@@ -91,6 +91,8 @@ export class TimeZone {
       if (c instanceof Locale) locale = c;
     }
     const iana = (this.$zone as ZoneRegion).$iana;
+    if (this.$idValue === 'UTC') return style === TimeZone.SHORT ? 'UTC' : 'Coordinated Universal Time';
+    if (this.$idValue === 'GMT') return style === TimeZone.SHORT ? 'GMT' : 'Greenwich Mean Time';
     if (!iana) return this.$zone instanceof ZoneOffset || this.$idValue.startsWith('GMT') ? gmtId(this.$zone.$offsetAt(0)) : this.$idValue;
     // Pick an instant in (or out of) daylight time so the right name variant comes back.
     const y = new Date().getUTCFullYear();
@@ -732,12 +734,13 @@ export class Calendar {
     if (!this.$lenient) {
       for (let i = 0; i < FIELD_COUNT; i++) {
         if (!userMask[i] || i === ZONE_OFFSET || i === DST_OFFSET) continue;
-        if (!mask.has(i) && i !== YEAR) continue;
         if (original[i] !== this.$fields[i]) {
+          const msg = FIELD_NAMES[i] + ': ' + original[i] + ' -> ' + this.$fields[i];
           // restore so later reads see what the caller set
           this.$fields = original;
           this.$isTimeSet = false;
-          throw new IllegalArgumentException(FIELD_NAMES[i] + ': ' + original[i] + ' -> ' + this.$fields[i]);
+          this.$areFieldsSet = false;
+          throw new IllegalArgumentException(msg);
         }
       }
     }

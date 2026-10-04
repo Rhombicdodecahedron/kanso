@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "Kanso",
+    "slug": "kanso",
+    "version": "0.1.0",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "scheme": "kanso",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "bundleIdentifier": "com.alexiss.kanso",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.alexiss.kanso",
+      "adaptiveIcon": {
+        "backgroundColor": "#0E0E10",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      "expo-image",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0E0E10",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 76
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "backgroundColor": "#0E0E10"
+  }
+}
