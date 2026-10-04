@@ -9,6 +9,7 @@ import { Program, Unsupported } from './syms';
 import { Compiler } from './compiler';
 import { RuntimeInfo } from './runtime-info';
 import { annotationName, annotations } from './parser';
+import { preprocess } from './preprocess';
 
 /** lib/ modules implemented by hand in the runtime (not translated). */
 const SHIMMED_LIBS = new Set(['i18n']);
@@ -55,6 +56,16 @@ function assetFiles(dir: string, into: Record<string, string>): void {
 
 let rtInfo: RuntimeInfo | null = null;
 
+function parseChecked(repo: string, f: string) {
+  const root = parseKotlin(preprocess(fs.readFileSync(f, 'utf8')));
+  if (root.hasError) {
+    const err = root.descendantsOfType('ERROR')[0];
+    const at = err ? `:${err.startPosition.row + 1}` : '';
+    throw new Unsupported('Kotlin parse error', path.relative(repo, f) + at);
+  }
+  return root;
+}
+
 export async function translateExtension(repo: string, extDir: string): Promise<TranslateResult> {
   await initParser();
   rtInfo ??= new RuntimeInfo();
@@ -80,20 +91,18 @@ export async function translateExtension(repo: string, extDir: string): Promise<
       if (!fs.existsSync(themeDir)) throw new Unsupported(`missing theme ${meta.theme}`);
       const tmeta = parseGradle(fs.readFileSync(path.join(themeDir, 'build.gradle.kts'), 'utf8'));
       addDeps(tmeta.deps);
-      for (const f of ktFiles(path.join(themeDir, 'src'))) prog.addFile(path.relative(repo, f), parseKotlin(fs.readFileSync(f, 'utf8')));
+      for (const f of ktFiles(path.join(themeDir, 'src'))) prog.addFile(path.relative(repo, f), parseChecked(repo, f));
       assetFiles(path.join(themeDir, 'assets'), assets);
     }
     for (const lib of libDirs) {
       if (SHIMMED_LIBS.has(lib)) continue;
       const libDir = path.join(repo, 'lib', lib);
       if (!fs.existsSync(libDir)) throw new Unsupported(`missing lib ${lib}`);
-      for (const f of ktFiles(path.join(libDir, 'src'))) prog.addFile(path.relative(repo, f), parseKotlin(fs.readFileSync(f, 'utf8')));
+      for (const f of ktFiles(path.join(libDir, 'src'))) prog.addFile(path.relative(repo, f), parseChecked(repo, f));
     }
     const extFiles = ktFiles(path.join(extDir, 'src'));
     for (const f of extFiles) {
-      const root = parseKotlin(fs.readFileSync(f, 'utf8'));
-      if (root.hasError) throw new Unsupported('Kotlin parse error', path.relative(repo, f));
-      prog.addFile(path.relative(repo, f), root);
+      prog.addFile(path.relative(repo, f), parseChecked(repo, f));
     }
     assetFiles(path.join(extDir, 'assets'), assets);
     // main class: @Source in the extension's files

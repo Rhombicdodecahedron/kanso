@@ -205,6 +205,8 @@ export class Preference {
 }
 
 export class SwitchPreferenceCompat extends Preference {
+  summaryOn: any = null;
+  summaryOff: any = null;
   get $kind() {
     return 'switch';
   }

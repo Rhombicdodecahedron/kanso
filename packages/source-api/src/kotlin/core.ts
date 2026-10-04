@@ -470,6 +470,8 @@ export interface ExtDef {
   recvLambda?: boolean;
   /** Translator-made candidate for a user member extension: call `self[member](recv, ...)`. */
   member?: string;
+  /** Takes the caller's context object (Kotlin context parameter) after the receiver. */
+  ctx?: boolean;
 }
 
 export const ANY = (_x: unknown) => true;
@@ -514,7 +516,7 @@ export function call(recv: any, name: string, cands: readonly ExtDef[], args: an
     if (m) return m.apply(recv, args);
   }
   const ext = findExt(recv, cands);
-  if (ext) return ext.member ? self[ext.member](recv, ...args) : ext.fn(recv, ...args);
+  if (ext) return ext.member ? self[ext.member](recv, ...args) : ext.ctx ? ext.fn(recv, self, ...args) : ext.fn(recv, ...args);
   if (recv === null || recv === undefined) throw new NullPointerException(`Calling '${name}' on null`);
   if (typeof recv === 'function' && name === 'invoke') return recv(...args);
   return noSuch(recv, name);
@@ -527,7 +529,7 @@ export function callAsync(recv: any, name: string, cands: readonly ExtDef[], arg
     if (m) return m.apply(recv, args);
   }
   const ext = findExt(recv, cands);
-  if (ext) return ext.member ? self[ext.member](recv, ...args) : (ext.async ?? ext.fn)(recv, ...args);
+  if (ext) return ext.member ? self[ext.member](recv, ...args) : ext.ctx ? ext.fn(recv, self, ...args) : (ext.async ?? ext.fn)(recv, ...args);
   if (recv === null || recv === undefined) throw new NullPointerException(`Calling '${name}' on null`);
   return noSuch(recv, name);
 }
@@ -565,7 +567,7 @@ export function icall(receivers: any[], name: string, cands: readonly ExtDef[], 
   }
   for (const r of receivers) {
     const ext = findExt(r, cands);
-    if (ext) return ext.member ? self[ext.member](r, ...args) : ext.fn(r, ...args);
+    if (ext) return ext.member ? self[ext.member](r, ...args) : ext.ctx ? ext.fn(r, self, ...args) : ext.fn(r, ...args);
   }
   if (fallback) return fallback(...args);
   throw new UnsupportedOperationException(`Unresolved call '${name}'`);
@@ -580,7 +582,7 @@ export function icallAsync(receivers: any[], name: string, cands: readonly ExtDe
   }
   for (const r of receivers) {
     const ext = findExt(r, cands);
-    if (ext) return ext.member ? self[ext.member](r, ...args) : (ext.async ?? ext.fn)(r, ...args);
+    if (ext) return ext.member ? self[ext.member](r, ...args) : ext.ctx ? ext.fn(r, self, ...args) : (ext.async ?? ext.fn)(r, ...args);
   }
   if (fallback) return fallback(...args);
   throw new UnsupportedOperationException(`Unresolved call '${name}'`);

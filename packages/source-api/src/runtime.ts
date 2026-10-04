@@ -229,6 +229,8 @@ export const k = {
   and: boolOrBits('and'),
   or: boolOrBits('or'),
   xor: boolOrBits('xor'),
+  /** Class/type from a reified descriptor (for `is T` inside inline reified functions). */
+  descClass: (d: any) => (d?.k === 'cls' || d?.k === 'enum' ? d.cls : d?.k === 'str' ? core.KTypes.String : d?.k === 'list' ? core.KTypes.List : core.KTypes.Any),
   throwIt: (e: any): never => {
     throw e;
   },

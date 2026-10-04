@@ -687,3 +687,43 @@ export function addJsonObject(b: JsonArrayBuilder, f: (b: JsonObjectBuilder) => 
 export function addJsonArray(b: JsonArrayBuilder, f: (b: JsonArrayBuilder) => any): boolean {
   return b.add(buildJsonArray(f));
 }
+
+// ---------- custom serializers ----------
+
+/** kotlinx.serialization.json.JsonTransformingSerializer<T>(tSerializer) */
+export class JsonTransformingSerializer {
+  readonly $inner: Desc;
+  constructor(inner: any) {
+    this.$inner = inner && typeof inner.k === 'string' ? inner : T.any;
+  }
+  transformDeserialize(e: any): any {
+    return e;
+  }
+  transformSerialize(e: any): any {
+    return e;
+  }
+  get descriptor(): any {
+    return { serialName: this.constructor.name, kind: 'CLASS' };
+  }
+}
+
+/** KSerializer is an interface; user serializers implement deserialize(decoder)/serialize(encoder, v). */
+export class KSerializer {
+  static $interface = true;
+}
+
+export const PrimitiveKind = { STRING: 'STRING', INT: 'INT', LONG: 'LONG', BOOLEAN: 'BOOLEAN', DOUBLE: 'DOUBLE', FLOAT: 'FLOAT' };
+export function PrimitiveSerialDescriptor(serialName: string, kind: any): any {
+  return { serialName, kind };
+}
+export function buildClassSerialDescriptor(serialName: string, ..._rest: any[]): any {
+  return { serialName, kind: 'CLASS' };
+}
+
+export const builtinSerializers = {
+  ListSerializer: (d: Desc) => T.list(d),
+  SetSerializer: (d: Desc) => T.set(d),
+  MapSerializer: (k: Desc, v: Desc) => T.map(k, v),
+  PairSerializer: (a: Desc, b: Desc) => T.pair(a, b),
+  nullable: (d: Desc) => T.nullable(d),
+};

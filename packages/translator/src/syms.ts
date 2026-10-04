@@ -72,6 +72,8 @@ export interface FunSym {
   /** JS method/function name (mangled for overloads and extensions) */
   jsName: string;
   isSuspend: boolean;
+  /** Kotlin context parameters (passed implicitly from the caller's source `this`) */
+  contextParams: string[];
 }
 
 export type ClassKind = 'class' | 'interface' | 'object' | 'enum' | 'companion' | 'annotation';
@@ -367,6 +369,7 @@ export class Program {
       body,
       jsName: name,
       isSuspend: mods.has('suspend'),
+      contextParams: annotations(d).filter((a) => annotationName(a) === 'KansoContext').map((a) => annotationStringArgs(a)[0]),
     };
     this.allFuns.push(fn);
     return fn;

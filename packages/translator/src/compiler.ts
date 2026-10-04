@@ -221,6 +221,7 @@ export class Compiler {
   // ======================================================================
 
   private fail(reason: string, n?: Node | null): never {
+    if (process.env.KANSO_TRACE && !this.inFallback) console.log(new Error(reason).stack?.split('\n').slice(1, 9).join('\n'));
     throw new Unsupported(reason, n ? `${this.file?.path ?? '?'}:${pos(n)}` : this.file?.path);
   }
 
@@ -263,6 +264,9 @@ export class Compiler {
       if (c.typeParams.includes(n)) return { builtin: 'Any' };
       const nested = this.findNested(c, n);
       if (nested) return nested;
+      const rs = this.rtSuper(c);
+      const rv: any = rs?.value;
+      if (rv && typeof rv === 'function' && Object.prototype.hasOwnProperty.call(rv, n) && typeof rv[n] === 'function') return { rt: { fqn: `${rs!.fqn}.${n}`, value: rv[n] } };
     }
     const pkg = this.prog.packages.get(from.file.pkg);
     const local = pkg?.classes.get(n);
@@ -343,6 +347,7 @@ export class Compiler {
       if (typeof t !== 'string' && t.type === 'function_type') return `$k.KTypes.Function`;
       this.fail(`unsupported type reference ${typeof t === 'string' ? t : t.text}`, n ?? null);
     }
+    for (let f: FnCtx | null = this.fn; f; f = f.parent) if (f.fun?.reified.includes(name)) return `$k.descClass($tp_${name})`;
     const r = this.resolveType(name, { file: this.file, cls: this.cls });
     if (!r && process.env.KANSO_LENIENT && !this.inFallback) {
       this.warn(`unknown type ${name}`, n ?? (typeof t === 'string' ? null : t));
@@ -376,10 +381,17 @@ export class Compiler {
     if (t.type === 'parenthesized_type' || t.type === 'non_nullable_type') return this.typeDesc(named(t)[0] ?? null, typeParams);
     if (t.type === 'function_type') return '$T.any';
     if (t.type !== 'user_type') return '$T.any';
-    const name = typeName(t)!;
+    const name = typeName(t)!.replace(/`/g, '');
+    if (name.includes('$ser$')) {
+      const [, ser] = name.split('$ser$');
+      const r = this.resolveType(ser, { file: this.file, cls: this.cls });
+      if (!r?.user) this.fail(`custom serializer ${ser} not found`, t);
+      return `$T.custom(${this.classJs(r.user)})`;
+    }
     const args = this.typeArgs(t).map((a) => this.typeDesc(a, typeParams));
     const ti = typeParams.indexOf(name);
     if (ti >= 0) return `$T.param(${ti})`;
+    for (let f: FnCtx | null = this.fn; f; f = f.parent) if (f.fun?.reified.includes(name)) return `$tp_${name}`;
     switch (name) {
       case 'String':
         return '$T.str';
@@ -1005,7 +1017,7 @@ export class Compiler {
       const params = this.emitParams(f.params, base?.params ?? null);
       const body = this.functionBody(f.body!, f.returnType);
       this.checkInfection(f);
-      const allParams = selfParam ? [selfParam, ...params] : params;
+      const allParams = [...(selfParam ? [selfParam] : []), ...params, ...f.reified.map((t) => `$tp_${t}`)];
       return `${this.fn.usedAwait || isAsync ? 'async ' : ''}${f.jsName}(${allParams.join(', ')}) {\n${indent(body)}\n}`;
     });
     return code;
@@ -1047,10 +1059,11 @@ export class Compiler {
           selfParam = '$this';
           this.receivers = [{ js: '$this', kind: 'ext', cls: this.userTypeOf(f.extReceiver), rt: this.rtTypeOf(f.extReceiver), label: f.name }];
         }
+        const ctx = f.contextParams.map((c) => this.declareLocal(c, true));
         const params = this.emitParams(f.params, null);
         const body = this.functionBody(f.body!, f.returnType);
         this.checkInfection(f);
-        const allParams = selfParam ? [selfParam, ...params] : params;
+        const allParams = [...(selfParam ? [selfParam] : []), ...ctx, ...params, ...f.reified.map((t) => `$tp_${t}`)];
         return `${this.fn.usedAwait || isAsync ? 'async ' : ''}function ${f.jsName}(${allParams.join(', ')}) {\n${indent(body)}\n}`;
       });
     } finally {
@@ -1708,6 +1721,17 @@ export class Compiler {
       const head = this.prefixHead(n);
       if (head) {
         const op = head.op;
+        if (head.left) {
+          // `a + b.f<T>()` parsed as `(a + b.f)<T>()`: apply the chain to the right operand.
+          const l = this.expr(head.left);
+          this.override.set(head.node.id, head.arg);
+          try {
+            const inner = this.expr(n, expected);
+            return this.binopNodes(op, l, inner, head.left, null);
+          } finally {
+            this.override.delete(head.node.id);
+          }
+        }
         this.override.set(head.node.id, head.arg);
         try {
           const inner = this.expr(n, expected);
@@ -1831,14 +1855,23 @@ export class Compiler {
   private override = new Map<number, Node>();
   private loops: { label: string | null; fn: FnCtx; token: string | null }[] = [];
   private inFallback = false;
+  /** name of the call whose arguments are being compiled (default lambda label) */
+  private callName: string | null = null;
 
   /** tree-sitter-kotlin binds prefix `!`/`-` tighter than postfix calls; find such a head. */
-  private prefixHead(n: Node): { node: Node; op: string; arg: Node } | null {
+  private prefixHead(n: Node): { node: Node; op: string; arg: Node; left?: Node } | null {
     let cur: Node | null = n;
     while (cur && (cur.type === 'navigation_expression' || cur.type === 'call_expression' || cur.type === 'index_expression')) {
       const first: Node | undefined = named(cur)[0];
       if (!first) return null;
       if (this.override.has(first.id)) return null;
+      if (first.type === 'binary_expression') {
+        const left = first.childForFieldName('left');
+        const right = first.childForFieldName('right');
+        const op = first.childForFieldName('operator')?.text ?? this.opToken(first);
+        if (left && right) return { node: first, op, arg: right, left };
+        return null;
+      }
       if (first.type === 'unary_expression') {
         const opNode = first.childForFieldName('operator');
         const arg = first.childForFieldName('argument');
@@ -1870,6 +1903,17 @@ export class Compiler {
   }
 
   private selfJs(): string {
+    for (let f: FnCtx | null = this.fn; f; f = f.parent) {
+      if (f.fun?.contextParams.length) return this.scope.lookup(f.fun.contextParams[0])?.js ?? this.thisJs();
+    }
+    return this.thisJs();
+  }
+
+  /** Value for an implicit context parameter: an enclosing context param, else the class `this`. */
+  private contextArg(): string {
+    for (let f: FnCtx | null = this.fn; f; f = f.parent) {
+      if (f.fun?.contextParams.length) return this.scope.lookup(f.fun.contextParams[0])?.js ?? this.thisJs();
+    }
     return this.thisJs();
   }
 
@@ -1903,6 +1947,7 @@ export class Compiler {
     if (name === 'null') return 'null';
     if (name === 'true' || name === 'false') return name;
     if (name === 'Unit') return 'undefined';
+    if (name === 'javaClass' && !this.scope.lookup(name)) return `$k.kclass(${this.thisJs()}, $loader).java`;
     if (name === 'break' || name === 'continue') {
       const lbl = named(n.parent ?? n).find((x) => x.type === 'label');
       this.jump(name, lbl ? lbl.text.replace(/@/g, '') : null, n);
@@ -2071,6 +2116,10 @@ export class Compiler {
         parts.push(`{ name: ${JSON.stringify(name)}, recv: ${pred}, member: ${JSON.stringify(f.jsName)} }`);
         keyParts.push(`m:${f.jsName}:${pred}`);
       }
+      if (!propOnly && this.rtMembers(r.cls).has(`${name}$ext`)) {
+        parts.push(`{ name: ${JSON.stringify(name)}, recv: $k.ANY, member: ${JSON.stringify(`${name}$ext`)} }`);
+        keyParts.push(`rm:${name}`);
+      }
       const p = this.findProp(r.cls, `${name}$extp`);
       if (p) {
         const pred = this.predFor(p.extReceiver!);
@@ -2083,7 +2132,8 @@ export class Compiler {
       const recvNode = fsym.extReceiver!;
       const pred = this.predFor(recvNode);
       const fnJs = fsym.kind === 'fun' ? fsym.jsName : this.topPropJs(fsym);
-      parts.push(`{ name: ${JSON.stringify(name)}, recv: ${pred}, fn: ${fnJs}${fsym.kind === 'prop' ? ', prop: true' : ''} }`);
+      const ctx = fsym.kind === 'fun' && fsym.contextParams.length ? ', ctx: true' : '';
+      parts.push(`{ name: ${JSON.stringify(name)}, recv: ${pred}, fn: ${fnJs}${fsym.kind === 'prop' ? ', prop: true' : ''}${ctx} }`);
       keyParts.push(`t:${fnJs}`);
     }
     // runtime: explicit imports, star imports, then stdlib defaults
@@ -2132,6 +2182,7 @@ export class Compiler {
     for (const r of this.receivers) {
       if (!r.cls) continue;
       if (!propOnly && this.findFuns(r.cls, name).some((f) => f.extReceiver)) return true;
+      if (!propOnly && this.rtMembers(r.cls).has(`${name}$ext`)) return true;
       if (this.findProp(r.cls, `${name}$extp`)) return true;
     }
     if (this.userTopExts(name).some((x) => !propOnly || x.kind === 'prop')) return true;
@@ -2218,6 +2269,7 @@ export class Compiler {
   }
 
   private memberAccess(recv: string, name: string, safe: boolean, n: Node): string {
+    if (name === 'javaClass') return `$k.kclass(${recv}, $loader).java`;
     const extp = this.extPropCands(name);
     if (safe) {
       const t = this.tmp();
@@ -2353,6 +2405,16 @@ export class Compiler {
 
   /** Unqualified call: foo(...) */
   private plainCall(n: Node, name: string, va: Node | null, lambdaNode: Node | null, typeArgs: Node[], expected: Node | null): string {
+    const prevName = this.callName;
+    this.callName = name;
+    try {
+      return this.plainCall0(n, name, va, lambdaNode, typeArgs, expected);
+    } finally {
+      this.callName = prevName;
+    }
+  }
+
+  private plainCall0(n: Node, name: string, va: Node | null, lambdaNode: Node | null, typeArgs: Node[], expected: Node | null): string {
     // local function or local value of function type
     const local = this.scope.lookup(name);
     if (local) {
@@ -2367,12 +2429,13 @@ export class Compiler {
 
     // implicit-receiver members (class, ext receiver, lambda receivers)
     const dynRecv: string[] = [];
+    let firstType: { user?: ClassSym; rt?: any } | null = null;
     for (const r of this.receivers) {
       if (r.cls) {
         const funs = this.findFuns(r.cls, name).filter((f) => !f.extReceiver);
         if (funs.length) {
           const f = this.pickOverload(funs, va, lambdaNode);
-          const args = this.callArgs(va, lambdaNode, f.params, this.lambdaModesFor(f));
+          const args = this.withReified(f, this.callArgs(va, lambdaNode, f.params, this.lambdaModesFor(f)), typeArgs, expected, n);
           const callJs = `${r.js}.${funs.length > 1 && new Set(funs.map((x) => x.jsName)).size > 1 ? name : f.jsName}(${args.join(', ')})`;
           const awaited = this.awaitUser(f) ? this.awaitIt(callJs, n) : callJs;
           return dynRecv.length ? this.dynCall(dynRecv, name, va, lambdaNode, typeArgs, () => awaited, n) : awaited;
@@ -2402,8 +2465,8 @@ export class Compiler {
           return f && this.awaitUser(f) ? this.awaitIt(callJs, n) : callJs;
         }
         if (r.kind === 'class' || r.kind === 'object') {
-          // user extension functions whose receiver is this class (implicit this)
-          if (this.userExtFuns(name).length) {
+          // user (or runtime member) extension functions whose receiver is this class (implicit this)
+          if (this.userExtFuns(name).length || this.rtMembers(r.cls).has(`${name}$ext`)) {
             const args = this.callArgs(va, lambdaNode, null, null);
             const callJs = `$k.icall([${[...dynRecv, r.js].join(', ')}], ${JSON.stringify(name)}, ${this.extList(name, n)}, [${args.join(', ')}], undefined, ${this.selfJs()})`;
             return this.userExtFuns(name).some((f) => this.awaitUser(f)) ? this.awaitIt(callJs, n) : callJs;
@@ -2419,6 +2482,7 @@ export class Compiler {
         }
         // extension with receiver = this ext receiver
         if (this.hasExt(name)) {
+          if (!dynRecv.length) firstType = { rt: r.rt };
           dynRecv.push(r.js);
           continue;
         }
@@ -2430,7 +2494,7 @@ export class Compiler {
     const staticCall = () => this.staticCall(n, name, va, lambdaNode, typeArgs, expected);
     if (dynRecv.length) {
       // Unknown receiver types: decide at runtime, falling back to static resolution.
-      return this.dynCall(dynRecv, name, va, lambdaNode, typeArgs, staticCall, n);
+      return this.dynCall(dynRecv, name, va, lambdaNode, typeArgs, staticCall, n, firstType);
     }
     return staticCall();
   }
@@ -2446,14 +2510,14 @@ export class Compiler {
   }
 
   /** Call through implicit receivers whose types are unknown at compile time. */
-  private dynCall(recvs: string[], name: string, va: Node | null, lambdaNode: Node | null, typeArgs: Node[], fallback: (() => string) | null, n: Node): string {
+  private dynCall(recvs: string[], name: string, va: Node | null, lambdaNode: Node | null, typeArgs: Node[], fallback: (() => string) | null, n: Node, recvType: { user?: ClassSym; rt?: any } | null = null): string {
     const rtc = this.rtCands(name);
     const userExt = this.userExtFuns(name);
     const recvLambda = rtc.some((c) => c.recvLambda);
-    const inline = rtc.some((c) => !!c.async) || rtc.length === 0;
+    const inline = rtc.some((c) => !!c.async);
     const suspendLambda = rtc.some((c) => c.suspendLambda);
     const mode: LambdaMode = suspendLambda ? 'suspend' : inline ? 'inline' : 'plain';
-    const args = this.callArgs(va, lambdaNode, null, { recv: recvLambda, mode, label: name });
+    const args = this.callArgs(va, lambdaNode, null, { recv: recvLambda, mode, label: name, recvType });
     const reified = rtc.find((c) => c.reified);
     if (reified && typeArgs.length) args.push(reified.reified === 'desc' ? this.typeDesc(typeArgs[0]) : this.typeRefJs(typeArgs[0], typeArgs[0]));
     let fb = 'undefined';
@@ -2463,7 +2527,10 @@ export class Compiler {
       this.out = lines;
       let code: string | null = null;
       const prevFb = this.inFallback;
+      const prevAwait = this.fn.usedAwait;
+      this.fn.usedAwait = false;
       this.inFallback = true;
+      let fbAwait = false;
       try {
         code = fallback();
       } catch (e) {
@@ -2471,14 +2538,16 @@ export class Compiler {
         code = null;
       } finally {
         this.inFallback = prevFb;
+        fbAwait = this.fn.usedAwait;
+        this.fn.usedAwait = prevAwait || fbAwait;
       }
       this.out = saved;
       if (code !== null) {
-        const awaitsInFallback = /\bawait\b/.test(code) || lines.some((l) => /\bawait\b/.test(l));
+        const awaitsInFallback = fbAwait;
         fb = `${awaitsInFallback ? 'async ' : ''}() => { ${lines.join(' ')} return ${code}; }`;
       }
     }
-    const lambdaAsync = args.some((a) => a.startsWith('async '));
+    const lambdaAsync = mode === 'inline' && args.some((a) => a.startsWith('async '));
     const fnName = lambdaAsync ? 'icallAsync' : 'icall';
     const callJs = `$k.${fnName}([${recvs.join(', ')}], ${JSON.stringify(name)}, ${this.extList(name, n)}, [${args.join(', ')}], ${fb}, ${this.selfJs()})`;
     const can = this.fn.canAwait || this.inlineChainCanAwait();
@@ -2509,9 +2578,8 @@ export class Compiler {
     switch (r.k) {
       case 'topFun': {
         const f = this.pickOverload(r.funs.filter((x) => !x.extReceiver), va, lambdaNode);
-        const args = this.callArgs(va, lambdaNode, f.params, this.lambdaModesFor(f));
-        if (f.reified.length && typeArgs.length) args.push(...typeArgs.map((t) => this.typeDesc(t)));
-        const call = `${f.jsName}(${args.join(', ')})`;
+        const args = this.withReified(f, this.callArgs(va, lambdaNode, f.params, this.lambdaModesFor(f)), typeArgs, expected, n);
+        const call = `${f.jsName}(${[...f.contextParams.map(() => this.contextArg()), ...args].join(', ')})`;
         return this.awaitUser(f) ? this.awaitIt(call, n) : call;
       }
       case 'userClass':
@@ -2563,7 +2631,7 @@ export class Compiler {
       args.push(v.$reified === 'desc' ? this.typeDesc(t) : this.typeRefJs(t, t));
     }
     let call: string;
-    const lambdaAsync = args.some((a) => a.startsWith('async '));
+    const lambdaAsync = mode === 'inline' && args.some((a) => a.startsWith('async '));
     if (isRuntimeClass(v)) call = args.some((a) => a.startsWith('$k.named(')) ? `$k.construct(${r.js}, [${args.join(', ')}])` : `new ${r.js}(${args.join(', ')})`;
     else if (lambdaAsync && v?.$async) call = `${r.js}.$async(${args.join(', ')})`;
     else call = `${r.js}(${args.join(', ')})`;
@@ -2600,6 +2668,16 @@ export class Compiler {
 
   /** Method call `recv.name(args)` / `recv?.name(args)` / static `Type.name(args)`. */
   private methodCall(n: Node, callee: Node, va: Node | null, lambdaNode: Node | null, typeArgs: Node[], expected: Node | null): string {
+    const prevName = this.callName;
+    this.callName = identOf(named(callee)[named(callee).length - 1]) ?? null;
+    try {
+      return this.methodCall0(n, callee, va, lambdaNode, typeArgs, expected);
+    } finally {
+      this.callName = prevName;
+    }
+  }
+
+  private methodCall0(n: Node, callee: Node, va: Node | null, lambdaNode: Node | null, typeArgs: Node[], expected: Node | null): string {
     const parts = named(callee);
     const recvNode = this.ovr(parts[0]);
     const memberNode = parts[parts.length - 1];
@@ -2655,10 +2733,12 @@ export class Compiler {
       if (t) args.push(reified.reified === 'desc' ? this.typeDesc(t) : this.typeRefJs(t, t));
       else if (reified.reified === 'desc') args.push('$T.any');
       else this.fail(`cannot infer reified type for ${name}`, n);
-    } else if (typeArgs.length && userExts.some((f) => f.reified.length)) {
-      args.push(...typeArgs.map((t) => this.typeDesc(t)));
+    } else if (userExts.length === 1 && userExts[0].reified.length) {
+      args.splice(0, args.length, ...this.withReified(userExts[0], args, typeArgs, expected, n));
+    } else if (knownUserMethod.length === 1 && knownUserMethod[0].reified.length) {
+      args.splice(0, args.length, ...this.withReified(knownUserMethod[0], args, typeArgs, expected, n));
     }
-    const lambdaAsync = args.some((a) => a.startsWith('async '));
+    const lambdaAsync = mode === 'inline' && args.some((a) => a.startsWith('async '));
     let call: string;
     if (hasExt) {
       call = `$k.${lambdaAsync ? 'callAsync' : 'call'}(${recv}, ${JSON.stringify(name)}, ${this.extList(name, n)}, [${args.join(', ')}], ${this.selfJs()})`;
@@ -2682,6 +2762,11 @@ export class Compiler {
   /** Cheap static type of an expression: constructor calls and `X.create()` factories. */
   private inferType(n0: Node): { user?: ClassSym; rt?: any } | null {
     const n = this.ovr(n0);
+    if (n.type === 'this_expression' && !named(n).length) {
+      const r = this.receivers[0];
+      if (r && (r.cls || r.rt)) return { user: r.cls ?? undefined, rt: r.rt ?? undefined };
+      return null;
+    }
     if (n.type !== 'call_expression') return null;
     const callee = named(n)[0];
     if (callee.type === 'identifier') {
@@ -2702,6 +2787,20 @@ export class Compiler {
       if (owner?.rt && isRuntimeClass(owner.rt.value) && chain[chain.length - 1] === 'create') return { rt: owner.rt.value };
     }
     return null;
+  }
+
+  /** Pad omitted optional args and append reified type descriptors. */
+  private withReified(f: FunSym, args: string[], typeArgs: Node[], expected: Node | null, n: Node): string[] {
+    if (!f.reified.length) return args;
+    const out = [...args];
+    while (out.length < f.params.length) out.push('undefined');
+    f.reified.forEach((tp, i) => {
+      const ti = f.typeParams.indexOf(tp);
+      const t = typeArgs[ti] ?? typeArgs[i] ?? (f.returnType && typeName(f.returnType) === tp ? expected : null);
+      if (!t) this.fail(`cannot infer reified type ${tp} for ${f.name}`, n);
+      out.push(this.typeDesc(t));
+    });
+    return out;
   }
 
   private userMethodsNamed(name: string): FunSym[] {
@@ -2731,6 +2830,7 @@ export class Compiler {
   private staticMethodCall(t: { user?: ClassSym; rtJs?: string; rtValue?: any; fqn?: string }, name: string, va: Node | null, lambdaNode: Node | null, typeArgs: Node[], expected: Node | null, n: Node): string {
     if (t.user) {
       const c = t.user;
+      if (name === 'serializer' && (c.serializable || c.kind === 'enum') && !va?.namedChildCount) return `$T.cls(${this.classJs(c)})`;
       // nested class constructor: Outer.Inner(...)
       const nested = c.nested.get(name);
       if (nested && nested.kind !== 'object' && nested.kind !== 'companion') return this.construct(nested, va, lambdaNode, n);
@@ -2792,7 +2892,7 @@ export class Compiler {
       const mark = this.out.length;
       let v: string;
       if (it.node.type === 'lambda_literal' || it.node.type === 'annotated_lambda') {
-        v = this.lambda(it.node.type === 'lambda_literal' ? it.node : this.lambdaOf(it.node), lambdaOpts ?? { mode: 'plain', recv: false, label: null });
+        v = this.lambda(it.node.type === 'lambda_literal' ? it.node : this.lambdaOf(it.node), lambdaOpts ?? { mode: 'plain', recv: false, label: this.callName });
       } else v = this.expr(it.node);
       if (this.out.length > mark && compiled.length) {
         const spills: string[] = [];
@@ -2807,7 +2907,7 @@ export class Compiler {
       }
       compiled.push(it.spread ? `...${v}` : v);
     }
-    if (lambdaNode) compiled.push(this.lambda(this.lambdaOf(lambdaNode), lambdaOpts ?? { mode: 'plain', recv: false, label: null }));
+    if (lambdaNode) compiled.push(this.lambda(this.lambdaOf(lambdaNode), lambdaOpts ?? { mode: 'plain', recv: false, label: this.callName }));
     const namedItems = items.map((it, i) => ({ ...it, js: compiled[i] })).filter((x) => x.name);
     if (!namedItems.length) return compiled;
     if (params) {
@@ -3126,6 +3226,13 @@ export class Compiler {
       default:
         this.fail(`unsupported operator ${op}`, ln ?? rn);
     }
+  }
+
+  /** Apply a binary operator to already-compiled operands (used by re-association). */
+  private binopNodes(op: string, l: string, r: string, ln: Node | null, rn: Node | null): string {
+    if (op === '?:') return `(${l} ?? ${r})`;
+    if (op === '&&' || op === '||') return `(${l} ${op} ${r})`;
+    return this.binop(op, l, r, ln, rn);
   }
 
   private elvis(left: Node, right: Node): string {

@@ -4,7 +4,7 @@ import { md5 } from '@noble/hashes/legacy.js';
 import { IllegalStateException, UnsupportedOperationException } from '../kotlin/core';
 import { FilterList, MangasPage, type Page, type SChapter, type SManga, SMangaUpdate } from '../model';
 import { GET, Headers, HeadersBuilder, OkHttpClient, OkHttpClientBuilder, type Request, type Response, type Transport, MemoryCookieJar, type CookieJar } from '../okhttp';
-import { toHttpUrlOrNull, type HttpUrl } from '../okhttp/url';
+import { parseHttpUrl, toHttpUrlOrNull, type HttpUrl } from '../okhttp/url';
 import { JsonNull } from '../serialization/json';
 import { SharedPreferences, type PrefStore } from './preferences';
 
@@ -159,6 +159,19 @@ export class HttpSource {
   }
   generateId(name: string, lang: string, versionId: number): string {
     return generateId(name, lang, versionId);
+  }
+
+  /** `fun SManga.setUrlWithoutDomain(url)` / `SChapter.setUrlWithoutDomain(url)` */
+  setUrlWithoutDomain$ext(target: any, url: string): void {
+    target.url = this.getUrlWithoutDomain(url);
+  }
+  getUrlWithoutDomain(orig: string): string {
+    const u = parseHttpUrl(orig.replace(/ /g, '%20'));
+    if (!u) return orig;
+    let out = u.encodedPath;
+    if (u.encodedQuery !== null) out += '?' + u.encodedQuery;
+    if (u.encodedFragment !== null) out += '#' + u.encodedFragment;
+    return out;
   }
 
   // --- legacy API: request/parse pairs, overridden by 1.4 sources ---
