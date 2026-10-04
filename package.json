@@ -1,0 +1,14 @@
+{
+  "name": "kanso",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "translate": "npm run translate -w @kanso/translator --",
+    "harness": "npm run harness -w @kanso/harness --"
+  }
+}

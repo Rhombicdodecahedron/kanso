@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.expo/
+/apps/*/ios
+/apps/*/android
+/repo/*.js
+/repo/index*.json
+/repo/report.*
+*.log
+.DS_Store

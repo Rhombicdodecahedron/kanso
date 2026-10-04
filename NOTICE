@@ -1,0 +1,8 @@
+Kanso
+Copyright 2026 Alexis S.
+
+Kanso's source runtime mirrors the extension API of Mihon (https://github.com/mihonapp/mihon)
+and its translator consumes extensions from keiyoushi/extensions-source
+(https://github.com/keiyoushi/extensions-source). Both projects are licensed under the
+Apache License, Version 2.0. Translated extension bundles are derivative works of those
+extensions and remain under the Apache License, Version 2.0.
