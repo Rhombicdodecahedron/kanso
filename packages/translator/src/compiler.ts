@@ -2128,6 +2128,16 @@ export class Compiler {
         parts.push(`{ name: ${JSON.stringify(name)}, recv: ${pred}, member: ${JSON.stringify(f.jsName)} }`);
         keyParts.push(`m:${f.jsName}:${pred}`);
       }
+      // member extensions declared in companion objects of this class and its outers/supers
+      for (const comp of this.companionsOf(r.cls)) {
+        if (propOnly) break;
+        for (const f of comp.funs.get(name) ?? []) {
+          if (!f.extReceiver) continue;
+          const pred = this.predFor(f.extReceiver);
+          parts.push(`{ name: ${JSON.stringify(name)}, recv: ${pred}, fn: (r, ...a) => ${this.classJs(comp)}.${f.jsName}(r, ...a) }`);
+          keyParts.push(`c:${comp.fqn}:${f.jsName}`);
+        }
+      }
       if (!propOnly && this.rtMembers(r.cls).has(`${name}$ext`)) {
         parts.push(`{ name: ${JSON.stringify(name)}, recv: $k.ANY, member: ${JSON.stringify(`${name}$ext`)} }`);
         keyParts.push(`rm:${name}`);
@@ -2194,6 +2204,7 @@ export class Compiler {
     for (const r of this.receivers) {
       if (!r.cls) continue;
       if (!propOnly && this.findFuns(r.cls, name).some((f) => f.extReceiver)) return true;
+      if (!propOnly && this.companionsOf(r.cls).some((c) => (c.funs.get(name) ?? []).some((f) => f.extReceiver))) return true;
       if (!propOnly && this.rtMembers(r.cls).has(`${name}$ext`)) return true;
       if (this.findProp(r.cls, `${name}$extp`)) return true;
     }
@@ -2225,9 +2236,22 @@ export class Compiler {
     return out;
   }
 
+  /** Companion objects (and enclosing objects) whose members are visible inside class c. */
+  private companionsOf(c: ClassSym): ClassSym[] {
+    const out: ClassSym[] = [];
+    for (let x: ClassSym | null = c; x; x = x.outer) {
+      const seen = new Set<ClassSym>();
+      for (let s: ClassSym | null = x; s && !seen.has(s); s = this.userSuper(s)) {
+        seen.add(s);
+        if (s.companion && !out.includes(s.companion)) out.push(s.companion);
+      }
+    }
+    return out;
+  }
+
   private userExtFuns(name: string): FunSym[] {
     const out: FunSym[] = [];
-    for (const r of this.receivers) if (r.cls) out.push(...this.findFuns(r.cls, name).filter((f) => f.extReceiver));
+    for (const r of this.receivers) if (r.cls) out.push(...this.findFuns(r.cls, name).filter((f) => f.extReceiver), ...this.companionsOf(r.cls).flatMap((c) => (c.funs.get(name) ?? []).filter((f) => f.extReceiver)));
     out.push(...(this.userTopExts(name).filter((x) => x.kind === 'fun') as FunSym[]));
     return out;
   }

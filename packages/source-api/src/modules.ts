@@ -430,9 +430,12 @@ export const defaultImports: Record<string, unknown> = {
 export const defaultExts: Record<string, ExtDef[]> = stdlibExts;
 
 const extraModules: Record<string, unknown>[] = [];
+const isExtDef = (v: any) => !!v && typeof v === 'object' && !Array.isArray(v) && typeof v.name === 'string' && typeof v.recv === 'function' && typeof v.fn === 'function';
+
+/** Add FQN entries; single extension definitions are normalised to lists. */
 export function registerModules(m: Record<string, unknown>): void {
   extraModules.push(m);
-  Object.assign(table, m);
+  for (const [k, v] of Object.entries(m)) table[k] = isExtDef(v) ? [v] : v;
 }
 
 export const modules = table;

@@ -1,0 +1,3699 @@
+{
+  "at": "2026-10-04T21:36:59.751Z",
+  "passed": 53,
+  "total": 100,
+  "rows": [
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.ar.detectiveconanar",
+      "name": "Detective Conan Ar",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 15,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "شبكة كونان العربية ar https://manga.detectiveconanar.com id=5702082694566979718"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 144,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.ar.anyonemanga",
+      "name": "Anyone Manga",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 17,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Anyone Manga ar https://anyonemanga.com id=2056490261402651047"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 159,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.aquamanga",
+      "name": "Aqua Manga",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Aqua Manga en https://aquareader.org id=626267698662819838"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 230,
+          "detail": "0 mangas, next=false, first=undefined"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.ar.rocksmanga",
+      "name": "Rocks Manga",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Rocks Manga ar https://rocksmanga.com id=3301038340499911137"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 566,
+          "detail": "0 mangas, next=false, first=undefined"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.boratscans",
+      "name": "Borat Scans",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Borat Scans en https://boratscans.com id=7909401032149692930"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 133,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.aryascans",
+      "name": "BrainRotComics",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "BrainRotComics en https://brainrotcomics.com id=7621724834621233000"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 172,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.anisascans",
+      "name": "Anisa Scans",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Anisa Scans en https://anisascans.in id=8904806262353429205"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 541,
+          "detail": "25 mangas, next=true, first=Death Is The Only Ending For The Villainess"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 395,
+          "detail": "title=Death Is The Only Ending For The Villainess status=1 chapters=215"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 131,
+          "detail": "12 pages, first=https://like.mgread.io/manga/2026/07/4636/1791344/1.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 399,
+          "detail": "image/jpeg 1947471 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.all.kodokustudio",
+      "name": "Kodoku Studio",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 19,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Kodoku Studio all https://kodokustudio.com id=1835150489344342556"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 575,
+          "detail": "6 mangas, next=false, first=Reverend Insanity [EN]"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 525,
+          "detail": "title=Reverend Insanity [EN] status=1 chapters=29"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 521,
+          "detail": "128 pages, first=https://i0.wp.com/kodokustudio.com/wp-content/uploads/WP-manga/data/manga_6868054768de7/e30cc0e9d6254102886de9c286a98fcc/Comic3_001_png_split_1_jpeg_split_1.jpeg?ssl=1"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 501,
+          "detail": "image/jpeg 787610 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.ar.hizomanga",
+      "name": "HizoManga",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 14,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Hizo Manga ar https://hizomanga.net id=4177563748162518441"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 972,
+          "detail": "25 mangas, next=true, first=Your Eternal Lies"
+        },
+        {
+          "stage": "details",
+          "ok": false,
+          "ms": 1254,
+          "detail": "NullPointerException: Null value (!!)"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.all.grabberzone",
+      "name": "Grabber Zone",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 22,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Grabber Zone all https://grabber.zone id=7008887237419113673"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 643,
+          "detail": "25 mangas, next=true, first=IDW Sonic The Hedgehog (#1-87)"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 590,
+          "detail": "title=IDW Sonic The Hedgehog (#1-87) status=1 chapters=88"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 547,
+          "detail": "29 pages, first=https://grabber.zone/wp-content/uploads/WP-manga/data/manga_6388809b6d8bc/4fd308089adeba048514208b03ef37bf/Sonic-the-Hedgehog-083-0000.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 497,
+          "detail": "image/jpeg 2442995 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.dragontea",
+      "name": "DragonTea",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 1,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "DragonTea en https://dragontea.ink id=6573506892686767219"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 168,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.bunmanga",
+      "name": "Bun Manga",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 1,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Bun Manga en https://bunmanga.com id=5944672760629857205"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 540,
+          "detail": "25 mangas, next=true, first=Seize My Boyfriend"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 792,
+          "detail": "title=Seize My Boyfriend status=1 chapters=569"
+        },
+        {
+          "stage": "pages",
+          "ok": false,
+          "ms": 1859,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.ar.mangastarz",
+      "name": "Manga Starz",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 4,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Manga Starz ar https://starzmanga.com id=6058166507489091982"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 2234,
+          "detail": "25 mangas, next=true, first=Otherworldly Evil Monarch"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 156,
+          "detail": "title=Otherworldly Evil Monarch status=1 chapters=257"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 132,
+          "detail": "2 pages, first=https://s2manhwa.starzmanga.com/manga/arb4/data/manga_5ef28f62ab9b0/9e02b07dbf666b0d814bbaedf6b1600e/image-1.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 2161,
+          "detail": "image/jpeg 1883481 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.ar.mangaspark",
+      "name": "MangaSpark",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 6,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "MangaSpark ar https://sparkmanga.net id=2436176998646301840"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 2399,
+          "detail": "25 mangas, next=true, first=Otherworldly Evil Monarch"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 2315,
+          "detail": "title=Otherworldly Evil Monarch status=1 chapters=257"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 246,
+          "detail": "0 pages, first=undefined"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.ar.mangalink",
+      "name": "Mangalink",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 9,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "مانجا لينك ar https://link-manga.net id=3568795724496898351"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 4078,
+          "detail": "25 mangas, next=true, first=Otherworldly Evil Monarch"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 194,
+          "detail": "title=Otherworldly Evil Monarch status=1 chapters=257"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 75,
+          "detail": "2 pages, first=https://s2darko.link-manga.net/manga/arb4/data/manga_5ef28f62ab9b0/9e02b07dbf666b0d814bbaedf6b1600e/image-1.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 768,
+          "detail": "image/jpeg 1883481 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.ar.manga3asq",
+      "name": "3asq",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 12,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "مانجا العاشق ar https://3asq.online id=1073624495230267708"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 867,
+          "detail": "21 mangas, next=true, first=One Piece"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 3199,
+          "detail": "title=One Piece status=1 chapters=568"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 404,
+          "detail": "14 pages, first=https://3asq.online/wp-content/uploads/WP-manga/data/manga_5ca2daf920c76/f324d29724fc502c32a98f57a82d0578/1194_01.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 753,
+          "detail": "image/jpeg 1173672 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.ar.mangalek",
+      "name": "Mangalek",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 11,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "مانجا ليك ar https://mangalik.net id=918460697583900080"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 2307,
+          "detail": "25 mangas, next=true, first=Otherworldly Evil Monarch"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 206,
+          "detail": "title=Otherworldly Evil Monarch status=1 chapters=257"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 1581,
+          "detail": "2 pages, first=https://s2solo.mangalik.net/manga/arb4/data/manga_5ef28f62ab9b0/9e02b07dbf666b0d814bbaedf6b1600e/image-1.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 1241,
+          "detail": "image/jpeg 1883481 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.kissmangain",
+      "name": "Kissmanga.in",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Kissmanga.in en https://kissmanga.in id=3112384885023225761"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 119,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.ar.mangalionz",
+      "name": "MangaLionz",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 7,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "MangaLionz ar https://manga-lionz.org id=2589550143244611118"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 4888,
+          "detail": "25 mangas, next=true, first=Otherworldly Evil Monarch"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 224,
+          "detail": "title=Otherworldly Evil Monarch status=1 chapters=257"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 86,
+          "detail": "2 pages, first=https://s2leo.manga-lionz.org/manga/arb4/data/manga_5ef28f62ab9b0/9e02b07dbf666b0d814bbaedf6b1600e/image-1.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 560,
+          "detail": "image/jpeg 1883481 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.galaxydegenscans",
+      "name": "GalaxyDegenScans",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "GalaxyDegenScans en https://gdscans.com id=4598626990187882152"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 753,
+          "detail": "25 mangas, next=true, first=Reincarnated • The Hero Marries the Sage"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 508,
+          "detail": "title=Reincarnated • The Hero Marries the Sage status=1 chapters=44"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 256,
+          "detail": "34 pages, first=https://gdscans.com/wp-content/uploads/WP-manga/data/manga_6402c2a2e68ee/d81d3ff1ffb18106fa6823d6fd60c035/000.webp"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 228,
+          "detail": "image/webp 89070 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.ksgroupscans",
+      "name": "KSGroupScans",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 1,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "KSGroupScans en https://ksgroupscans.com id=4307007494151154546"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 671,
+          "detail": "25 mangas, next=true, first=Hell Mode: Yarikomi Suki no Gamer wa Hai Settei no Isekai de Musou Suru"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 476,
+          "detail": "title=Hell Mode: Yarikomi Suki no Gamer wa Hai Settei no Isekai de Musou Suru status=1 chapters=129"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 96,
+          "detail": "12 pages, first=https://ksgroupscans.com/wp-content/uploads/WP-manga/data/manga_63f3b3e12375d/0142718a9a8b6b28b9973114e58e273a/00.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 235,
+          "detail": "image/jpeg 671233 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.jinmangas",
+      "name": "Jinmangas",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Jinmangas en https://mangafree.info id=5727368826344311935"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 552,
+          "detail": "25 mangas, next=true, first=Perfect Secret Love: The Bad New Wife Is A Little Sweet"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 611,
+          "detail": "title=Perfect Secret Love: The Bad New Wife Is A Little Sweet status=1 chapters=586"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 176,
+          "detail": "3 pages, first=http://mangafree.info/wp-content/uploads/WP-manga/data/manga_61f39aadad1ca/4780f5a07620198b02dacc9488368e4a/1.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 466,
+          "detail": "image/jpeg 1826794 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.gourmetscans",
+      "name": "Gourmet Scans",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 4,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Gourmet Scans en https://gourmetsupremacy.com id=3694940277826033657"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1079,
+          "detail": "25 mangas, next=true, first=It’s Time to Change the Genre"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 183,
+          "detail": "title=It’s Time to Change the Genre status=2 chapters=123"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 906,
+          "detail": "5 pages, first=https://gourmetsupremacy.com/wp-content/uploads/WP-manga/data/manga_60843620e2917/9982b0bb9b81cedfb4f58d416d47ae2a/01_01.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 368,
+          "detail": "image/jpeg 629736 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.battleinfivesecondsaftermeeting",
+      "name": "Battle In 5 Seconds After Meeting",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Battle In 5 Seconds After Meeting en https://www.deatte5.com id=2529980242070778875"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 741,
+          "detail": "1 mangas, next=false, first=Battle in 5 Seconds After Meeting"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 4540,
+          "detail": "title=Battle in 5 Seconds After Meeting Manga status=1 chapters=282"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 1619,
+          "detail": "0 pages, first=undefined"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.mangadia",
+      "name": "MangaDia",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "MangaDia en https://mangadia.com id=408151224123746617"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 131,
+          "detail": "HttpException: HTTP error 526"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.lhtranslation",
+      "name": "LHTranslation",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "LHTranslation en https://lhtranslation.net id=8802607595629671202"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1051,
+          "detail": "25 mangas, next=true, first=Maou ni Natta node, Dungeon Tsukutte Jingai Musume to Honobono suru"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 648,
+          "detail": "title=Maou ni Natta node, Dungeon Tsukutte Jingai Musume to Honobono suru status=1 chapters=139"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 84,
+          "detail": "20 pages, first=https://lhtranslation.net/wp-content/uploads/WP-manga/data/manga_61227c4232f30/645cd14b8010e25c5cfda5be831f6f2f/00.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 247,
+          "detail": "image/jpeg 1114981 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.mangagg",
+      "name": "MangaGG",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 5,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "MangaGG en https://mangagg.com id=8173282214298911566"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 196,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.frierenonline",
+      "name": "Frieren Online",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 1,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Frieren Online en https://www.frieren.online id=27704135061035291"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1822,
+          "detail": "1 mangas, next=false, first=Frieren: Beyond Journey’s End"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 3069,
+          "detail": "title=Frieren: Beyond Journey's End Manga status=1 chapters=162"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 846,
+          "detail": "1 pages, first=https://img.spoilerhat.com/img/?url=https%3A%2F%2Fwww.frieren.online%2Fwp-content%2Fuploads%2FWP-manga%2Fdata%2Fmanga_61f2e53b15d4c%2Ffa0bc4ae7f54a2b7f2a4b0e1e5e67f18%2FE-KPa7XXsAA_FtG.jpeg&mime=jpeg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 164,
+          "detail": "image/jpeg 114065 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.mangaka",
+      "name": "MangaKa",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "MangaKa en https://mangaka.cc id=3253856465912445981"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 4,
+          "detail": "IOException: fetch failed"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.mangaeclipse",
+      "name": "Manga Eclipse",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Manga Eclipse en https://mangaeclipse.com id=5229341270935044914"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 705,
+          "detail": "17 mangas, next=false, first=Great Heaven Sovereign"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 104,
+          "detail": "title=Great Heaven Sovereign status=1 chapters=57"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 48,
+          "detail": "29 pages, first=https://mangaeclipse.com/wp-content/uploads/WP-manga/data/manga_621787800d345/a966364bfdda57324726637e67e755a3/00.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 84,
+          "detail": "image/jpeg 283711 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.gakamangas",
+      "name": "GakaMangas",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 1,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "GakaMangas en https://gakamangas.com id=5246625723235112128"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 2881,
+          "detail": "11 mangas, next=false, first=The anime geniuses meet"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 1093,
+          "detail": "title=The anime geniuses meet status=1 chapters=30"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 1128,
+          "detail": "19 pages, first=https://gakamangas.com/wp-content/uploads/WP-manga/data/manga_59dde12f3cfea/e3516be9f93f949f9bc6ff81c18d8274/IMG_6283.PNG"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 885,
+          "detail": "image/png 777231 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.mangadass",
+      "name": "Manga Dass",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Manga Dass en https://mangadass.com id=5571661567325096882"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 423,
+          "detail": "24 mangas, next=true, first=Secret Class"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 229,
+          "detail": "title=Secret Class status=1 chapters=332"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 738,
+          "detail": "0 pages, first=undefined"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.linkmanga",
+      "name": "LinkManga",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "LinkManga en https://linkmanga.com id=8622937201319058235"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1626,
+          "detail": "25 mangas, next=true, first=Ojisan to Ore no Koiwazurai"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 97,
+          "detail": "title=Ojisan to Ore no Koiwazurai status=1 chapters=6"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 81,
+          "detail": "15 pages, first=https://f1link.linkmanga.com/manga/eng2/data/manga_694a503c5706d/ch-005-5/h001-1721493550-o.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": false,
+          "ms": 221,
+          "detail": "HttpException: HTTP error 404"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.hunlightcomics",
+      "name": "Hunlight Comics",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Hunlight Comics en https://hunlightcomics.com id=3876544289472679486"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1411,
+          "detail": "25 mangas, next=true, first=Reincarnated Fighting Gamer"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 1127,
+          "detail": "title=Reincarnated Fighting Gamer status=1 chapters=26"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 1063,
+          "detail": "22 pages, first=https://hunlightcomics.com/wp-content/uploads/WP-manga/data/manga_6a25f884ddf4c/2cc60d155f5694c755be9c17b7ca4044/000.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 515,
+          "detail": "image/jpeg 2775598 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.likemangain",
+      "name": "MangaYY",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "MangaYY en https://mangayy.org id=828698548689586600"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 2990,
+          "detail": "25 mangas, next=true, first=Catastrophic Necromancer"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 331,
+          "detail": "title=Catastrophic Necromancer status=2 chapters=311"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 77,
+          "detail": "0 pages, first=undefined"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.decadencescans",
+      "name": "Decadence Scans",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Decadence Scans en https://reader.decadencescans.com id=7432245132662185058"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1975,
+          "detail": "25 mangas, next=true, first=Koi to Yobu ni wa Kimochi Warui"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 2079,
+          "detail": "title=Koi to Yobu ni wa Kimochi Warui status=2 chapters=64"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 2883,
+          "detail": "50 pages, first=https://reader.decadencescans.com/wp-content/uploads/WP-manga/data/manga_5e93545469344/8cded5be4035435572e1f5472be9412a/Koi_to_Yobu_Une_Fleur_p001-2.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 676,
+          "detail": "image/jpeg 1045212 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.manhuatop",
+      "name": "ManhuaTop",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 1,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "ManhuaTop en https://manhuatop.org id=1903782575226230108"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 127,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.manhuaus",
+      "name": "ManhuaUS",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "ManhuaUS en https://manhuaus.com id=4005973248538140146"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 153,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.mangareadorg",
+      "name": "MangaRead.org",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "MangaRead.org en https://www.mangaread.org id=2681651342533848540"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 653,
+          "detail": "25 mangas, next=true, first=Martial Peak"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 1219,
+          "detail": "title=Martial Peak status=1 chapters=3864"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 187,
+          "detail": "13 pages, first=https://www.mangaread.org/wp-content/uploads/WP-manga/data/manga_5de40b5f9df66/761c58df325ee4882ab8733b6e5bdd0b/0.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 600,
+          "detail": "image/jpeg 720858 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.manhuaplus",
+      "name": "Manhua Plus",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Manhua Plus en https://manhuaplus.com id=9030178752551947945"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1143,
+          "detail": "25 mangas, next=true, first=Martial Peak"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 679,
+          "detail": "title=Martial Peak status=1 chapters=3364"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 332,
+          "detail": "0 pages, first=undefined"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.mangasushi",
+      "name": "Mangasushi",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Mangasushi en https://mangasushi.org id=3606721916149050760"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1113,
+          "detail": "25 mangas, next=true, first=Lonely Attack on the Different World"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 1334,
+          "detail": "title=Lonely Attack on the Different World status=1 chapters=335"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 61,
+          "detail": "15 pages, first=https://mangasushi.org/wp-content/uploads/WP-manga/data/manga_61e3cd69761e1/a877e5d8d7cb53283f4b61c0e41f8a12/00.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 275,
+          "detail": "image/jpeg 771440 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.manhuanext",
+      "name": "Manhuanext",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Manhuanext en https://manhuanext.com id=3544957587727489204"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1178,
+          "detail": "25 mangas, next=true, first=The Yellow-Haired Villain in the Female Main Character’s Novel Wants Happiness"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 864,
+          "detail": "title=The Yellow-Haired Villain in the Female Main Character’s Novel Wants Happiness status=1 chapters=88"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 560,
+          "detail": "12 pages, first=https://manhuanext.com/wp-content/uploads/WP-manga/data/manga_68683c59087bc/36be892a85e07295b25905fd688dcaba/1.webp"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 244,
+          "detail": "image/webp 776800 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.manhwaget",
+      "name": "ManhwaGet",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "ManhwaGet en https://manhwaget.com id=2979406394980750413"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1039,
+          "detail": "1 mangas, next=false, first=Manga 20"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 719,
+          "detail": "title=Manga 20 status=2 chapters=4"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 196,
+          "detail": "15 pages, first=https://cdn2.manhwaget.com/%20https://cdn2.manhwaget.com/wp-content/uploads/WP-manga/data//chapter-4/sample-01.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": false,
+          "ms": 2,
+          "detail": "IOException: fetch failed"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.manhwatop",
+      "name": "Manhwatop",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Manhwatop en https://manhwatop.com id=5177484976652938680"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 143,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.manhuahot",
+      "name": "ManhuaHot",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "ManhuaHot en https://manhuahot.com id=7638481723868333116"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 779,
+          "detail": "25 mangas, next=true, first=Deliverance of the Counterattack"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 857,
+          "detail": "title=Deliverance of the Counterattack status=1 chapters=445"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 1280,
+          "detail": "8 pages, first=https://cdn.manhuahot.com/manga_60d84a6e6ccfe/765ad2723719a76ac4272cd9c69887e4/0.jpeg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 242,
+          "detail": "image/jpeg 547451 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.setsuscans",
+      "name": "Setsu Scans",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Setsu Scans en https://setsuscans.com id=8546397272954539389"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 158,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.mangaowlio",
+      "name": "MangaOwl.io (unoriginal)",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "MangaOwl.io (unoriginal) en https://mangaowl.io id=2031498907928923621"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1905,
+          "detail": "25 mangas, next=true, first=Dark fall"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 1526,
+          "detail": "title=Dark fall status=1 chapters=191"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 579,
+          "detail": "10 pages, first=https://mangaowl.io/wp-content/uploads/WP-manga/data/manga_674adb4f4f888/dark-fall-chapter-93-5-warning-19/1-001.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 51,
+          "detail": "image/jpeg 42835 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.toongod",
+      "name": "ToonGod",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "ToonGod en https://www.toongod.org id=2054192099319007885"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 164,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.manhwareads",
+      "name": "Manhwa Reads",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Manhwa Reads en https://manhwareads.com id=3315938131690984352"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 501,
+          "detail": "25 mangas, next=true, first=The Beginning After The End"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 469,
+          "detail": "title=The Beginning After The End status=1 chapters=196"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 352,
+          "detail": "93 pages, first=https://manhwareads.com/wp-content/uploads/WP-manga/data/manga_6990f4af45ef4/chapter-194/image-placeholder.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 34,
+          "detail": "image/jpeg 0 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.spmanhwa",
+      "name": "Spmanhwa",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Spmanhwa en https://spmanhwa.online id=4735212915018805501"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 635,
+          "detail": "IOException: fetch failed"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.manhwanex",
+      "name": "ManhwaNex",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "ManhwaNex en https://manhwanex.com id=3663840686576348637"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 877,
+          "detail": "25 mangas, next=true, first=A Glimpse of the Jianghu"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 586,
+          "detail": "title=A Glimpse of the Jianghu status=1 chapters=19"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 182,
+          "detail": "9 pages, first=https://cdn.manhwanex.com/manga_6990778feb73f/a9dea92fbe1094f3bcb2d6fb791e8fd0/imgi_1_01.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 488,
+          "detail": "image/jpeg 606173 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.s2manga",
+      "name": "S2Manga",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 1,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "S2Manga en https://s2read.com id=4870917758913494428"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 503,
+          "detail": "25 mangas, next=true, first=Under the Oak Tree"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 357,
+          "detail": "title=Under the Oak Tree status=1 chapters=232"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 407,
+          "detail": "14 pages, first=https://cdn-1.s2read.com/WP-manga/data/manga_e6e964d83b00c289e4ac25b3c1f44632/chapter_e6e964d83b00c289e4ac25b3c1f44632/ch_7109ab53c1e16e600fb035bafea17cb5_0d9f7298af9103d9eaab7ec2ac3f7cef.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 428,
+          "detail": "image/jpeg 1808964 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.topmanhuanet",
+      "name": "TopManhua.net",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 6,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "TopManhua.net en https://topmanhua.net id=6421630287504544593"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 605,
+          "detail": "25 mangas, next=true, first=The Return of the Crazy Demon"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 706,
+          "detail": "title=The Return of the Crazy Demon status=1 chapters=193"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 751,
+          "detail": "1 pages, first=https://cdn.topmanhua.net/storage/media/423107/conversions/01KJPJ7233C4XP1WQVE99DSXG0-optimized.webp"
+        },
+        {
+          "stage": "image",
+          "ok": false,
+          "ms": 335,
+          "detail": "HttpException: HTTP error 526"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.topmanhuafan",
+      "name": "TopManhua.fan",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "TopManhua.fan en https://www.topmanhua.fan id=6293890187960663957"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1609,
+          "detail": "12 mangas, next=true, first=Tales of Demons and Gods"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 756,
+          "detail": "title=Tales of Demons and Gods status=1 chapters=2135"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 301,
+          "detail": "9 pages, first=https://img-r1.2xstorage.com/tales-of-demons-and-gods/897/0.webp"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 236,
+          "detail": "image/webp 114834 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.sleepytranslations",
+      "name": "Sleepy Translations",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Sleepy Translations en https://sleepytranslations.com id=5756634909776784131"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1080,
+          "detail": "6 mangas, next=false, first=His Highness’s Allure"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 1100,
+          "detail": "title=His Highness’s Allure status=1 chapters=63"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 1418,
+          "detail": "3 pages, first=https://i0.wp.com/sleepytranslations.com/wp-content/uploads/WP-manga/data/manga_62d7c15a88e54/d0e318f3de0da919a86f2c2c3b53e5f6/1.png?ssl=1"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 259,
+          "detail": "image/png 171707 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.webtoonxyz",
+      "name": "WebtoonXYZ",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "WebtoonXYZ en https://www.webtoon.xyz id=6750082404202711318"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 267,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.manhwatoon",
+      "name": "Manhwa Toon",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Manhwa Toon en https://www.manhwatoon.me id=3590279382085161370"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1555,
+          "detail": "25 mangas, next=true, first=MILF Exchange Plan"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 1096,
+          "detail": "title=MILF Exchange Plan status=1 chapters=110"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 1200,
+          "detail": "14 pages, first=https://cdn.manhwatoon.me/WP-manga/data/manga_6a24932d72245/chapter78raw/1-Plan-(1)_result.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 1050,
+          "detail": "image/jpeg 505298 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.webtoonscan",
+      "name": "WebtoonScan",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 4,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "WebtoonScan en https://webtoonscan.com id=3062846066388633553"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 577,
+          "detail": "25 mangas, next=true, first=Secret Class"
+        },
+        {
+          "stage": "details",
+          "ok": false,
+          "ms": 138,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.yaoiscan",
+      "name": "YaoiScan",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 4,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "YaoiScan en https://yaoiscan.com id=4439807782838127935"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 250,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.wearehunger",
+      "name": "KokoMangas",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "KokoMangas en https://kokomangas.com id=58992897252080929"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 435,
+          "detail": "25 mangas, next=true, first=You Did It, Didn’t You!?"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 319,
+          "detail": "title=You Did It, Didn’t You!? status=0 chapters=17"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 243,
+          "detail": "12 pages, first=https://kokomangas.com/wp-content/uploads/WP-manga/data/manga_6a0223596c09f/fa220888770bd60f2a3cf436ccdfc1e8/0.webp"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 225,
+          "detail": "image/webp 369980 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.wuxiaworld",
+      "name": "WuxiaWorld",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 5,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "WuxiaWorld en https://wuxiaworld.site id=6540843430852844328"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 459,
+          "detail": "4 mangas, next=false, first=The Boss’s Shotgun Wedding"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 768,
+          "detail": "title=The Boss’s Shotgun Wedding status=1 chapters=20"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 618,
+          "detail": "100 pages, first=http://wuxiaworld.site/wp-content/uploads/WP-manga/data/manga_5fe0c7a89c694/becebee4707d8d93287bd3b5eec133af/001.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 174,
+          "detail": "image/jpeg 53860 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.zazamanga",
+      "name": "Zazamanga",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Zazamanga en https://www.zazamanga.com id=1264036757248780997"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 488,
+          "detail": "12 mangas, next=false, first=Tales of Demons and Gods"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 792,
+          "detail": "title=Tales of Demons and Gods status=0 chapters=2135"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 262,
+          "detail": "9 pages, first=https://img-r1.2xstorage.com/tales-of-demons-and-gods/897/0.webp"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 68,
+          "detail": "image/webp 114834 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.zinmanganet",
+      "name": "Zinmanga.net",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Zinmanga.net en https://www.zinmanga.net id=1987105317893699901"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 475,
+          "detail": "12 mangas, next=false, first=Tales of Demons and Gods"
+        },
+        {
+          "stage": "details",
+          "ok": false,
+          "ms": 320,
+          "detail": "HttpException: HTTP error 404"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.begatranslation",
+      "name": "Bega Translation",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Bega Translation es https://begatranslation.com id=6757330205319558057"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 198,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.dragontranslationorg",
+      "name": "DragonTranslation.org",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 5,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "DragonTranslation.org es https://dragontranslation.org id=4647982373411241498"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 904,
+          "detail": "0 mangas, next=false, first=undefined"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.emperorscan",
+      "name": "Emperor Scan",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Emperor Scan es https://imperiomanhua.com id=4562754350961964148"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 833,
+          "detail": "0 mangas, next=true, first=undefined"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.gremorymangas",
+      "name": "Gremory Mangas",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Gremory Mangas es https://gremoryhistorias.org id=6911130909796364094"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1267,
+          "detail": "0 mangas, next=false, first=undefined"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.yakshacomics",
+      "name": "YakshaComics",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "YakshaComics en https://yakshacomics.com id=4871612284225100668"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 886,
+          "detail": "25 mangas, next=true, first=Infinite Evolution Starting From Zero"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 885,
+          "detail": "title=Infinite Evolution Starting From Zero status=1 chapters=131"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 1655,
+          "detail": "5 pages, first=https://yakshacomics.com/wp-content/uploads/WP-manga/data/manga_68b9e78f85303/f95cb67b54e259267c9655b6d6425461/00.5.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 2594,
+          "detail": "image/jpeg 323330 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.barmanga",
+      "name": "BarManga",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "BarManga es https://archiviumbar.com id=404674447362480247"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1151,
+          "detail": "25 mangas, next=true, first=Cállate, malvado dragón, ya no quiero criar hijos contigo."
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 649,
+          "detail": "title=Cállate, malvado dragón, ya no quiero criar hijos contigo. status=0 chapters=125"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 1547,
+          "detail": "26 pages, first=https://archiviumbar.com/wp-content/uploads/WP-manga/data/manga_66e3c14784bb4/091246d14f79237d3dc19754e701935e/001.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 819,
+          "detail": "image/jpeg 1168702 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.zinmanga",
+      "name": "Zinmanga",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Zinmanga en https://mangazin.org id=5990114708086767078"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1706,
+          "detail": "25 mangas, next=true, first=CEO Above, Me Below"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 3159,
+          "detail": "title=CEO Above, Me Below status=1 chapters=661"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 2341,
+          "detail": "18 pages, first=https://cdn-1.mangazin.org/manga_01b7ebbc8e1990be2acfee93902b2675/chapter_660/ch_660_1.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": false,
+          "ms": 460,
+          "detail": "HttpException: HTTP error 404"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.mangahe",
+      "name": "MangaHe",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "MangaHe en https://mangahe.com id=1406386535599331231"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 19469,
+          "detail": "HttpException: HTTP error 522"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.mangakiss",
+      "name": "Manga Kiss",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Manga Kiss en https://mangakiss.org id=2402699562771779060"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 19540,
+          "detail": "HttpException: HTTP error 522"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.tritiniascans",
+      "name": "TritiniaScans",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "TritiniaScans en https://tritinia.org id=6032516943051342273"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 12249,
+          "detail": "25 mangas, next=true, first=Back from the Grave"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 725,
+          "detail": "title=Back from the Grave status=1 chapters=212"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 586,
+          "detail": "16 pages, first=https://tritinia.org/wp-content/uploads/WP-manga/data/manga_60190571e0c11/69f81b138844d840191428d062601c20/00.png"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 797,
+          "detail": "image/png 334918 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.infrafandub",
+      "name": "InfraFandub",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 5,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "InfraFandub es https://infrafandub.com id=5594696691862732725"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 636,
+          "detail": "18 mangas, next=false, first=Combat Continent IV"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 1474,
+          "detail": "title=Combat Continent IV status=1 chapters=698"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 1371,
+          "detail": "18 pages, first=https://i.imgur.com/sdCRXpZ.png"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 751,
+          "detail": "image/png 624557 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.inventariooculto",
+      "name": "Inventario Oculto",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 4,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Inventario Oculto es https://inventariooculto.com id=609477585841458199"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 523,
+          "detail": "25 mangas, next=true, first=Jujutsu Kaisen Módulo"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 257,
+          "detail": "title=Jujutsu Kaisen Módulo status=2 chapters=29"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 230,
+          "detail": "23 pages, first=https://inventariooculto.com/wp-content/uploads/WP-manga/data/manga_68bbe0b2a4dbe/77f3a086a26fbcdf75c30eb462c69aea/0-(0).png"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 202,
+          "detail": "image/png 178019 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.mangaromance",
+      "name": "Manga Romance",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Manga Romance es https://mangaromance19.com id=3857421120061111113"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 249,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.manhwalatino",
+      "name": "Manhwa-Latino",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Manhwa-Latino es https://manhwa-latino.com id=3548601371328353875"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 273,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.kunmangaonline",
+      "name": "Kun Manga Online",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Kun Manga Online en https://www.kunmanga.online id=7947062020376654174"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1101,
+          "detail": "12 mangas, next=true, first=Tales of Demons and Gods"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 22860,
+          "detail": "title=Tales of Demons and Gods status=1 chapters=2135"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 68,
+          "detail": "9 pages, first=https://img-r1.2xstorage.com/tales-of-demons-and-gods/897/0.webp"
+        },
+        {
+          "stage": "image",
+          "ok": false,
+          "ms": 1053,
+          "detail": "HttpException: HTTP error 429"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.manhuaonline",
+      "name": "SamuraiScan",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "SamuraiScan es https://samurai.j5z.xyz id=5713083996691468000"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 409,
+          "detail": "25 mangas, next=true, first=El Heredero del Dragón Ancestral"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 501,
+          "detail": "title=El Heredero del Dragón Ancestral status=1 chapters=1269"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 783,
+          "detail": "11 pages, first=https://samurai.j5z.xyz/wp-content/uploads/WP-manga/data/manga_65701654d2366/a45fe99f3dc435d01d1af59a537d57cc/0Logo1_resultado_resultado_resultado_resultado_resultado.webp"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 653,
+          "detail": "image/webp 744484 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.houseofotakus",
+      "name": "House Of Otakus",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "House Of Otakus es https://houseofotakusv2.xyz id=1968531533450563052"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1982,
+          "detail": "25 mangas, next=true, first=Soy el único con una desafortunada habilidad en otro mundo que Invoca a la Rebelión ~ Hasta que la habilidad más débil [Absorción] se lo trague todo ~"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 2896,
+          "detail": "title=Soy el único con una desafortunada habilidad en otro mundo que Invoca a la Rebelión ~ Hasta que la habilidad más débil [Absorción] se lo trague todo ~ status=1 chapters=163"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 2064,
+          "detail": "23 pages, first=https://sinimaginizacion.s3.us-west-004.backblazeb2.com/manga_6865bd79aab22/b03c64e5026f6a30181df77f47812462/00.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 1985,
+          "detail": "image/jpeg 770558 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.kazokuden",
+      "name": "Kazoku Den",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Kazoku Den es https://www.kazokuden.com id=475788948976592183"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 707,
+          "detail": "15 mangas, next=true, first=Un harem en un apocalipsis zombie"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 1469,
+          "detail": "title=Un harem en un apocalipsis zombie status=1 chapters=68"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 864,
+          "detail": "20 pages, first=https://www.kazokuden.com/wp-content/uploads/WP-manga/data/manga_69eab24b60d7c/2886b6673467d08a7b6746e19f972bd6/c-(0.01).webp"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 600,
+          "detail": "image/webp 223692 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.hadesnofansub",
+      "name": "Hades no Fansub",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Hades no Fansub es https://lectorhades.latamtoon.com id=8311505150576608267"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 3004,
+          "detail": "25 mangas, next=true, first=El Antiguo Soberano"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 3677,
+          "detail": "title=El Antiguo Soberano status=0 chapters=528"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 2146,
+          "detail": "17 pages, first=https://lectorhades.latamtoon.com/wp-content/uploads/WP-manga/data/manga_62aa10dec8f5a/18213ad3a386696051499ee8f7b27ed4/00.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 795,
+          "detail": "image/jpeg 311391 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.marmota",
+      "name": "Marmota",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 6,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Marmota es https://marmota.me id=5937472249278743372"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1031,
+          "detail": "25 mangas, next=true, first=Absolute Batman (2024)"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 821,
+          "detail": "title=Absolute Batman (2024) status=1 chapters=26"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 767,
+          "detail": "22 pages, first=http://marmota.me/wp-content/uploads/WP-manga/data/manga_67151d003d20b/ec5626df5ddbe722297e9261791c1a49/Absolute-Batman-024-(2026)-(F)-(Digital)-(Shan-Empire)-00001.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 633,
+          "detail": "image/jpeg 181999 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.inmortalscan",
+      "name": "Inmortal Scan",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Inmortal Scan es https://scan-inmortal.com id=8879875375160764811"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1459,
+          "detail": "25 mangas, next=true, first=La admisión es una pérdida de tiempo"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 1389,
+          "detail": "title=La admisión es una pérdida de tiempo status=0 chapters=57"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 1349,
+          "detail": "10 pages, first=https://wp.scaninmortal.store/manga_6714491c10230/f84b4c86df740e003fbf4bdedbc45bac/01_001.webp"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 1208,
+          "detail": "image/webp 1123468 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.monopolyscan",
+      "name": "Monopoly Scan",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 4,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Monopoly Scan es https://monopolymanhua.com id=5862188113261788590"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 637,
+          "detail": "25 mangas, next=true, first=Todo comienza con un balance de mil billones en el Inframundo"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 324,
+          "detail": "title=Todo comienza con un balance de mil billones en el Inframundo status=1 chapters=130"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 218,
+          "detail": "9 pages, first=https://monopolymanhua.com/wp-content/uploads/WP-manga/data/manga_6929e31aaa8b1/69e605df134d8e650a2d92a040a3bca8/130_01.avif"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 458,
+          "detail": "image/jpeg 1246611 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.ragnarokscanlation",
+      "name": "Ragnarok Scanlation",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Ragnarok Scanlation es https://ragnarokscanlation.org id=1348827658894665970"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 746,
+          "detail": "25 mangas, next=true, first=Blue Lock"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 388,
+          "detail": "title=Blue Lock status=1 chapters=75"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 89,
+          "detail": "1 pages, first=https://ragnarokscanlation.org/wp-content/uploads/WP-manga/data/manga_66643d2775cee/98f1ab9595c40bd85215ff427a55f21f/27282.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 474,
+          "detail": "image/jpeg 1893752 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.fr.mangascantrad",
+      "name": "Manga-Scantrad",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Manga-Scantrad fr https://manga-scantrad.io id=540252682818453285"
+        },
+        {
+          "stage": "popular",
+          "ok": false,
+          "ms": 224,
+          "detail": "HttpException: HTTP error 403"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.taurusfansub",
+      "name": "Taurus Fansub",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Taurus Fansub es https://lectortaurus.com id=5157867187592331768"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1115,
+          "detail": "25 mangas, next=true, first=Después de dejar de actuar como un perro, me convertí en un Magnate Celestial Urbano"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 918,
+          "detail": "title=Después de dejar de actuar como un perro, me convertí en un Magnate Celestial Urbano status=1 chapters=344"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 792,
+          "detail": "9 pages, first=https://lectortaurus.com/wp-content/uploads/WP-manga/data/manga_6669566557528/6b833787750614ac8fe25d7a32ab337e/000000_1_1_1.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 503,
+          "detail": "image/jpeg 65986 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.richtoscan",
+      "name": "RichtoScan",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 4,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "RichtoScan es https://r1.richtoon.top id=1245067583654716116"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1136,
+          "detail": "25 mangas, next=true, first=EL SUEÑO DE WOO HOO-YOUNG ROBANDO TALENTOS"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 674,
+          "detail": "title=EL SUEÑO DE WOO HOO-YOUNG ROBANDO TALENTOS status=1 chapters=105"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 1419,
+          "detail": "17 pages, first=https://r1.richtoon.top/wp-content/uploads/WP-manga/data/manga_6701b4a606032/6b58cd2c5fc02f31fc917c322270bebd/0.1_1_11zon.webp"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 383,
+          "detail": "image/webp 155990 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.fr.bananascan",
+      "name": "Harmony-Scan",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Harmony-Scan fr https://harmony-scan.fr id=3121632933690926000"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1349,
+          "detail": "25 mangas, next=true, first=Law of reincarnation"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 933,
+          "detail": "title=Law of reincarnation status=0 chapters=79"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 384,
+          "detail": "11 pages, first=https://harmony-scan.fr/wp-content/uploads/WP-manga/data/manga_657ecc1270e02/2d185bda4a6df73240add960f3329231/0.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 162,
+          "detail": "image/jpeg 371954 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.yurionline",
+      "name": "Yuri-Online",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Yuri-Online es https://yuri-online.com id=3410370616110029377"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1505,
+          "detail": "25 mangas, next=true, first=Ame to Muchi"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 1254,
+          "detail": "title=Ame to Muchi status=1 chapters=21"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 855,
+          "detail": "29 pages, first=https://yuri-online.com/__img/manga_69b609dbdd518/cf901d79f0182a9a590a6ec19c6d7904/01.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 607,
+          "detail": "image/jpeg 344387 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.fr.pantheonscan",
+      "name": "Pantheon Scan",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 6,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Pantheon Scan fr https://pantheon-scan.com id=1615599506055429686"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 935,
+          "detail": "12 mangas, next=true, first=Solo Leveling"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 602,
+          "detail": "title=Solo Leveling status=0 chapters=203"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 82,
+          "detail": "12 pages, first=https://pantheon-scan.com/wp-content/uploads/WP-manga/data/manga_6356a8df2c883/e245f039d2e0a9ec032b858446a3d33d/01.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 1765,
+          "detail": "image/jpeg 538491 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.toonizy",
+      "name": "Toonizy",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "Toonizy en https://toonizy.com id=5404499323728358840"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 15217,
+          "detail": "25 mangas, next=true, first=My Stepmom"
+        },
+        {
+          "stage": "details",
+          "ok": false,
+          "ms": 9198,
+          "detail": "NullPointerException: Null value (!!)"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.fr.mangahubfr",
+      "name": "MangaHub.fr",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 3,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "MangaHub.fr fr https://mangahub.fr id=3294884430139323314"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 2218,
+          "detail": "25 mangas, next=true, first=BJ Alex"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 1361,
+          "detail": "title=BJ Alex status=2 chapters=10"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 576,
+          "detail": "18 pages, first=https://mangahub.fr/wp-admin/admin-ajax.php?action=load_img_data&token=5ddc2f63813dc7adad63e24aaa6a163d"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 381,
+          "detail": "image/jpeg 301965 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.id.klikmanga",
+      "name": "KlikManga",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 2,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "KlikManga id https://klikmanga.org id=5213948951740602020"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 2847,
+          "detail": "25 mangas, next=true, first=Kimetsu no Yaiba"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 1620,
+          "detail": "title=Kimetsu no Yaiba status=0 chapters=237"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 2145,
+          "detail": "47 pages, first=https://img.bakacdn.com/data-manga/manga_5b1cfe4a45005/chapter-205-5/001.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 1651,
+          "detail": "image/jpeg 222393 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.cocomic",
+      "name": "Cocomic",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "timeout",
+          "ok": false,
+          "ms": 45000,
+          "detail": "timed out"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.mhscans",
+      "name": "MHScans",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "load",
+          "ok": true,
+          "ms": 6,
+          "detail": "1 source(s)"
+        },
+        {
+          "stage": "create",
+          "ok": true,
+          "ms": 0,
+          "detail": "MHScans es https://mhscans.com id=3253304651550496369"
+        },
+        {
+          "stage": "popular",
+          "ok": true,
+          "ms": 1025,
+          "detail": "25 mangas, next=true, first=El Antiguo Soberano de la Eternidad"
+        },
+        {
+          "stage": "details",
+          "ok": true,
+          "ms": 6927,
+          "detail": "title=El Antiguo Soberano de la Eternidad status=1 chapters=596"
+        },
+        {
+          "stage": "pages",
+          "ok": true,
+          "ms": 5169,
+          "detail": "14 pages, first=https://mhscans.com/wp-content/uploads/WP-manga/data/manga_6699ee1cefb96/f5a5140d646a61fac7f5c9ecc7798849/0.jpg"
+        },
+        {
+          "stage": "image",
+          "ok": true,
+          "ms": 5466,
+          "detail": "image/jpeg 777572 bytes"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.lilymanga",
+      "name": "Lily Manga",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "timeout",
+          "ok": false,
+          "ms": 45000,
+          "detail": "timed out"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.en.topmanhua",
+      "name": "Top Manhua",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "timeout",
+          "ok": false,
+          "ms": 45000,
+          "detail": "timed out"
+        }
+      ],
+      "passed": false
+    },
+    {
+      "pkg": "eu.kanade.tachiyomi.extension.es.haremdekira",
+      "name": "Harem de Kira",
+      "theme": "madara",
+      "stages": [
+        {
+          "stage": "timeout",
+          "ok": false,
+          "ms": 45000,
+          "detail": "timed out"
+        }
+      ],
+      "passed": false
+    }
+  ]
+}
