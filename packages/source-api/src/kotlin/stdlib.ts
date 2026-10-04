@@ -18,6 +18,7 @@ import {
   mapHas,
   mapSet,
   NoSuchElementException,
+  NonLocalReturn,
   NONNULL,
   NumberFormatException,
   plus,
@@ -197,6 +198,7 @@ export const buildersHof = {
     try {
       return Result.success(yield f());
     } catch (e) {
+      if (e instanceof NonLocalReturn || (e as any)?.constructor?.name === 'NonLocalJump') throw e;
       return Result.failure(e);
     }
   },
@@ -222,10 +224,10 @@ add(
   hof('apply', NULLABLE, function* (x, f) {
     yield f(x);
     return x;
-  }),
+  }, true),
   hof('run', NULLABLE, function* (x, f) {
     return yield f(x);
-  }),
+  }, true),
   hof('takeIf', NULLABLE, function* (x, f) {
     return bool(yield f(x)) ? x : null;
   }),
@@ -243,9 +245,10 @@ add(
     try {
       return Result.success(yield f(x));
     } catch (e) {
+      if (e instanceof NonLocalReturn || (e as any)?.constructor?.name === 'NonLocalJump') throw e;
       return Result.failure(e);
     }
-  }),
+  }, true),
   ext('to', NULLABLE, (a, b) => new Pair(a, b)),
   ext('toString', NULLABLE, (x, radix?: number) => (typeof x === 'number' && radix ? x.toString(radix) : str(x))),
   ext('hashCode', NULLABLE, (x) => hash(x)),

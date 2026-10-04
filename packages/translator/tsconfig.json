@@ -1,0 +1,5 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": { "noEmit": true, "noImplicitAny": false, "types": ["node"], "lib": ["ES2022", "DOM"] },
+  "include": ["src", "test"]
+}

@@ -38,9 +38,9 @@ export function ext(name: string, recv: (x: any) => boolean, fn: Fn): ExtDef {
   return { name, recv, fn };
 }
 
-export function hof(name: string, recv: (x: any) => boolean, gen: (...args: any[]) => Gen): ExtDef {
+export function hof(name: string, recv: (x: any) => boolean, gen: (...args: any[]) => Gen, recvLambda = false): ExtDef {
   const { fn, async } = hofFn(gen);
-  return { name, recv, fn, async };
+  return recvLambda ? { name, recv, fn, async, recvLambda } : { name, recv, fn, async };
 }
 
 export function extProp(name: string, recv: (x: any) => boolean, get: Fn, set?: Fn): ExtDef {

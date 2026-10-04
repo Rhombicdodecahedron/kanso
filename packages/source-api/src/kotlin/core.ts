@@ -42,7 +42,8 @@ export class UnknownHostException extends IOException {}
 export class SocketTimeoutException extends IOException {}
 export class CancellationException extends IllegalStateException {}
 export class SerializationException extends IllegalArgumentException {}
-export class DateTimeParseException extends RuntimeException {}
+export class DateTimeException extends RuntimeException {}
+export class DateTimeParseException extends DateTimeException {}
 export class ParseException extends Exception {}
 export class UnsupportedEncodingException extends IOException {}
 export class GeneralSecurityException extends Exception {}
@@ -54,6 +55,11 @@ export function isCatch(e: unknown, T: any): boolean {
   if (T === Throwable || T === Exception || T === RuntimeException) return e instanceof Error || e instanceof Throwable;
   if (T === IllegalStateException && e instanceof TypeError) return false;
   return e instanceof T;
+}
+
+/** Thrown to unwind a non-local `break`/`continue` out of an inlined lambda. */
+export class NonLocalJump {
+  constructor(readonly token: object, readonly kind: 'break' | 'continue') {}
 }
 
 /** Thrown to unwind a non-local `return` out of an inlined lambda. */
@@ -450,6 +456,20 @@ export interface ExtDef {
   /** `true` for extension properties. */
   prop?: boolean;
   set?: Fn;
+  /** Returns a promise: callers in suspend code await it. */
+  suspend?: boolean;
+  /** Its lambda argument is a suspend lambda (may be async) but the call itself is not inlined. */
+  suspendLambda?: boolean;
+  /** Synchronous in Kotlin but async here: makes the calling function async. */
+  infect?: boolean;
+  /** Parameter names (after the receiver) for named-argument calls. */
+  params?: string[];
+  /** Reified type parameter: the translator appends a type descriptor ('desc') or class ('class'). */
+  reified?: 'desc' | 'class';
+  /** Its lambda argument has a receiver (`T.() -> R`), passed as the lambda's first argument. */
+  recvLambda?: boolean;
+  /** Translator-made candidate for a user member extension: call `self[member](recv, ...)`. */
+  member?: string;
 }
 
 export const ANY = (_x: unknown) => true;
@@ -488,35 +508,35 @@ function findExt(recv: any, cands: readonly ExtDef[]): ExtDef | null {
 }
 
 /** Method call that may be an extension: members win on objects; built-ins only use extensions. */
-export function call(recv: any, name: string, cands: readonly ExtDef[], args: any[]): any {
+export function call(recv: any, name: string, cands: readonly ExtDef[], args: any[], self?: any): any {
   if (!isBuiltin(recv)) {
     const m = memberFn(recv, name);
     if (m) return m.apply(recv, args);
   }
   const ext = findExt(recv, cands);
-  if (ext) return ext.fn(recv, ...args);
+  if (ext) return ext.member ? self[ext.member](recv, ...args) : ext.fn(recv, ...args);
   if (recv === null || recv === undefined) throw new NullPointerException(`Calling '${name}' on null`);
   if (typeof recv === 'function' && name === 'invoke') return recv(...args);
   return noSuch(recv, name);
 }
 
 /** Same as `call`, but lambdas may return promises; the result must be awaited. */
-export function callAsync(recv: any, name: string, cands: readonly ExtDef[], args: any[]): any {
+export function callAsync(recv: any, name: string, cands: readonly ExtDef[], args: any[], self?: any): any {
   if (!isBuiltin(recv)) {
     const m = memberFn(recv, name);
     if (m) return m.apply(recv, args);
   }
   const ext = findExt(recv, cands);
-  if (ext) return (ext.async ?? ext.fn)(recv, ...args);
+  if (ext) return ext.member ? self[ext.member](recv, ...args) : (ext.async ?? ext.fn)(recv, ...args);
   if (recv === null || recv === undefined) throw new NullPointerException(`Calling '${name}' on null`);
   return noSuch(recv, name);
 }
 
 /** Property read that may be an extension property. */
-export function prop(recv: any, name: string, cands: readonly ExtDef[]): any {
+export function prop(recv: any, name: string, cands: readonly ExtDef[], self?: any): any {
   if (!isBuiltin(recv) && name in recv) return recv[name];
   const ext = findExt(recv, cands);
-  if (ext) return ext.fn(recv);
+  if (ext) return ext.member ? self[ext.member](recv) : ext.fn(recv);
   if (recv === null || recv === undefined) throw new NullPointerException(`Reading '${name}' of null`);
   if (typeof recv === 'object' && name in recv) return recv[name];
   return noSuch(recv, name);
@@ -536,7 +556,7 @@ export function setProp(recv: any, name: string, cands: readonly ExtDef[], value
 }
 
 /** Unqualified call inside receiver lambdas: innermost receiver that has the member wins. */
-export function icall(receivers: any[], name: string, cands: readonly ExtDef[], args: any[], fallback?: Fn): any {
+export function icall(receivers: any[], name: string, cands: readonly ExtDef[], args: any[], fallback?: Fn, self?: any): any {
   for (const r of receivers) {
     if (r !== null && r !== undefined && !isBuiltin(r)) {
       const m = memberFn(r, name);
@@ -545,13 +565,13 @@ export function icall(receivers: any[], name: string, cands: readonly ExtDef[], 
   }
   for (const r of receivers) {
     const ext = findExt(r, cands);
-    if (ext) return ext.fn(r, ...args);
+    if (ext) return ext.member ? self[ext.member](r, ...args) : ext.fn(r, ...args);
   }
   if (fallback) return fallback(...args);
   throw new UnsupportedOperationException(`Unresolved call '${name}'`);
 }
 
-export function icallAsync(receivers: any[], name: string, cands: readonly ExtDef[], args: any[], fallback?: Fn): any {
+export function icallAsync(receivers: any[], name: string, cands: readonly ExtDef[], args: any[], fallback?: Fn, self?: any): any {
   for (const r of receivers) {
     if (r !== null && r !== undefined && !isBuiltin(r)) {
       const m = memberFn(r, name);
@@ -560,19 +580,19 @@ export function icallAsync(receivers: any[], name: string, cands: readonly ExtDe
   }
   for (const r of receivers) {
     const ext = findExt(r, cands);
-    if (ext) return (ext.async ?? ext.fn)(r, ...args);
+    if (ext) return ext.member ? self[ext.member](r, ...args) : (ext.async ?? ext.fn)(r, ...args);
   }
   if (fallback) return fallback(...args);
   throw new UnsupportedOperationException(`Unresolved call '${name}'`);
 }
 
-export function iprop(receivers: any[], name: string, cands: readonly ExtDef[], fallback?: () => any): any {
+export function iprop(receivers: any[], name: string, cands: readonly ExtDef[], fallback?: () => any, self?: any): any {
   for (const r of receivers) {
     if (r !== null && r !== undefined && !isBuiltin(r) && name in r) return r[name];
   }
   for (const r of receivers) {
     const ext = findExt(r, cands);
-    if (ext) return ext.fn(r);
+    if (ext) return ext.member ? self[ext.member](r) : ext.fn(r);
   }
   if (fallback) return fallback();
   throw new UnsupportedOperationException(`Unresolved property '${name}'`);

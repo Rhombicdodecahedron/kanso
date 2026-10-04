@@ -1,6 +1,7 @@
 // eu.kanade.tachiyomi.source.model.* - the Mihon extension data model.
 
 import { eq, str } from '../kotlin/core';
+import { JsonObject, toElement, elementToJS } from '../serialization/json';
 
 export const UpdateStrategy = {
   ALWAYS_UPDATE: { name: 'ALWAYS_UPDATE', ordinal: 0, toString: () => 'ALWAYS_UPDATE' },
@@ -26,8 +27,8 @@ export class SManga {
   thumbnail_url: string | null = null;
   update_strategy: any = UpdateStrategy.ALWAYS_UPDATE;
   initialized = false;
-  // Komikku-only metadata some sources set; kept so assignments don't fail.
-  memo: string | null = null;
+  /** Komikku-style per-manga memo (a JsonObject) that some sources use to keep ids/paths. */
+  memo: any = new JsonObject();
 
   static create(): SManga {
     return new SManga();
@@ -68,12 +69,14 @@ export class SManga {
       thumbnail_url: this.thumbnail_url,
       update_strategy: this.update_strategy?.name ?? 'ALWAYS_UPDATE',
       initialized: this.initialized,
+      memo: elementToJS(this.memo),
     };
   }
 
   static fromJSON(o: any): SManga {
     const m = new SManga();
-    for (const k of ['url', 'title', 'artist', 'author', 'description', 'genre', 'thumbnail_url', 'memo']) {
+    if (o.memo) m.memo = toElement(o.memo);
+    for (const k of ['url', 'title', 'artist', 'author', 'description', 'genre', 'thumbnail_url']) {
       if (o[k] !== undefined) (m as any)[k] = o[k];
     }
     m.status = o.status ?? 0;
@@ -93,6 +96,7 @@ export class SChapter {
   date_upload = 0;
   chapter_number = -1;
   scanlator: string | null = null;
+  memo: any = new JsonObject();
 
   static create(): SChapter {
     return new SChapter();
@@ -113,11 +117,13 @@ export class SChapter {
       date_upload: this.date_upload,
       chapter_number: this.chapter_number,
       scanlator: this.scanlator,
+      memo: elementToJS(this.memo),
     };
   }
 
   static fromJSON(o: any): SChapter {
     const c = new SChapter();
+    if (o.memo) c.memo = toElement(o.memo);
     c.url = o.url;
     c.name = o.name;
     c.date_upload = o.date_upload ?? 0;

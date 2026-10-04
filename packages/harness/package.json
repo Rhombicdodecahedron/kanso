@@ -1,0 +1,12 @@
+{
+  "name": "@kanso/harness",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "harness": "tsx src/cli.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": { "@kanso/source-api": "*" }
+}

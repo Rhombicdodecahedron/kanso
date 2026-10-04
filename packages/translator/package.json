@@ -1,0 +1,26 @@
+{
+  "name": "@kanso/translator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "bin": {
+    "kanso-translate": "src/cli.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "translate": "tsx src/cli.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7"
+  },
+  "dependencies": {
+    "@tree-sitter-grammars/tree-sitter-kotlin": "^1.1.0",
+    "web-tree-sitter": "^0.25.10",
+    "@kanso/source-api": "*"
+  }
+}

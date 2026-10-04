@@ -1,0 +1,422 @@
+// Kotlin fully-qualified name -> runtime value. The translator checks every import against this
+// table (unknown import = unsupported extension) and bundles look values up at load time.
+
+import * as core from './kotlin/core';
+import { builders, stdlibExts } from './kotlin/stdlib';
+import { Regex, RegexOption, Pattern, Matcher, MatchResult } from './kotlin/regex';
+import { Comparator, comparators, IntRange, Pair, Result, StringBuilder, Triple } from './kotlin/types';
+import * as G from './kotlin/globals';
+import * as Co from './kotlin/coroutines';
+import * as M from './model';
+import * as J from './jsoup';
+import * as H from './okhttp';
+import { HttpUrl, toHttpUrl, toHttpUrlOrNull } from './okhttp/url';
+import * as S from './serialization/json';
+import * as Src from './source';
+import * as P from './source/preferences';
+import * as A from './android';
+import { keiyoushiModules, jsonExts } from './keiyoushi';
+import { Intl } from './lib/i18n';
+import { ext, extProp } from './kotlin/hof';
+import type { ExtDef } from './kotlin/core';
+
+const exts = (name: string, defs: ExtDef[] | ExtDef) => (Array.isArray(defs) ? defs : [defs]);
+
+/** Annotation markers: imported but never evaluated. */
+const ANNOTATION = { $annotation: true };
+
+const okhttpExts = {
+  toHttpUrl: ext('toHttpUrl', core.isStr, toHttpUrl),
+  toHttpUrlOrNull: ext('toHttpUrlOrNull', core.isStr, toHttpUrlOrNull),
+  toMediaType: ext('toMediaType', core.isStr, H.toMediaType),
+  toMediaTypeOrNull: ext('toMediaTypeOrNull', core.isStr, H.toMediaTypeOrNull),
+  toRequestBody: ext('toRequestBody', (x) => core.isStr(x) || x instanceof Int8Array || x instanceof Uint8Array, H.toRequestBody),
+  toResponseBody: ext('toResponseBody', () => true, H.toResponseBody),
+  asResponseBody: ext('asResponseBody', () => true, H.toResponseBody),
+  toHeaders: ext('toHeaders', core.isMap, H.toHeaders),
+  closeQuietly: ext('closeQuietly', () => true, (x: any) => x?.close?.()),
+};
+
+const jsonBuilderExts = {
+  put: ext('put', (x) => x instanceof S.JsonObjectBuilder, (b: S.JsonObjectBuilder, k: string, v: any) => b.put(k, v)),
+  putJsonObject: { ...ext('putJsonObject', (x) => x instanceof S.JsonObjectBuilder, S.putJsonObject) },
+  putJsonArray: { ...ext('putJsonArray', (x) => x instanceof S.JsonObjectBuilder, S.putJsonArray) },
+  add: ext('add', (x) => x instanceof S.JsonArrayBuilder, (b: S.JsonArrayBuilder, v: any) => b.add(v)),
+  addJsonObject: ext('addJsonObject', (x) => x instanceof S.JsonArrayBuilder, S.addJsonObject),
+  addJsonArray: ext('addJsonArray', (x) => x instanceof S.JsonArrayBuilder, S.addJsonArray),
+  addAll: ext('addAll', (x) => x instanceof S.JsonArrayBuilder, (b: S.JsonArrayBuilder, v: any) => b.addAll(v)),
+};
+
+const jsonAccessor = (n: string) => jsonExts.filter((e) => e.name === n);
+
+const table: Record<string, unknown> = {
+  // ---- Mihon model / source API ----
+  'eu.kanade.tachiyomi.source.model.SManga': M.SManga,
+  'eu.kanade.tachiyomi.source.model.SChapter': M.SChapter,
+  'eu.kanade.tachiyomi.source.model.Page': M.Page,
+  'eu.kanade.tachiyomi.source.model.MangasPage': M.MangasPage,
+  'eu.kanade.tachiyomi.source.model.SMangaUpdate': M.SMangaUpdate,
+  'eu.kanade.tachiyomi.source.model.Filter': M.Filter,
+  'eu.kanade.tachiyomi.source.model.FilterList': M.FilterList,
+  'eu.kanade.tachiyomi.source.model.UpdateStrategy': M.UpdateStrategy,
+  'eu.kanade.tachiyomi.source.Source': Src.Source,
+  'eu.kanade.tachiyomi.source.CatalogueSource': Src.CatalogueSource,
+  'eu.kanade.tachiyomi.source.ConfigurableSource': Src.ConfigurableSource,
+  'eu.kanade.tachiyomi.source.UnmeteredSource': Src.UnmeteredSource,
+  'eu.kanade.tachiyomi.source.online.HttpSource': Src.HttpSource,
+  'eu.kanade.tachiyomi.source.online.ParsedHttpSource': Src.ParsedHttpSource,
+  'keiyoushi.source.KeiSource': Src.KeiSource,
+  'keiyoushi.annotation.Source': ANNOTATION,
+  'eu.kanade.tachiyomi.network.NetworkHelper': Src.NetworkHelper,
+  'eu.kanade.tachiyomi.network.GET': H.GET,
+  'eu.kanade.tachiyomi.network.POST': H.POST,
+  'eu.kanade.tachiyomi.network.PUT': H.PUT,
+  'eu.kanade.tachiyomi.network.DELETE': H.DELETE,
+  'eu.kanade.tachiyomi.network.PATCH': H.PATCH,
+  'eu.kanade.tachiyomi.network.HttpException': H.HttpException,
+  'eu.kanade.tachiyomi.AppInfo': A.AppInfo,
+
+  // ---- okhttp / okio ----
+  'okhttp3.OkHttpClient': H.OkHttpClient,
+  'okhttp3.Request': H.Request,
+  'okhttp3.Response': H.Response,
+  'okhttp3.Headers': H.Headers,
+  'okhttp3.Headers.Companion.headersOf': H.Headers.of,
+  'okhttp3.Headers.Companion.toHeaders': exts('toHeaders', okhttpExts.toHeaders),
+  'okhttp3.HttpUrl': HttpUrl,
+  'okhttp3.HttpUrl.Companion.toHttpUrl': exts('toHttpUrl', okhttpExts.toHttpUrl),
+  'okhttp3.HttpUrl.Companion.toHttpUrlOrNull': exts('toHttpUrlOrNull', okhttpExts.toHttpUrlOrNull),
+  'okhttp3.HttpUrl.Builder': (HttpUrl as any).Builder,
+  'okhttp3.MediaType': H.MediaType,
+  'okhttp3.MediaType.Companion.toMediaType': exts('toMediaType', okhttpExts.toMediaType),
+  'okhttp3.MediaType.Companion.toMediaTypeOrNull': exts('toMediaTypeOrNull', okhttpExts.toMediaTypeOrNull),
+  'okhttp3.RequestBody': H.RequestBody,
+  'okhttp3.RequestBody.Companion.toRequestBody': exts('toRequestBody', okhttpExts.toRequestBody),
+  'okhttp3.ResponseBody': H.ResponseBody,
+  'okhttp3.ResponseBody.Companion.toResponseBody': exts('toResponseBody', okhttpExts.toResponseBody),
+  'okhttp3.ResponseBody.Companion.asResponseBody': exts('asResponseBody', okhttpExts.asResponseBody),
+  'okhttp3.FormBody': H.FormBody,
+  'okhttp3.MultipartBody': H.MultipartBody,
+  'okhttp3.CacheControl': H.CacheControl,
+  'okhttp3.Interceptor': H.Interceptor,
+  'okhttp3.Call': H.Call,
+  'okhttp3.Callback': Object.assign(class Callback {}, { $interface: true }),
+  'okhttp3.Cookie': H.Cookie,
+  'okhttp3.CookieJar': Object.assign(class CookieJar {}, { $interface: true }),
+  'okhttp3.Protocol': H.Protocol,
+  'okhttp3.internal.closeQuietly': exts('closeQuietly', okhttpExts.closeQuietly),
+  'okio.Buffer': H.Buffer,
+  'okio.BufferedSource': H.BufferedSource,
+  'okio.IOException': core.IOException,
+  'java.util.concurrent.TimeUnit': H.TimeUnit,
+
+  // ---- jsoup ----
+  'org.jsoup.Jsoup': J.Jsoup,
+  'org.jsoup.nodes.Document': J.Document,
+  'org.jsoup.nodes.Element': J.Element,
+  'org.jsoup.nodes.Node': J.Node,
+  'org.jsoup.nodes.TextNode': J.TextNode,
+  'org.jsoup.nodes.DataNode': J.DataNodeW,
+  'org.jsoup.nodes.Comment': J.Comment,
+  'org.jsoup.nodes.Entities': J.Entities,
+  'org.jsoup.nodes.Attribute': J.Attribute,
+  'org.jsoup.select.Elements': J.Elements,
+  'org.jsoup.select.Evaluator': J.Evaluator,
+  'org.jsoup.parser.Parser': J.Parser,
+  'org.jsoup.safety.Safelist': J.Safelist,
+  'org.jsoup.safety.Whitelist': J.Safelist,
+
+  // ---- kotlinx.serialization ----
+  'kotlinx.serialization.Serializable': ANNOTATION,
+  'kotlinx.serialization.SerialName': ANNOTATION,
+  'kotlinx.serialization.Transient': ANNOTATION,
+  'kotlinx.serialization.EncodeDefault': ANNOTATION,
+  'kotlinx.serialization.ExperimentalSerializationApi': ANNOTATION,
+  'kotlinx.serialization.Contextual': ANNOTATION,
+  'kotlinx.serialization.json.JsonNames': ANNOTATION,
+  'kotlinx.serialization.json.JsonClassDiscriminator': ANNOTATION,
+  'kotlinx.serialization.json.JsonIgnoreUnknownKeys': ANNOTATION,
+  'kotlinx.serialization.SerializationException': core.SerializationException,
+  'kotlinx.serialization.json.Json': S.Json,
+  'kotlinx.serialization.json.JsonElement': S.JsonElement,
+  'kotlinx.serialization.json.JsonObject': S.JsonObject,
+  'kotlinx.serialization.json.JsonArray': S.JsonArray,
+  'kotlinx.serialization.json.JsonPrimitive': S.JsonPrimitive,
+  'kotlinx.serialization.json.JsonNull': S.JsonNull,
+  'kotlinx.serialization.json.JsonDecoder': S.JsonDecoder,
+  'kotlinx.serialization.json.JsonObjectBuilder': S.JsonObjectBuilder,
+  'kotlinx.serialization.json.buildJsonObject': S.buildJsonObject,
+  'kotlinx.serialization.json.buildJsonArray': S.buildJsonArray,
+  'kotlinx.serialization.json.put': exts('put', jsonBuilderExts.put),
+  'kotlinx.serialization.json.putJsonObject': exts('putJsonObject', jsonBuilderExts.putJsonObject),
+  'kotlinx.serialization.json.putJsonArray': exts('putJsonArray', jsonBuilderExts.putJsonArray),
+  'kotlinx.serialization.json.add': exts('add', jsonBuilderExts.add),
+  'kotlinx.serialization.json.addJsonObject': exts('addJsonObject', jsonBuilderExts.addJsonObject),
+  'kotlinx.serialization.json.addJsonArray': exts('addJsonArray', jsonBuilderExts.addJsonArray),
+  'kotlinx.serialization.json.addAll': exts('addAll', jsonBuilderExts.addAll),
+  'kotlinx.serialization.json.jsonObject': jsonAccessor('jsonObject'),
+  'kotlinx.serialization.json.jsonArray': jsonAccessor('jsonArray'),
+  'kotlinx.serialization.json.jsonPrimitive': jsonAccessor('jsonPrimitive'),
+  'kotlinx.serialization.json.jsonNull': jsonAccessor('jsonNull'),
+  'kotlinx.serialization.json.content': jsonAccessor('content'),
+  'kotlinx.serialization.json.contentOrNull': jsonAccessor('contentOrNull'),
+  'kotlinx.serialization.json.int': jsonAccessor('int'),
+  'kotlinx.serialization.json.intOrNull': jsonAccessor('intOrNull'),
+  'kotlinx.serialization.json.long': jsonAccessor('long'),
+  'kotlinx.serialization.json.longOrNull': jsonAccessor('longOrNull'),
+  'kotlinx.serialization.json.double': jsonAccessor('double'),
+  'kotlinx.serialization.json.doubleOrNull': jsonAccessor('doubleOrNull'),
+  'kotlinx.serialization.json.float': jsonAccessor('float'),
+  'kotlinx.serialization.json.floatOrNull': jsonAccessor('floatOrNull'),
+  'kotlinx.serialization.json.boolean': jsonAccessor('boolean'),
+  'kotlinx.serialization.json.booleanOrNull': jsonAccessor('booleanOrNull'),
+  'kotlinx.serialization.json.decodeFromJsonElement': [
+    { name: 'decodeFromJsonElement', recv: (x: any) => x instanceof S.Json, fn: (j: S.Json, el: any, d: any) => j.decodeFromJsonElement(el, d), reified: 'desc' },
+  ],
+  'kotlinx.serialization.json.decodeFromStream': [
+    { name: 'decodeFromStream', recv: (x: any) => x instanceof S.Json, fn: (j: S.Json, s: any, d: any) => j.decodeFromStream(s, d), reified: 'desc' },
+  ],
+  'kotlinx.serialization.decodeFromString': [
+    { name: 'decodeFromString', recv: (x: any) => x instanceof S.Json, fn: (j: S.Json, s: string, d: any) => j.decodeFromString(s, d), reified: 'desc' },
+  ],
+  'kotlinx.serialization.encodeToString': [
+    { name: 'encodeToString', recv: (x: any) => x instanceof S.Json, fn: (j: S.Json, v: any) => j.encodeToString(v), reified: 'desc' },
+  ],
+  'kotlinx.serialization.json.encodeToJsonElement': [
+    { name: 'encodeToJsonElement', recv: (x: any) => x instanceof S.Json, fn: (j: S.Json, v: any) => j.encodeToJsonElement(v), reified: 'desc' },
+  ],
+  'kotlinx.serialization.serializer': Object.assign((d: any) => S.serializer(d), { $reified: 'desc' }),
+
+  // ---- coroutines ----
+  'kotlinx.coroutines.coroutineScope': Co.coroutineFns.coroutineScope,
+  'kotlinx.coroutines.supervisorScope': Co.coroutineFns.supervisorScope,
+  'kotlinx.coroutines.withContext': Co.coroutineFns.withContext,
+  'kotlinx.coroutines.runBlocking': Co.coroutineFns.runBlocking,
+  'kotlinx.coroutines.delay': Co.coroutineFns.delay,
+  'kotlinx.coroutines.yield': Co.coroutineFns.yield,
+  'kotlinx.coroutines.withTimeout': Co.coroutineFns.withTimeout,
+  'kotlinx.coroutines.withTimeoutOrNull': Co.coroutineFns.withTimeoutOrNull,
+  'kotlinx.coroutines.async': Co.coroutineExts.async,
+  'kotlinx.coroutines.launch': Co.coroutineExts.launch,
+  'kotlinx.coroutines.awaitAll': [...Co.coroutineExts.awaitAll],
+  'kotlinx.coroutines.joinAll': Co.coroutineExts.joinAll,
+  'kotlinx.coroutines.isActive': Co.coroutineExts.isActive,
+  'kotlinx.coroutines.ensureActive': Co.coroutineExts.ensureActive,
+  'kotlinx.coroutines.cancel': Co.coroutineExts.cancel,
+  'kotlinx.coroutines.Dispatchers': Co.Dispatchers,
+  'kotlinx.coroutines.GlobalScope': Co.GlobalScope,
+  'kotlinx.coroutines.CoroutineScope': Object.assign(Co.CoroutineScopeFn, { $fn: true, $is: (x: any) => x instanceof Co.CoroutineScope }),
+  'kotlinx.coroutines.SupervisorJob': Co.SupervisorJob,
+  'kotlinx.coroutines.Job': Object.assign(Co.JobCtor, { $fn: true, $is: (x: any) => x instanceof Co.Job }),
+  'kotlinx.coroutines.Deferred': Co.Deferred,
+  'kotlinx.coroutines.CoroutineStart': Co.CoroutineStart,
+  'kotlinx.coroutines.CancellationException': core.CancellationException,
+  'kotlinx.coroutines.TimeoutCancellationException': core.TimeoutCancellationException,
+  'kotlinx.coroutines.DelicateCoroutinesApi': ANNOTATION,
+  'kotlinx.coroutines.ExperimentalCoroutinesApi': ANNOTATION,
+  'kotlinx.coroutines.sync.Mutex': Co.Mutex,
+  'kotlinx.coroutines.sync.withLock': Co.coroutineExts.withLock,
+  'kotlinx.coroutines.sync.Semaphore': Co.Semaphore,
+  'kotlinx.coroutines.sync.withPermit': Co.coroutineExts.withPermit,
+  'kotlin.coroutines.cancellation.CancellationException': core.CancellationException,
+  'java.util.concurrent.CancellationException': core.CancellationException,
+  'kotlin.concurrent.withLock': [Co.coroutineExts.withLock[1]],
+
+  // ---- android / preferences / DI ----
+  'android.util.Log': A.Log,
+  'android.widget.Toast': A.Toast,
+  'android.os.Build': A.Build,
+  'android.os.SystemClock': A.SystemClock,
+  'android.text.InputType': A.InputType,
+  'android.app.Application': A.Application,
+  'android.content.Context': P.Context,
+  'android.content.SharedPreferences': P.SharedPreferences,
+  'android.net.Uri': A.Uri,
+  'android.annotation.SuppressLint': ANNOTATION,
+  'android.annotation.SuppressLint.SuppressLint': ANNOTATION,
+  'androidx.preference.PreferenceScreen': P.PreferenceScreen,
+  'androidx.preference.Preference': P.Preference,
+  'androidx.preference.SwitchPreferenceCompat': P.SwitchPreferenceCompat,
+  'androidx.preference.SwitchPreference': P.SwitchPreference,
+  'androidx.preference.CheckBoxPreference': P.CheckBoxPreference,
+  'androidx.preference.TwoStatePreference': P.TwoStatePreference,
+  'androidx.preference.EditTextPreference': P.EditTextPreference,
+  'androidx.preference.ListPreference': P.ListPreference,
+  'androidx.preference.MultiSelectListPreference': P.MultiSelectListPreference,
+  'androidx.preference.PreferenceCategory': P.PreferenceCategory,
+  'uy.kohesive.injekt.Injekt': A.Injekt,
+  'uy.kohesive.injekt.api.get': Object.assign((T: any) => A.Injekt.get(T), { $reified: 'class' }),
+  'uy.kohesive.injekt.injectLazy': Object.assign((T: any) => A.injectLazy(T), { $reified: 'class' }),
+  'keiyoushi.utils.applicationContext': P.appContext,
+
+  // ---- libs ----
+  'keiyoushi.lib.i18n.Intl': Intl,
+
+  // ---- kotlin / java explicitly imported ----
+  'kotlin.math.abs': G.kmath.abs,
+  'kotlin.math.min': G.kmath.min,
+  'kotlin.math.max': G.kmath.max,
+  'kotlin.math.floor': G.kmath.floor,
+  'kotlin.math.ceil': G.kmath.ceil,
+  'kotlin.math.round': G.kmath.round,
+  'kotlin.math.pow': stdlibExts.pow,
+  'kotlin.math.sqrt': G.kmath.sqrt,
+  'kotlin.math.ln': G.kmath.ln,
+  'kotlin.math.log10': G.kmath.log10,
+  'kotlin.math.log2': G.kmath.log2,
+  'kotlin.math.exp': G.kmath.exp,
+  'kotlin.math.truncate': G.kmath.truncate,
+  'kotlin.math.sign': stdlibExts.sign,
+  'kotlin.math.PI': Math.PI,
+  'kotlin.math.roundToInt': stdlibExts.roundToInt,
+  'kotlin.math.roundToLong': stdlibExts.roundToLong,
+  'kotlin.math.absoluteValue': stdlibExts.absoluteValue,
+  'kotlin.math.floorDiv': stdlibExts.floorDiv,
+  'kotlin.math.mod': stdlibExts.mod,
+  'kotlin.collections.ArrayDeque': builders.ArrayDeque,
+  'java.util.ArrayDeque': builders.ArrayDeque,
+  'java.util.ArrayList': builders.ArrayList,
+  'java.util.LinkedList': builders.LinkedList,
+  'java.util.HashMap': builders.HashMap,
+  'java.util.LinkedHashMap': builders.LinkedHashMap,
+  'java.util.TreeMap': builders.TreeMap,
+  'java.util.HashSet': builders.HashSet,
+  'java.util.LinkedHashSet': builders.LinkedHashSet,
+  'java.util.TreeSet': builders.TreeSet,
+  'java.util.Collections': G.Collections,
+  'java.util.Arrays': G.Arrays,
+  'java.util.concurrent.ConcurrentHashMap': G.ConcurrentHashMap,
+  'java.util.concurrent.atomic.AtomicInteger': G.AtomicInteger,
+  'java.util.concurrent.atomic.AtomicBoolean': G.AtomicBoolean,
+  'java.util.concurrent.atomic.AtomicReference': G.AtomicReference,
+  'java.util.concurrent.locks.ReentrantLock': G.ReentrantLock,
+  'java.util.regex.Pattern': Pattern,
+  'java.util.regex.Matcher': Matcher,
+  'java.io.IOException': core.IOException,
+  'java.io.UnsupportedEncodingException': core.UnsupportedEncodingException,
+  'java.net.UnknownHostException': core.UnknownHostException,
+  'java.net.SocketTimeoutException': core.SocketTimeoutException,
+  'java.io.InputStream': H.InputStream,
+  'java.text.ParseException': core.ParseException,
+  'java.time.format.DateTimeParseException': core.DateTimeParseException,
+  'java.security.GeneralSecurityException': core.GeneralSecurityException,
+  'kotlin.concurrent.thread': (f: () => any) => void Promise.resolve().then(f),
+  'kotlin.properties.Delegates': { notNull: () => ({ $notNull: true }) },
+  'kotlin.reflect.KClass': Object,
+  'kotlin.jvm.JvmStatic': ANNOTATION,
+  'kotlin.jvm.JvmField': ANNOTATION,
+  'kotlin.jvm.JvmOverloads': ANNOTATION,
+  'kotlin.jvm.JvmName': ANNOTATION,
+  'kotlin.jvm.Volatile': ANNOTATION,
+  'kotlin.concurrent.Volatile': ANNOTATION,
+  'kotlin.jvm.Synchronized': ANNOTATION,
+  'kotlin.ExperimentalStdlibApi': ANNOTATION,
+  'kotlin.OptIn': ANNOTATION,
+  'kotlin.time.ExperimentalTime': ANNOTATION,
+  'kotlin.io.encoding.ExperimentalEncodingApi': ANNOTATION,
+  'kotlin.text.Regex': Regex,
+  'kotlin.text.RegexOption': RegexOption,
+  'kotlin.text.MatchResult': MatchResult,
+  'kotlin.collections.Map.Entry': Object,
+  'kotlin.collections.component1': stdlibExts.component1,
+  'kotlin.collections.component2': stdlibExts.component2,
+  'kotlin.collections.set': stdlibExts.set,
+  'kotlin.collections.forEach': stdlibExts.forEach,
+  'kotlin.collections.getOrPut': stdlibExts.getOrPut,
+  'kotlin.collections.List': Object.assign(core.KTypes.List, { $pred: true }),
+  'kotlin.text.isNotBlank': stdlibExts.isNotBlank,
+  'kotlin.text.trimEnd': stdlibExts.trimEnd,
+  'kotlin.comparisons.compareBy': comparators.compareBy,
+  'kotlin.comparisons.compareByDescending': comparators.compareByDescending,
+  'kotlin.comparisons.naturalOrder': comparators.naturalOrder,
+  'kotlin.comparisons.reverseOrder': comparators.reverseOrder,
+  'kotlin.comparisons.nullsLast': comparators.nullsLast,
+  'kotlin.comparisons.nullsFirst': comparators.nullsFirst,
+  'kotlin.comparisons.thenBy': [ext('thenBy', (x) => x instanceof Comparator, (c: Comparator, f: any) => c.thenBy(f))],
+  'kotlin.comparisons.thenByDescending': [ext('thenByDescending', (x) => x instanceof Comparator, (c: Comparator, f: any) => c.thenByDescending(f))],
+  'java.util.Comparator': Object.assign(comparators.Comparator, { $fn: true }),
+  'kotlin.random.Random': undefined, // provided by java/crypto module
+
+  ...keiyoushiModules,
+};
+
+/** Names usable without imports (kotlin.*, kotlin.collections.*, kotlin.text.*, java.lang.*). */
+export const defaultImports: Record<string, unknown> = {
+  ...builders,
+  listOf: builders.listOf,
+  Pair: Pair,
+  Triple: Triple,
+  StringBuilder: StringBuilder,
+  Regex: Regex,
+  RegexOption: RegexOption,
+  Result: Result,
+  IntRange: IntRange,
+  Comparator: Object.assign(comparators.Comparator, { $fn: true }),
+  compareBy: comparators.compareBy,
+  compareByDescending: comparators.compareByDescending,
+  naturalOrder: comparators.naturalOrder,
+  reverseOrder: comparators.reverseOrder,
+  lazy: core.lazy,
+  error: core.error,
+  require: G.require,
+  requireNotNull: G.requireNotNull,
+  check: G.check,
+  checkNotNull: G.checkNotNull,
+  TODO: G.TODO,
+  println: G.println,
+  print: G.print,
+  maxOf: G.maxOf,
+  minOf: G.minOf,
+  String: G.KString,
+  Math: G.JMath,
+  Integer: G.Integer,
+  Long: G.JLong,
+  Double: G.JDouble,
+  Character: G.Character,
+  Boolean: G.JBoolean,
+  System: G.JSystem,
+  Thread: G.Thread,
+  Unit: undefined,
+  Any: Object.assign(core.KTypes.Any, { $pred: true }),
+  Throwable: core.Throwable,
+  Exception: core.Exception,
+  RuntimeException: core.RuntimeException,
+  Error: core.Throwable,
+  IllegalStateException: core.IllegalStateException,
+  IllegalArgumentException: core.IllegalArgumentException,
+  NumberFormatException: core.NumberFormatException,
+  NullPointerException: core.NullPointerException,
+  IndexOutOfBoundsException: core.IndexOutOfBoundsException,
+  NoSuchElementException: core.NoSuchElementException,
+  UnsupportedOperationException: core.UnsupportedOperationException,
+  ClassCastException: core.ClassCastException,
+  ArithmeticException: core.ArithmeticException,
+  ConcurrentModificationException: core.ConcurrentModificationException,
+  NotImplementedError: core.NotImplementedError,
+  InterruptedException: core.InterruptedException,
+  KotlinNullPointerException: core.NullPointerException,
+  // Type markers for `is` checks / casts.
+  ...Object.fromEntries(Object.entries(core.KTypes).map(([k, v]) => [`$type:${k}`, Object.assign(v, { $pred: true })])),
+};
+
+/** Extension functions/properties available without imports (the Kotlin stdlib). */
+export const defaultExts: Record<string, ExtDef[]> = stdlibExts;
+
+const extraModules: Record<string, unknown>[] = [];
+export function registerModules(m: Record<string, unknown>): void {
+  extraModules.push(m);
+  Object.assign(table, m);
+}
+
+export const modules = table;
+
+export function lookup(fqn: string): unknown {
+  return table[fqn];
+}
+
+export function hasModule(fqn: string): boolean {
+  return Object.prototype.hasOwnProperty.call(table, fqn) && table[fqn] !== undefined;
+}
+
+export { ANNOTATION };
+void extProp;
