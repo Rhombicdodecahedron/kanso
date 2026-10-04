@@ -323,7 +323,26 @@ export class Program {
     const nameNode = field(d, 'name') ?? named(d).find((x) => x.type === 'identifier') ?? null;
     const name = identOf(nameNode) ?? '$anon';
     const fvp = child(d, 'function_value_parameters');
-    const params = fvp ? children(fvp, 'parameter').map((p, i) => paramOf(p, fvp, i)) : [];
+    const params: Param[] = [];
+    if (fvp) {
+      let pendingMods: Node | null = null;
+      let i = 0;
+      for (const c of named(fvp)) {
+        if (c.type === 'parameter_modifiers') {
+          pendingMods = c;
+          continue;
+        }
+        if (c.type !== 'parameter') continue;
+        const prm = paramOf(c, fvp, i++);
+        if (pendingMods) {
+          if (/\bvararg\b/.test(pendingMods.text)) prm.vararg = true;
+          prm.annotations = [...prm.annotations, ...children(pendingMods, 'annotation')];
+          for (const m of named(pendingMods)) prm.mods.add(m.text.trim());
+        }
+        pendingMods = null;
+        params.push(prm);
+      }
+    }
     // receiver type: a type node appearing before the name
     let extReceiver: Node | null = null;
     for (const c of named(d)) {

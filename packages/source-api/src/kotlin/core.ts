@@ -240,9 +240,23 @@ export function setHas(s: Set<any>, v: any): boolean {
   return false;
 }
 
+const identityHashes = new WeakMap<object, number>();
+let nextIdentity = 0x1b6d3586;
+
+/** Object.hashCode() for objects without their own: a stable identity hash. */
+export function identityHash(x: object): number {
+  let h = identityHashes.get(x);
+  if (h === undefined) {
+    h = nextIdentity = (Math.imul(nextIdentity, 1103515245) + 12345) | 0;
+    identityHashes.set(x, h);
+  }
+  return h;
+}
+
 export function hash(x: any): number {
   if (x === null || x === undefined) return 0;
-  if (typeof x === 'object' && typeof x.hashCode === 'function') return x.hashCode();
+  if ((typeof x === 'object' || typeof x === 'function') && typeof x.hashCode === 'function') return x.hashCode();
+  if (typeof x === 'object' && !Array.isArray(x) && !(x instanceof Map) && !(x instanceof Set)) return identityHash(x);
   return stringHash(str(x));
 }
 
@@ -260,7 +274,7 @@ export function str(x: any): string {
   if (x instanceof Set) return '[' + [...x].map(str).join(', ') + ']';
   if (x instanceof Map) return '{' + [...x].map(([k, v]) => `${str(k)}=${str(v)}`).join(', ') + '}';
   if (typeof x === 'object' && x.toString !== Object.prototype.toString) return x.toString();
-  if (typeof x === 'object') return `${x.constructor?.name ?? 'Object'}@${(hash(x) >>> 0).toString(16)}`;
+  if (typeof x === 'object') return `${x.constructor?.name ?? 'Object'}@${(identityHash(x) >>> 0).toString(16)}`;
   return String(x);
 }
 
@@ -460,6 +474,8 @@ export interface ExtDef {
   suspend?: boolean;
   /** Its lambda argument is a suspend lambda (may be async) but the call itself is not inlined. */
   suspendLambda?: boolean;
+  /** Kotlin `inline` function: its lambda allows non-local return and inherits suspension. */
+  inline?: boolean;
   /** Synchronous in Kotlin but async here: makes the calling function async. */
   infect?: boolean;
   /** Parameter names (after the receiver) for named-argument calls. */
@@ -786,8 +802,18 @@ export function invoke(f: any, ...args: any[]): any {
 // ---------- callable references ----------
 
 /** `Foo::bar` / `::bar` - member function reference taking the receiver first. */
+/** `Type::name` - a function or a property reference; resolved per receiver at call time. */
 export function memberRef(name: string, cands: readonly ExtDef[]): Fn {
-  return (recv: any, ...args: any[]) => call(recv, name, cands, args);
+  return (recv: any, ...args: any[]) => {
+    if (!isBuiltin(recv)) {
+      const m = memberFn(recv, name);
+      if (m) return m.apply(recv, args);
+      if (name in recv) return recv[name];
+    }
+    const ext = findExt(recv, cands);
+    if (ext) return ext.prop ? ext.fn(recv) : ext.fn(recv, ...args);
+    return call(recv, name, cands, args);
+  };
 }
 
 export function propRef(name: string, cands: readonly ExtDef[]): Fn {

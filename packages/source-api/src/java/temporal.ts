@@ -2,7 +2,7 @@
 // ZonedDateTime, OffsetDateTime, Duration, Year, WeekFields.
 
 import { ArithmeticException, DateTimeException, NullPointerException, stringHash } from '../kotlin/core';
-import { ChronoField, ChronoUnit, DayOfWeek, Month, TextStyle, UnsupportedTemporalTypeException, ValueRange } from './fields';
+import { ChronoField, ChronoUnit, DayOfWeek, Month, TextStyle, UnsupportedTemporalTypeException } from './fields';
 import { TemporalBase } from './base';
 import { DateTimeFormatter } from './formatter';
 import { Locale } from './locale';

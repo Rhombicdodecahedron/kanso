@@ -14,6 +14,7 @@ export interface ExtLike {
   prop?: boolean;
   suspend?: boolean;
   suspendLambda?: boolean;
+  inline?: boolean;
   infect?: boolean;
   params?: string[];
   reified?: 'desc' | 'class';

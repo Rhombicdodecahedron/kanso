@@ -32,9 +32,8 @@ export function createDownloadUseCases(deps: Deps) {
       await deps.pages.remove(chapter.id);
       for (const p of pages) {
         if (cancelled.has(dl.chapterId)) throw new Error('cancelled');
-        const req = await deps.sources.imageRequest(manga.sourceId, p);
-        const img = await withRetry(() => deps.pages.fetchImage(req), 3);
-        await deps.pages.write(chapter.id, p.index, img.bytes, img.ext);
+        const img = await withRetry(() => deps.sources.fetchImage(manga.sourceId, p), 3);
+        await deps.pages.write(chapter.id, p.index, img.bytes, extFor(img.contentType));
         cur = { ...cur, progress: cur.progress + 1 };
         await deps.downloads.upsert(cur);
         emit(cur);
@@ -137,4 +136,13 @@ async function withRetry<T>(f: () => Promise<T>, attempts: number): Promise<T> {
     }
   }
   throw last;
+}
+
+function extFor(contentType: string): string {
+  const t = contentType.toLowerCase();
+  if (t.includes('png')) return 'png';
+  if (t.includes('webp')) return 'webp';
+  if (t.includes('gif')) return 'gif';
+  if (t.includes('avif')) return 'avif';
+  return 'jpg';
 }

@@ -27,6 +27,7 @@ function fakeSource(chapters: RemoteChapter[]) {
     update: async (_s, m) => ({ manga: { ...m, description: 'desc', initialized: true }, chapters: gw.chapters }),
     pages: async () => [0, 1, 2].map((i) => ({ index: i, url: '', imageUrl: `https://t.test/p${i}.jpg` })),
     imageRequest: async (_s, p) => ({ url: p.imageUrl!, headers: { Referer: 'https://t.test/' } }),
+    fetchImage: async () => ({ bytes: new Uint8Array([1]), contentType: 'image/png' }),
     mangaWebUrl: (_s, m) => `https://t.test${m.url}`,
     preferences: () => [],
     setPreference: () => true,
@@ -53,7 +54,6 @@ function setup(chapters: RemoteChapter[]) {
     write: async (c, i) => void pageFiles.set(c, [...(pageFiles.get(c) ?? []), `file://${c}/${i}`]),
     list: async (c) => pageFiles.get(c) ?? [],
     remove: async (c) => void pageFiles.delete(c),
-    fetchImage: async () => ({ bytes: new Uint8Array([1]), ext: 'jpg' }),
   };
   let t = 1_000_000;
   const sources = fakeSource(chapters);

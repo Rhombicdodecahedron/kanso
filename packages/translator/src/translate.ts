@@ -31,6 +31,35 @@ export interface TranslateErr {
 }
 export type TranslateResult = TranslateOk | TranslateErr;
 
+/** Every import must name a translated declaration or a runtime API. */
+function checkImports(prog: Program, rt: RuntimeInfo): void {
+  const userFqns = new Set<string>();
+  for (const c of prog.allClasses) userFqns.add(c.fqn);
+  for (const p of prog.packages.values()) {
+    for (const n of p.funs.keys()) userFqns.add(`${p.name}.${n}`);
+    for (const n of p.props.keys()) userFqns.add(`${p.name}.${n.replace(/\$extp$/, '')}`);
+    for (const n of p.typeAliases.keys()) userFqns.add(`${p.name}.${n}`);
+  }
+  for (const f of prog.files) {
+    for (const imp of f.imports) {
+      if (imp.star) {
+        if (prog.packages.has(imp.fqn) || prog.classesByFqn.has(imp.fqn) || rt.withPrefix(imp.fqn).length || rt.has(imp.fqn)) continue;
+        throw new Unsupported(`missing runtime API ${imp.fqn}.*`, f.path);
+      }
+      if (userFqns.has(imp.fqn) || rt.has(imp.fqn)) continue;
+      // member of a user class/object (e.g. companion const) or nested runtime value
+      const owner = imp.fqn.split('.').slice(0, -1).join('.');
+      if (prog.classesByFqn.has(owner) || userFqns.has(owner)) continue;
+      if (rt.has(owner)) {
+        const v: any = rt.value(owner);
+        const last = imp.fqn.split('.').pop()!;
+        if (v && (typeof v === 'object' || typeof v === 'function') && last in v) continue;
+      }
+      throw new Unsupported(`missing runtime API ${imp.fqn}`, f.path);
+    }
+  }
+}
+
 function ktFiles(dir: string): string[] {
   if (!fs.existsSync(dir)) return [];
   const out: string[] = [];
@@ -109,6 +138,7 @@ export async function translateExtension(repo: string, extDir: string): Promise<
     const extRel = new Set(extFiles.map((f) => path.relative(repo, f)));
     const main = prog.allClasses.find((c) => extRel.has(c.file.path) && annotations(c.node).some((a) => annotationName(a) === 'Source'));
     if (!main) throw new Unsupported('no @Source class');
+    checkImports(prog, rtInfo);
     const compiler = new Compiler(prog, rtInfo);
     const sources = meta.sources.map((s) => ({
       className: main,

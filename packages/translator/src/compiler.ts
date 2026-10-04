@@ -2,7 +2,7 @@
 // @kanso/source-api (see docs/runtime-conventions.md). Anything it cannot translate faithfully
 // raises Unsupported, so a bundle is either complete or not produced.
 
-import { allChildren, child, children, field, hasToken, identOf, modifiersOf, named, pos, stringLiteralValue, unescapeKotlin, annotations, annotationName, annotationStringArgs, type Node } from './parser';
+import { allChildren, child, children, field, hasToken, identOf, modifiersOf, named, pos, stringLiteralValue, templateParts, unescapeKotlin, annotations, annotationName, annotationStringArgs, type Node } from './parser';
 import { type ClassSym, type FunSym, type KFile, type Param, type PropSym, Program, typeName, Unsupported } from './syms';
 import { isAnnotation, isExtList, isRuntimeClass, RuntimeInfo, type ExtLike } from './runtime-info';
 
@@ -14,6 +14,8 @@ interface Local {
   fun?: FunSym;
   /** local declared with a function type known to be a receiver lambda */
   recvLambda?: boolean;
+  /** false when the local is known not to be callable (non-function declared type) */
+  invokable?: boolean;
 }
 
 class Scope {
@@ -361,7 +363,17 @@ export class Compiler {
   }
 
   private rtValueJs(fqn: string): string {
-    if (fqn.startsWith('$default.')) return this.defaultRef(fqn.slice(9));
+    if (fqn.startsWith('$default.')) {
+      const [head, ...rest] = fqn.slice(9).split('.');
+      return this.defaultRef(head) + rest.map((r) => `.${jsProp(r)}`).join('');
+    }
+    if (this.rt.has(fqn)) return this.rtRef(fqn);
+    // nested member of a runtime value (e.g. okhttp3.FormBody.Builder): parent ref + property path
+    const parts = fqn.split('.');
+    for (let i = parts.length - 1; i > 0; i--) {
+      const head = parts.slice(0, i).join('.');
+      if (this.rt.has(head)) return this.rtRef(head) + parts.slice(i).map((r) => `.${jsProp(r)}`).join('');
+    }
     return this.rtRef(fqn);
   }
 
@@ -766,9 +778,17 @@ export class Compiler {
     return null;
   }
 
+  private isTypeParamName(n: string | null): boolean {
+    if (!n) return false;
+    if (this.cls?.typeParams.includes(n)) return true;
+    for (let f: FnCtx | null = this.fn; f; f = f.parent) if (f.fun?.typeParams.includes(n)) return true;
+    return false;
+  }
+
   private emitParams(ps: Param[], base: Param[] | null): string[] {
     return ps.map((p, i) => {
-      const js = this.declareLocal(p.name, true);
+      const fnType = !!p.type && (p.type.type === 'function_type' || (p.type.type === 'nullable_type' && /\)\s*->/.test(p.type.text)) || p.type.text.trim().startsWith('suspend'));
+      const js = this.declareLocal(p.name, true, { invokable: !p.type || fnType || this.isTypeParamName(typeName(p.type)) });
       if (p.vararg) return `...${js}`;
       const def = p.def ?? base?.[i]?.def ?? null;
       if (def) {
@@ -1308,7 +1328,8 @@ export class Compiler {
     const type = named(vd).find((x) => x.type !== 'identifier') ?? null;
     const recvLambda = type?.type === 'function_type' && this.isReceiverFnType(type);
     const v = init ? this.expr(init, type) : null;
-    const js = this.declareLocal(name, isVal, recvLambda ? { recvLambda } : {});
+    const invokable = type ? type.type === 'function_type' || /->/.test(type.text) : !init || ['lambda_literal', 'callable_reference', 'anonymous_function', 'navigation_expression', 'call_expression', 'identifier'].includes(init.type);
+    const js = this.declareLocal(name, isVal, { ...(recvLambda ? { recvLambda } : {}), invokable });
     this.emit(`${isVal && v !== null ? 'const' : 'let'} ${js}${v !== null ? ` = ${v}` : ''};`);
   }
 
@@ -1920,22 +1941,13 @@ export class Compiler {
   // ---------- strings ----------
 
   private stringLit(n: Node): string {
-    const parts = named(n);
-    if (!parts.some((p) => p.type === 'interpolation')) {
-      let s = '';
-      for (const p of parts) s += p.type === 'escape_sequence' ? unescapeKotlin(p.text) : p.type === 'string_content' ? p.text : '';
-      if (n.type === 'multiline_string_literal') s = parts.map((p) => p.text).join('');
-      return JSON.stringify(s);
-    }
+    const parts = templateParts(n);
+    if (parts.every((p) => 'lit' in p)) return JSON.stringify(parts.map((p) => (p as { lit: string }).lit).join(''));
     let out = '`';
     for (const p of parts) {
-      if (p.type === 'string_content') out += escTpl(p.text);
-      else if (p.type === 'escape_sequence') out += escTpl(n.type === 'multiline_string_literal' ? p.text : unescapeKotlin(p.text));
-      else if (p.type === 'interpolation') {
-        const inner = named(p)[0]!;
-        const v = this.expr(inner);
-        out += `\${$s(${v})}`;
-      }
+      if ('lit' in p) out += escTpl(p.lit);
+      else if ('ident' in p) out += `\${$s(${this.resolvedValue(this.resolveName(p.ident, n), p.ident, n)})}`;
+      else out += `\${$s(${this.expr(p.expr)})}`;
     }
     return out + '`';
   }
@@ -2416,7 +2428,8 @@ export class Compiler {
 
   private plainCall0(n: Node, name: string, va: Node | null, lambdaNode: Node | null, typeArgs: Node[], expected: Node | null): string {
     // local function or local value of function type
-    const local = this.scope.lookup(name);
+    const local0 = this.scope.lookup(name);
+    const local = local0 && (local0.fun || local0.invokable !== false) ? local0 : null;
     if (local) {
       if (local.fun) {
         const args = this.callArgs(va, lambdaNode, local.fun.params, this.lambdaModesFor(local.fun));
@@ -2514,10 +2527,11 @@ export class Compiler {
     const rtc = this.rtCands(name);
     const userExt = this.userExtFuns(name);
     const recvLambda = rtc.some((c) => c.recvLambda);
-    const inline = rtc.some((c) => !!c.async);
+    const inline = rtc.some((c) => !!c.async || !!c.inline);
     const suspendLambda = rtc.some((c) => c.suspendLambda);
-    const mode: LambdaMode = suspendLambda ? 'suspend' : inline ? 'inline' : 'plain';
-    const args = this.callArgs(va, lambdaNode, null, { recv: recvLambda, mode, label: name, recvType });
+    const mode: LambdaMode = inline ? 'inline' : suspendLambda ? 'suspend' : 'plain';
+    const extRecvType = rtc.find((c: any) => c.recvType) as any;
+    const args = this.callArgs(va, lambdaNode, null, { recv: recvLambda, mode, label: name, recvType: extRecvType ? { rt: extRecvType.recvType } : recvType });
     const reified = rtc.find((c) => c.reified);
     if (reified && typeArgs.length) args.push(reified.reified === 'desc' ? this.typeDesc(typeArgs[0]) : this.typeRefJs(typeArgs[0], typeArgs[0]));
     let fb = 'undefined';
@@ -2543,7 +2557,7 @@ export class Compiler {
       }
       this.out = saved;
       if (code !== null) {
-        const awaitsInFallback = fbAwait;
+        const awaitsInFallback = fbAwait || /^\(await\b/.test(code.trim());
         fb = `${awaitsInFallback ? 'async ' : ''}() => { ${lines.join(' ')} return ${code}; }`;
       }
     }
@@ -2611,6 +2625,10 @@ export class Compiler {
   }
 
   private runtimeCall(r: { fqn: string; value: unknown; js: string }, name: string, va: Node | null, lambdaNode: Node | null, typeArgs: Node[], expected: Node | null, n: Node): string {
+    // classes that Kotlin also calls as functions (e.g. `Json { }`)
+    if (isRuntimeClass(r.value) && typeof (r.value as any).$invoke === 'function' && (lambdaNode || !(r.value as any).$params)) {
+      return this.runtimeCall({ fqn: r.fqn, value: (r.value as any).$invoke, js: `${r.js}.$invoke` }, name, va, lambdaNode, typeArgs, expected, n);
+    }
     const v: any = r.value;
     // extension list imported by name and called without receiver (e.g. inside receiver lambdas)
     if (isExtList(v)) {
@@ -2623,8 +2641,9 @@ export class Compiler {
     }
     const recvLambda = !!v?.$recvLambda;
     const suspendLambda = !!v?.$suspendLambda;
-    const mode: LambdaMode = suspendLambda ? 'suspend' : v?.$async ? 'inline' : 'plain';
-    const args = this.callArgs(va, lambdaNode, v?.$params ?? null, { recv: recvLambda, mode, label: name }, true);
+    const mode: LambdaMode = v?.$inline || v?.$async ? 'inline' : suspendLambda ? 'suspend' : 'plain';
+    const recvType = v?.$recvType ? { rt: v.$recvType } : null;
+    const args = this.callArgs(va, lambdaNode, v?.$params ?? null, { recv: recvLambda, mode, label: name, recvType }, true);
     if (v?.$reified) {
       const t = typeArgs[0] ?? expected;
       if (!t) this.fail(`cannot infer reified type for ${name}`, n);
@@ -2720,12 +2739,13 @@ export class Compiler {
 
     // Lambda handling depends on what the callee is.
     const recvLambda = rtc.some((c) => c.recvLambda) || userExts.some((f) => this.lambdaModesFor(f).recv) || knownUserMethod.some((f) => this.lambdaModesFor(f).recv);
-    const inline = rtc.some((c) => !!c.async) || userExts.some((f) => f.mods.has('inline')) || knownUserMethod.some((f) => f.mods.has('inline'));
+    const inline = rtc.some((c) => !!c.async || !!c.inline) || userExts.some((f) => f.mods.has('inline')) || knownUserMethod.some((f) => f.mods.has('inline'));
     const suspendLambda = rtc.some((c) => c.suspendLambda) || userExts.some((f) => this.lambdaModesFor(f).mode === 'suspend') || knownUserMethod.some((f) => this.lambdaModesFor(f).mode === 'suspend');
-    const mode: LambdaMode = suspendLambda ? 'suspend' : inline ? 'inline' : 'plain';
+    const mode: LambdaMode = inline ? 'inline' : suspendLambda ? 'suspend' : 'plain';
     const paramsHint = knownUserMethod.length === 1 ? knownUserMethod[0].params : userExts.length === 1 ? userExts[0].params : null;
     const rtParams = rtc.find((c) => c.params)?.params ?? null;
-    const recvType = recvLambda && recvNode ? this.inferType(recvNode) : null;
+    const extRecvType = rtc.find((c: any) => c.recvType)?.['recvType' as keyof ExtLike];
+    const recvType = extRecvType ? { rt: extRecvType } : recvLambda && recvNode ? this.inferType(recvNode) : null;
     const args = this.callArgs(va, lambdaNode, paramsHint ?? (rtParams ? rtParams.map((p) => ({ name: p }) as any) : null), { recv: recvLambda, mode, label: name, recvType }, !paramsHint);
     const reified = rtc.find((c) => c.reified);
     if (reified) {
@@ -3039,6 +3059,7 @@ export class Compiler {
     const walk = (x: Node, depth: number): boolean => {
       for (const c of named(x)) {
         if (c.type === 'identifier' && c.text === 'it') return true;
+        if ((c.type === 'string_literal' || c.type === 'multiline_string_literal') && templateParts(c).some((p) => 'ident' in p && p.ident === 'it')) return true;
         if (c.type === 'lambda_literal') {
           if (child(c, 'lambda_parameters')) {
             if (walk(c, depth + 1)) return true;

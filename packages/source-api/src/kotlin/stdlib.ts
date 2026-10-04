@@ -160,7 +160,7 @@ function pairsToMap(ps: Pair<any, any>[]): Map<any, any> {
 }
 
 // buildList etc. take receiver lambdas (receiver passed as first arg).
-export const buildersHof = {
+export const buildersHof: Record<string, (...a: any[]) => Generator<any, any, any>> = {
   buildList: function* (a: any, b?: any) {
     const f = typeof a === 'function' ? a : b;
     const l: any[] = [];

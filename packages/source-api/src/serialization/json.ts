@@ -303,6 +303,9 @@ export class Json {
 
   static Default = new Json();
 
+  /** Kotlin `Json { ... }` / `Json(from) { ... }` - a function call, not a constructor. */
+  static $invoke = Object.assign((a?: any, b?: any) => Json.build(a, b), { $recvLambda: true });
+
   /** `Json { ignoreUnknownKeys = true }` - the builder receives a mutable config. */
   static build(a?: any, b?: any): Json {
     const from: Json = a instanceof Json ? a : Json.Default;

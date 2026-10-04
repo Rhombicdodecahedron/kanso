@@ -482,6 +482,7 @@ const firstInstanceOrNull: ExtDef = {
 
 const getPreferences: ExtDef = {
   name: 'getPreferences',
+  recvLambda: true,
   recv: (x) => x !== null && typeof x === 'object' && 'baseUrl' in x,
   fn: (src: any, migration?: (p: any) => void) => {
     const p = getPreferencesFor(src);
@@ -491,6 +492,7 @@ const getPreferences: ExtDef = {
 };
 const getPreferencesLazy: ExtDef = {
   name: 'getPreferencesLazy',
+  recvLambda: true,
   recv: (x) => x !== null && typeof x === 'object' && 'baseUrl' in x,
   fn: (src: any, migration?: (p: any) => void) =>
     new Lazy(() => {

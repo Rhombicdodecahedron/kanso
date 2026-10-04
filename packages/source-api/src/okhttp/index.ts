@@ -1141,7 +1141,9 @@ export class OkHttpClient {
       }
       const respHeaders = new Headers(tr.headers);
       const ct = respHeaders.get('Content-Type');
-      const res = new Response(r, tr.code, tr.message, respHeaders, new ResponseBody(tr.body, ct ? MediaType.parse(ct) : null));
+      // Some transports (React Native fetch) follow redirects natively: report the final URL.
+      const finalReq = tr.url && tr.url !== r.url.toString() && HttpUrl.parse(tr.url) ? r.newBuilder().url(tr.url).build() : r;
+      const res = new Response(finalReq, tr.code, tr.message, respHeaders, new ResponseBody(tr.body, ct ? MediaType.parse(ct) : null));
       const set = Cookie.parseAll(r.url, respHeaders);
       if (set.length) this.cfg.cookieJar.saveFromResponse(r.url, set);
       return res;

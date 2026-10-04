@@ -241,8 +241,8 @@ export function CancellationExceptionCtor(msg?: string): CancellationException {
 
 // Extension-style coroutine functions (receiver first).
 export const coroutineExts: Record<string, ExtDef[]> = {
-  async: [{ name: 'async', recv: () => true, fn: asyncBuilder, suspendLambda: true } as ExtDef],
-  launch: [{ name: 'launch', recv: () => true, fn: launch, suspendLambda: true } as ExtDef],
+  async: [{ name: 'async', recv: () => true, fn: asyncBuilder, suspendLambda: true, recvLambda: true, recvType: CoroutineScope } as any],
+  launch: [{ name: 'launch', recv: () => true, fn: launch, suspendLambda: true, recvLambda: true, recvType: CoroutineScope } as any],
   awaitAll: [{ name: 'awaitAll', recv: (x: any) => Array.isArray(x), fn: (xs: any[]) => awaitAll(xs), suspend: true } as ExtDef],
   joinAll: [{ name: 'joinAll', recv: (x: any) => Array.isArray(x), fn: (xs: any[]) => joinAll(xs), suspend: true } as ExtDef],
   withLock: [
@@ -258,13 +258,14 @@ export const coroutineExts: Record<string, ExtDef[]> = {
         }
       },
       suspend: true,
-      suspendLambda: true,
+      inline: true,
     } as ExtDef,
     {
       // kotlin.concurrent.withLock on a ReentrantLock: synchronous.
       name: 'withLock',
       recv: () => true,
       fn: (_l: any, f: () => any) => f(),
+      inline: true,
     } as ExtDef,
   ],
   withPermit: [
@@ -280,7 +281,7 @@ export const coroutineExts: Record<string, ExtDef[]> = {
         }
       },
       suspend: true,
-      suspendLambda: true,
+      inline: true,
     } as ExtDef,
   ],
   cancel: [{ name: 'cancel', recv: (x: any) => x instanceof CoroutineScope || x instanceof Job, fn: (x: any) => x.cancel() } as ExtDef],
@@ -290,15 +291,15 @@ export const coroutineExts: Record<string, ExtDef[]> = {
 
 /** Top-level coroutine functions with their suspend metadata (read by the translator). */
 export const coroutineFns = {
-  coroutineScope: Object.assign(coroutineScope, { $suspend: true, $suspendLambda: true }),
-  supervisorScope: Object.assign(supervisorScope, { $suspend: true, $suspendLambda: true }),
-  withContext: Object.assign(withContext, { $suspend: true, $suspendLambda: true }),
-  runBlocking: Object.assign(runBlocking, { $suspend: true, $suspendLambda: true, $infect: true }),
+  coroutineScope: Object.assign(coroutineScope, { $suspend: true, $suspendLambda: true, $recvLambda: true, $recvType: CoroutineScope }),
+  supervisorScope: Object.assign(supervisorScope, { $suspend: true, $suspendLambda: true, $recvLambda: true, $recvType: CoroutineScope }),
+  withContext: Object.assign(withContext, { $suspend: true, $suspendLambda: true, $recvLambda: true, $recvType: CoroutineScope }),
+  runBlocking: Object.assign(runBlocking, { $suspend: true, $suspendLambda: true, $infect: true, $recvLambda: true }),
   delay: Object.assign(delay, { $suspend: true }),
   awaitAll: Object.assign(awaitAll, { $suspend: true }),
   joinAll: Object.assign(joinAll, { $suspend: true }),
-  withTimeout: Object.assign(withTimeout, { $suspend: true, $suspendLambda: true }),
-  withTimeoutOrNull: Object.assign(withTimeoutOrNull, { $suspend: true, $suspendLambda: true }),
+  withTimeout: Object.assign(withTimeout, { $suspend: true, $suspendLambda: true, $recvLambda: true }),
+  withTimeoutOrNull: Object.assign(withTimeoutOrNull, { $suspend: true, $suspendLambda: true, $recvLambda: true }),
   yield: Object.assign(yieldCoroutine, { $suspend: true }),
   async: Object.assign((...a: any[]) => asyncBuilder(GlobalScope, ...a), { $suspendLambda: true }),
   launch: Object.assign((...a: any[]) => launch(GlobalScope, ...a), { $suspendLambda: true }),

@@ -1,7 +1,7 @@
 // Extracts extension metadata from build.gradle.kts by evaluating the small Kotlin subset the
 // `keiyoushi { ... }` DSL uses (assignments, listOf/mapOf/to, forEach loops, if, templates).
 
-import { named, parseKotlin, stringLiteralValue, unescapeKotlin, type Node } from './parser';
+import { named, parseKotlin, stringLiteralValue, templateParts, type Node } from './parser';
 
 export interface SourceDecl {
   name: string | null;
@@ -215,10 +215,10 @@ function evalExpr(n: Node | null | undefined, env: Env): V {
       const c = stringLiteralValue(n);
       if (c !== null) return c;
       let out = '';
-      for (const p of named(n)) {
-        if (p.type === 'string_content') out += p.text;
-        else if (p.type === 'escape_sequence') out += unescapeKotlin(p.text);
-        else if (p.type === 'interpolation') out += String(evalExpr(named(p)[0], env) ?? 'null');
+      for (const p of templateParts(n)) {
+        if ('lit' in p) out += p.lit;
+        else if ('ident' in p) out += String(env.get(p.ident) ?? 'null');
+        else out += String(evalExpr(p.expr, env) ?? 'null');
       }
       return out;
     }

@@ -39,11 +39,11 @@ const okhttpExts = {
 
 const jsonBuilderExts = {
   put: ext('put', (x) => x instanceof S.JsonObjectBuilder, (b: S.JsonObjectBuilder, k: string, v: any) => b.put(k, v)),
-  putJsonObject: { ...ext('putJsonObject', (x) => x instanceof S.JsonObjectBuilder, S.putJsonObject) },
-  putJsonArray: { ...ext('putJsonArray', (x) => x instanceof S.JsonObjectBuilder, S.putJsonArray) },
+  putJsonObject: { ...ext('putJsonObject', (x) => x instanceof S.JsonObjectBuilder, S.putJsonObject), recvLambda: true },
+  putJsonArray: { ...ext('putJsonArray', (x) => x instanceof S.JsonObjectBuilder, S.putJsonArray), recvLambda: true },
   add: ext('add', (x) => x instanceof S.JsonArrayBuilder, (b: S.JsonArrayBuilder, v: any) => b.add(v)),
-  addJsonObject: ext('addJsonObject', (x) => x instanceof S.JsonArrayBuilder, S.addJsonObject),
-  addJsonArray: ext('addJsonArray', (x) => x instanceof S.JsonArrayBuilder, S.addJsonArray),
+  addJsonObject: { ...ext('addJsonObject', (x) => x instanceof S.JsonArrayBuilder, S.addJsonObject), recvLambda: true },
+  addJsonArray: { ...ext('addJsonArray', (x) => x instanceof S.JsonArrayBuilder, S.addJsonArray), recvLambda: true },
   addAll: ext('addAll', (x) => x instanceof S.JsonArrayBuilder, (b: S.JsonArrayBuilder, v: any) => b.addAll(v)),
 };
 
@@ -145,8 +145,8 @@ const table: Record<string, unknown> = {
   'kotlinx.serialization.json.JsonNull': S.JsonNull,
   'kotlinx.serialization.json.JsonDecoder': S.JsonDecoder,
   'kotlinx.serialization.json.JsonObjectBuilder': S.JsonObjectBuilder,
-  'kotlinx.serialization.json.buildJsonObject': S.buildJsonObject,
-  'kotlinx.serialization.json.buildJsonArray': S.buildJsonArray,
+  'kotlinx.serialization.json.buildJsonObject': Object.assign(S.buildJsonObject, { $recvLambda: true, $async: S.buildJsonObjectAsync }),
+  'kotlinx.serialization.json.buildJsonArray': Object.assign(S.buildJsonArray, { $recvLambda: true }),
   'kotlinx.serialization.json.put': exts('put', jsonBuilderExts.put),
   'kotlinx.serialization.json.putJsonObject': exts('putJsonObject', jsonBuilderExts.putJsonObject),
   'kotlinx.serialization.json.putJsonArray': exts('putJsonArray', jsonBuilderExts.putJsonArray),
@@ -315,6 +315,18 @@ const table: Record<string, unknown> = {
   'java.text.ParseException': core.ParseException,
   'java.time.format.DateTimeParseException': core.DateTimeParseException,
   'java.security.GeneralSecurityException': core.GeneralSecurityException,
+  'java.lang.ref.SoftReference': class SoftReference<T> {
+    constructor(private readonly v: T) {}
+    get(): T {
+      return this.v;
+    }
+  },
+  'java.lang.ref.WeakReference': class WeakReference<T> {
+    constructor(private readonly v: T) {}
+    get(): T {
+      return this.v;
+    }
+  },
   'kotlin.concurrent.thread': (f: () => any) => void Promise.resolve().then(f),
   'kotlin.properties.Delegates': { notNull: () => ({ $notNull: true }) },
   'kotlin.reflect.KClass': Object,

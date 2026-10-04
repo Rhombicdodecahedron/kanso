@@ -128,13 +128,13 @@ export class TimeZone {
 
   static getTimeZone(id: any): TimeZone {
     if (id instanceof ZoneId) {
-      if (id instanceof ZoneOffset) return id.totalSeconds === 0 ? new TimeZone('UTC', ZoneOffset.UTC) : new TimeZone(gmtId(id.totalSeconds), id);
+      if (id instanceof ZoneOffset) return id.totalSeconds === 0 ? new TimeZone('UTC', ZoneId.of('UTC')) : new TimeZone(gmtId(id.totalSeconds), id);
       const zid = id.id;
       return TimeZone.getTimeZone(zid.startsWith('UTC') || zid.startsWith('UT+') || zid.startsWith('UT-') ? zid.replace(/^UTC?/, 'GMT') : zid);
     }
     if (id === null || id === undefined) throw new NullPointerException('id');
     const s = String(id);
-    if (s === 'UTC' || s === 'GMT' || s === 'UT' || s === 'Z') return new TimeZone(s === 'Z' ? 'GMT' : s, ZoneOffset.UTC);
+    if (s === 'UTC' || s === 'GMT' || s === 'UT') return new TimeZone(s, ZoneId.of(s));
     const custom = /^GMT([+-])(\d{1,2})(?::(\d{2})|(\d{2}))?$/.exec(s);
     if (custom) {
       const h = +custom[2];
@@ -144,13 +144,13 @@ export class TimeZone {
         const z = ZoneOffset.ofTotalSeconds(secs);
         return new TimeZone(secs === 0 ? `GMT${custom[1]}00:00` : gmtId(secs), z);
       }
-      return new TimeZone('GMT', ZoneOffset.UTC);
+      return new TimeZone('GMT', ZoneId.of('GMT'));
     }
     const short = ZoneId.SHORT_IDS.get(s);
     if (short && (s === 'EST' || s === 'MST' || s === 'HST')) return new TimeZone(s, ZoneId.of(short));
     try {
       const z = ZoneId.of(s);
-      if (z instanceof ZoneOffset) return new TimeZone('GMT', ZoneOffset.UTC); // "+07:00" is not a TimeZone id
+      if (z instanceof ZoneOffset) return new TimeZone('GMT', ZoneId.of('GMT')); // "+07:00" is not a TimeZone id
       return new TimeZone(s, z);
     } catch {
       if (short) {
@@ -160,7 +160,7 @@ export class TimeZone {
           /* fall through */
         }
       }
-      return new TimeZone('GMT', ZoneOffset.UTC);
+      return new TimeZone('GMT', ZoneId.of('GMT'));
     }
   }
 

@@ -119,6 +119,8 @@ export interface SourceGateway {
   update(sourceId: SourceId, manga: RemoteManga, chapters: RemoteChapter[], details: boolean, withChapters: boolean): Promise<{ manga: RemoteManga; chapters: RemoteChapter[] }>;
   pages(sourceId: SourceId, chapter: RemoteChapter): Promise<RemotePage[]>;
   imageRequest(sourceId: SourceId, page: RemotePage): Promise<ImageRequest>;
+  /** Fetch an image through the source's client (its interceptors apply). */
+  fetchImage(sourceId: SourceId, page: RemotePage): Promise<{ bytes: Uint8Array; contentType: string }>;
   mangaWebUrl(sourceId: SourceId, manga: RemoteManga): string | null;
   preferences(sourceId: SourceId): PreferenceItem[];
   setPreference(sourceId: SourceId, key: string, value: unknown): boolean;
@@ -129,8 +131,6 @@ export interface PageStore {
   write(chapterId: ChapterId, index: number, bytes: Uint8Array, ext: string): Promise<void>;
   list(chapterId: ChapterId): Promise<string[]>;
   remove(chapterId: ChapterId): Promise<void>;
-  /** Fetch an image (with headers) and return its bytes + extension. */
-  fetchImage(req: ImageRequest): Promise<{ bytes: Uint8Array; ext: string }>;
 }
 
 export interface Clock {
