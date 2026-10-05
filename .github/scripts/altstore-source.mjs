@@ -45,7 +45,7 @@ const source = {
       iconURL: `${raw}/apps/reader/assets/icon.png`,
       tintColor: accent,
       category: 'entertainment',
-      screenshots: [],
+      screenshots: ['1-library', '2-manga', '3-reader', '4-history'].map((n) => ({ imageURL: `${raw}/docs/screenshots/${n}.jpg`, width: 1320, height: 2868 })),
       versions: [
         {
           version: a.version,

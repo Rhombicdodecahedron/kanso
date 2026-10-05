@@ -1,5 +1,7 @@
 // Dev-only: kanso://debug?repo=<url>&pkg=<pkg> runs install -> popular -> details -> pages -> image
 // through the real use cases and logs each stage (used to verify the runtime under Hermes).
+// Adding &seed=<n> instead fills the library with the first n popular series and some reading
+// history (used to take screenshots).
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ScrollView } from 'react-native';
@@ -10,7 +12,7 @@ import { Txt } from '@/ui/components/Txt';
 import { colors, space } from '@/ui/theme';
 
 export function DebugScreen() {
-  const { repo, pkg } = useLocalSearchParams<{ repo?: string; pkg?: string }>();
+  const { repo, pkg, seed } = useLocalSearchParams<{ repo?: string; pkg?: string; seed?: string }>();
   const { uc } = useApp();
   const [lines, setLines] = useState<string[]>([]);
 
@@ -44,6 +46,26 @@ export function DebugScreen() {
       if (!src) return log('source not loaded');
       const popular = await step('popular', () => uc.catalog.popular(src.id, 1), (p) => `${p.mangas.length} mangas, first=${p.mangas[0]?.title}`);
       if (!popular?.mangas.length) return;
+      if (seed) {
+        const picked = popular.mangas.slice(0, Number(seed));
+        for (const [i, m] of picked.entries()) {
+          await step(`seed ${m.title}`, async () => {
+            const r = await uc.catalog.refresh(m.id);
+            await uc.catalog.setFavorite(m.id, true);
+            // reading history for the first few, a few chapters in
+            const ordered = [...r.chapters].sort((a, b) => b.sourceOrder - a.sourceOrder);
+            if (i < 5 && ordered.length > 3) {
+              const done = ordered.slice(0, 2 + i);
+              await uc.catalog.setRead(done.map((c) => c.id), true);
+              const reading = ordered[done.length];
+              await uc.reader.progress(reading.id, 4 + i, 30, 600_000);
+            }
+            return r.chapters.length;
+          }, (n) => `${n} chapters`);
+        }
+        log('DONE');
+        return;
+      }
       const details = await step('details', () => uc.catalog.refresh(popular.mangas[0].id), (r) => `${r.manga.title}: ${r.chapters.length} chapters`);
       if (!details?.chapters.length) return;
       // start from a clean chapter so the download path really runs
@@ -77,7 +99,7 @@ export function DebugScreen() {
     return () => {
       alive = false;
     };
-  }, [repo, pkg, uc]);
+  }, [repo, pkg, seed, uc]);
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.bg }} contentContainerStyle={{ padding: space.lg, gap: space.sm }}>

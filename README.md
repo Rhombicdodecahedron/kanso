@@ -1,9 +1,31 @@
+![Kanso](docs/brand/banner.png)
+
 # Kanso
 
 A manga reader for iOS and Android modelled on [Mihon](https://github.com/mihonapp/mihon), which runs
 Mihon's own extension ecosystem. Kotlin extensions from
 [keiyoushi/extensions-source](https://github.com/keiyoushi/extensions-source) are translated
 mechanically into JavaScript bundles, which the app downloads from a repository and runs.
+
+<p>
+  <img src="docs/screenshots/1-library.jpg" width="200" alt="Library">
+  <img src="docs/screenshots/2-manga.jpg" width="200" alt="Series">
+  <img src="docs/screenshots/3-reader.jpg" width="200" alt="Reader">
+  <img src="docs/screenshots/4-history.jpg" width="200" alt="History">
+</p>
+
+## Install
+
+Each [release](https://github.com/Rhombicdodecahedron/kanso/releases/latest) has:
+
+- **Android:** `kanso-<version>.apk`. Download it and open it to install.
+- **iPhone / iPad:** add this source in [AltStore](https://altstore.io) or [SideStore](https://sidestore.io), which also installs updates:
+
+  ```
+  https://github.com/Rhombicdodecahedron/kanso/releases/latest/download/altstore.json
+  ```
+
+  Or sideload `kanso-<version>.ipa` with [Sideloadly](https://sideloadly.io).
 
 ## Layout
 
