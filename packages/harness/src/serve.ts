@@ -5,6 +5,7 @@ import path from 'node:path';
 
 const root = path.resolve(process.argv[2] ?? '../../repo');
 const port = Number(process.argv[3] ?? 8787);
+const host = process.argv[4] ?? '127.0.0.1';
 http
   .createServer((req, res) => {
     if (req.method === 'POST' && req.url === '/log') {
@@ -25,4 +26,4 @@ http
     res.setHeader('Content-Type', file.endsWith('.json') ? 'application/json' : 'application/javascript');
     fs.createReadStream(file).pipe(res);
   })
-  .listen(port, '127.0.0.1', () => console.log(`serving ${root} on http://127.0.0.1:${port}`));
+  .listen(port, host, () => console.log(`serving ${root} on http://${host}:${port}`));

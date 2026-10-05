@@ -15,7 +15,8 @@
           "NSAllowsArbitraryLoads": true,
           "NSAllowsLocalNetworking": true
         }
-      }
+      },
+      "appleTeamId": "HGTN6H2F3Y"
     },
     "android": {
       "package": "com.alexiss.kanso",
