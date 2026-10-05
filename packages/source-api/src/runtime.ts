@@ -1,3 +1,5 @@
+// Must run before anything decodes bytes.
+import './polyfills';
 // The `$rt` object translated bundles receive, plus bundle loading.
 
 import * as core from './kotlin/core';

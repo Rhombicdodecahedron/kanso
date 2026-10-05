@@ -112,6 +112,8 @@ export interface SourceGateway {
   sources(): SourceInfo[];
   has(sourceId: SourceId): boolean;
   supportsLatest(sourceId: SourceId): boolean;
+  /** Request headers for loading images directly (covers). */
+  headers(sourceId: SourceId): Record<string, string>;
   popular(sourceId: SourceId, page: number): Promise<MangasPage>;
   latest(sourceId: SourceId, page: number): Promise<MangasPage>;
   search(sourceId: SourceId, page: number, query: string, filters: FilterState[] | null): Promise<MangasPage>;

@@ -96,6 +96,17 @@ export class SourceRegistry {
     return e.instance;
   }
 
+  /** Default request headers of a source (for covers and other direct image loads). */
+  headers(id: string): Record<string, string> {
+    const out: Record<string, string> = {};
+    try {
+      for (const [k, v] of this.src(id).headers.pairs) out[k] = v;
+    } catch {
+      // source without headers
+    }
+    return out;
+  }
+
   supportsLatest(id: string): boolean {
     return !!this.src(id).supportsLatest;
   }

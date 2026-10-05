@@ -20,6 +20,7 @@ function fakeSource(chapters: RemoteChapter[]) {
     sources: () => (loaded.size ? [SRC] : []),
     has: () => loaded.size > 0,
     supportsLatest: () => true,
+    headers: () => ({}),
     popular: async () => ({ mangas: [manga(1), manga(2), manga(1)], hasNextPage: true }),
     latest: async () => ({ mangas: [manga(3)], hasNextPage: false }),
     search: async () => ({ mangas: [], hasNextPage: false }),

@@ -94,6 +94,7 @@ export async function createRuntimeGateway(db: SqlDriver): Promise<SourceGateway
     sources: (): SourceInfo[] => reg.sources().map((s) => ({ id: s.id, name: s.name, lang: s.lang, baseUrl: s.baseUrl, index: s.index })),
     has: (id) => reg.has(id),
     supportsLatest: (id) => reg.supportsLatest(id),
+    headers: (id) => (reg.has(id) ? reg.headers(id) : {}),
     popular: (id, page) => reg.popular(id, page),
     latest: (id, page) => reg.latest(id, page),
     search: (id, page, q, f) => reg.search(id, page, q, f as any),

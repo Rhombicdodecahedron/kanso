@@ -8,7 +8,6 @@ export type DownloadListener = (d: Download) => void;
 
 export function createDownloadUseCases(deps: Deps) {
   const listeners = new Set<DownloadListener>();
-  let running = false;
   const cancelled = new Set<ChapterId>();
 
   const emit = (dl: Download) => {
@@ -65,7 +64,6 @@ export function createDownloadUseCases(deps: Deps) {
   }
 
   async function drain(): Promise<void> {
-    running = true;
     try {
       for (;;) {
         const queue = (await deps.downloads.list()).filter((x) => x.state === 'queued').sort((a, b) => a.queuedAt - b.queuedAt);
@@ -75,7 +73,7 @@ export function createDownloadUseCases(deps: Deps) {
         await Promise.all(queue.slice(0, Math.max(1, downloadConcurrency)).map(downloadOne));
       }
     } finally {
-      running = false;
+      // drained
     }
   }
 
