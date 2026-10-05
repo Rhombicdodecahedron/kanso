@@ -520,6 +520,20 @@ export function memberFn(recv: any, name: string): Fn | null {
 
 const BUILTIN_PROTOS = new Set<any>([Object.prototype, Array.prototype, Function.prototype, Map.prototype, Set.prototype, String.prototype, Number.prototype, Boolean.prototype, Error.prototype]);
 
+/** Reorder trailing Named arguments for an extension that declares parameter names. */
+function argsFor(ext: ExtDef, args: any[]): any[] {
+  const last = args[args.length - 1];
+  if (!ext.params || !last || last.constructor?.name !== 'Named') return args;
+  const out = args.slice(0, -1);
+  for (const [k, v] of Object.entries(last.values as Record<string, any>)) {
+    const i = ext.params.indexOf(k);
+    if (i < 0) return args;
+    while (out.length < i) out.push(undefined);
+    out[i] = v;
+  }
+  return out;
+}
+
 function findExt(recv: any, cands: readonly ExtDef[]): ExtDef | null {
   for (const c of cands) if (c.recv(recv)) return c;
   return null;
@@ -532,7 +546,7 @@ export function call(recv: any, name: string, cands: readonly ExtDef[], args: an
     if (m) return m.apply(recv, args);
   }
   const ext = findExt(recv, cands);
-  if (ext) return ext.member ? self[ext.member](recv, ...args) : ext.ctx ? ext.fn(recv, self, ...args) : ext.fn(recv, ...args);
+  if (ext) return ext.member ? self[ext.member](recv, ...args) : ext.ctx ? ext.fn(recv, self, ...args) : ext.fn(recv, ...argsFor(ext, args));
   if (recv === null || recv === undefined) throw new NullPointerException(`Calling '${name}' on null`);
   if (typeof recv === 'function' && name === 'invoke') return recv(...args);
   return noSuch(recv, name);
@@ -545,7 +559,7 @@ export function callAsync(recv: any, name: string, cands: readonly ExtDef[], arg
     if (m) return m.apply(recv, args);
   }
   const ext = findExt(recv, cands);
-  if (ext) return ext.member ? self[ext.member](recv, ...args) : ext.ctx ? ext.fn(recv, self, ...args) : (ext.async ?? ext.fn)(recv, ...args);
+  if (ext) return ext.member ? self[ext.member](recv, ...args) : ext.ctx ? ext.fn(recv, self, ...args) : (ext.async ?? ext.fn)(recv, ...argsFor(ext, args));
   if (recv === null || recv === undefined) throw new NullPointerException(`Calling '${name}' on null`);
   return noSuch(recv, name);
 }
@@ -583,7 +597,7 @@ export function icall(receivers: any[], name: string, cands: readonly ExtDef[], 
   }
   for (const r of receivers) {
     const ext = findExt(r, cands);
-    if (ext) return ext.member ? self[ext.member](r, ...args) : ext.ctx ? ext.fn(r, self, ...args) : ext.fn(r, ...args);
+    if (ext) return ext.member ? self[ext.member](r, ...args) : ext.ctx ? ext.fn(r, self, ...args) : ext.fn(r, ...argsFor(ext, args));
   }
   if (fallback) return fallback(...args);
   throw new UnsupportedOperationException(`Unresolved call '${name}'`);
@@ -598,7 +612,7 @@ export function icallAsync(receivers: any[], name: string, cands: readonly ExtDe
   }
   for (const r of receivers) {
     const ext = findExt(r, cands);
-    if (ext) return ext.member ? self[ext.member](r, ...args) : ext.ctx ? ext.fn(r, self, ...args) : (ext.async ?? ext.fn)(r, ...args);
+    if (ext) return ext.member ? self[ext.member](r, ...args) : ext.ctx ? ext.fn(r, self, ...args) : (ext.async ?? ext.fn)(r, ...argsFor(ext, args));
   }
   if (fallback) return fallback(...args);
   throw new UnsupportedOperationException(`Unresolved call '${name}'`);

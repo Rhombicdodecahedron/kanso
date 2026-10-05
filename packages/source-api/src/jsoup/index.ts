@@ -8,7 +8,7 @@ import { parseDocument as htmlparser2Parse } from 'htmlparser2';
 import render from 'dom-serializer';
 import { IllegalArgumentException, str } from '../kotlin/core';
 import { Regex } from '../kotlin/regex';
-import { resolveUrl } from '../okhttp/url';
+import { resolveUrl, resolveUrlRaw } from '../okhttp/url';
 
 // ---------- selector dialect ----------
 
@@ -449,8 +449,7 @@ export class Node {
     if (!isEl(this.node)) return '';
     const v = this.node.attribs[key.toLowerCase()];
     if (v === undefined) return '';
-    const base = this.baseUri();
-    const r = resolveUrl(base, v.trim());
+    const r = resolveUrlRaw(this.baseUri(), v.trim());
     return r ?? (/^[a-z][a-z0-9+.-]*:/i.test(v.trim()) ? v.trim() : '');
   }
   baseUri(): string {

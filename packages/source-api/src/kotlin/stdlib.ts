@@ -1141,6 +1141,10 @@ function split(s: string, ...args: any[]): string[] {
   for (const a of args) {
     if (typeof a === 'boolean') ignoreCase = a;
     else if (typeof a === 'number') limit = a;
+    else if (a && typeof a === 'object' && a.constructor?.name === 'Named') {
+      ignoreCase = a.values.ignoreCase ?? ignoreCase;
+      limit = a.values.limit ?? limit;
+    }
     else if (a && typeof a === 'object' && !Array.isArray(a) && !(a instanceof Regex) && ('ignoreCase' in a || 'limit' in a)) {
       ignoreCase = a.ignoreCase ?? false;
       limit = a.limit ?? 0;
@@ -1599,8 +1603,48 @@ export function format(fmt: string, args: any[]): string {
 
 // ---------- registry ----------
 
+/** Parameter names (after the receiver) so Kotlin named arguments can be reordered. */
+const PARAMS: Record<string, string[]> = {
+  joinToString: ['separator', 'prefix', 'postfix', 'limit', 'truncated', 'transform'],
+  joinTo: ['buffer', 'separator', 'prefix', 'postfix', 'limit', 'truncated', 'transform'],
+  substringAfter: ['delimiter', 'missingDelimiterValue'],
+  substringBefore: ['delimiter', 'missingDelimiterValue'],
+  substringAfterLast: ['delimiter', 'missingDelimiterValue'],
+  substringBeforeLast: ['delimiter', 'missingDelimiterValue'],
+  replace: ['oldValue', 'newValue', 'ignoreCase'],
+  replaceFirst: ['oldValue', 'newValue', 'ignoreCase'],
+  startsWith: ['prefix', 'ignoreCase'],
+  endsWith: ['suffix', 'ignoreCase'],
+  contains: ['other', 'ignoreCase'],
+  equals: ['other', 'ignoreCase'],
+  compareTo: ['other', 'ignoreCase'],
+  indexOf: ['string', 'startIndex', 'ignoreCase'],
+  windowed: ['size', 'step', 'partialWindows', 'transform'],
+  chunked: ['size', 'transform'],
+  padStart: ['length', 'padChar'],
+  padEnd: ['length', 'padChar'],
+  trimMargin: ['marginPrefix'],
+  removeSurrounding: ['prefix', 'suffix'],
+  toRegex: ['option'],
+  toString: ['radix'],
+  toInt: ['radix'],
+  toIntOrNull: ['radix'],
+  toLong: ['radix'],
+  toLongOrNull: ['radix'],
+  coerceIn: ['minimumValue', 'maximumValue'],
+  associateBy: ['keySelector', 'valueTransform'],
+  groupBy: ['keySelector', 'valueTransform'],
+  getOrElse: ['index', 'defaultValue'],
+  getOrDefault: ['key', 'defaultValue'],
+  regionMatches: ['thisOffset', 'other', 'otherOffset', 'length', 'ignoreCase'],
+  digitToInt: ['radix'],
+};
+
 export const stdlibExts: Record<string, ExtDef[]> = Object.create(null);
-for (const d of defs) (stdlibExts[d.name] ??= []).push(d);
+for (const d of defs) {
+  if (!d.params && PARAMS[d.name]) d.params = PARAMS[d.name];
+  (stdlibExts[d.name] ??= []).push(d);
+}
 
 export function extsNamed(name: string): ExtDef[] {
   return stdlibExts[name] ?? [];

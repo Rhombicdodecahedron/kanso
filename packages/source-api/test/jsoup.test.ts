@@ -26,6 +26,10 @@ describe('jsoup shim', () => {
     expect(doc.selectFirst('img')!.absUrl('data-src')).toBe('https://cdn.x.com/a.jpg');
     expect(doc.location()).toBe('https://site.com/manga/');
   });
+  it('absUrl keeps raw characters like java.net.URL (srcset)', () => {
+    const d = Jsoup.parse('<img srcset="/a.webp 386w, /b.webp 772w">', 'https://x.com/m/');
+    expect(d.selectFirst('img')!.attr('abs:srcset')).toBe('https://x.com/a.webp 386w, /b.webp 772w');
+  });
   it('supports jsoup pseudos', () => {
     expect(doc.select('div.summary-heading:contains(status) + div').text()).toBe('Ongoing');
     expect(doc.select('li:eq(1)').text()).toBe('2');

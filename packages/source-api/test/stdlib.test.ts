@@ -46,3 +46,12 @@ describe('stdlib', () => {
     expect(str(null)).toBe('null');
   });
 });
+
+describe('named arguments to stdlib extensions', () => {
+  it('reorders Named for split/joinToString/substringAfter', async () => {
+    const { Named } = await import('../src/kotlin/named');
+    expect(c('a  b  c', 'split', new Regex('\\s+'), new Named({ limit: 2 }))).toEqual(['a', 'b  c']);
+    expect(c(['x', 'y'], 'joinToString', new Named({ separator: '|', prefix: '<' }))).toBe('<x|y');
+    expect(c('abc', 'substringAfter', 'z', new Named({ missingDelimiterValue: '' }))).toBe('');
+  });
+});

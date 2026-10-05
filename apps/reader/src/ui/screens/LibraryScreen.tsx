@@ -23,17 +23,30 @@ const SORTS: { key: LibrarySort; label: string }[] = [
   { key: 'dateAdded', label: 'Date added' },
 ];
 
-/** Dev builds: a debug.json next to a local repo (127.0.0.1:8787) opens the debug runner. */
+/**
+ * Dev builds only: polls debug.json on the local repo server (127.0.0.1:8787). Each new `id`
+ * either opens `route` or runs the debug chain for `pkg`. Lets tooling drive the simulator.
+ */
 function useDevDebugTrigger() {
   useEffect(() => {
     if (!__DEV__) return;
-    devLog('checking trigger');
-    fetch('http://127.0.0.1:8787/debug.json')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (d?.pkg) router.push({ pathname: '/debug', params: { repo: d.repo ?? 'http://127.0.0.1:8787', pkg: d.pkg } });
-      })
-      .catch((e) => devLog(`trigger fetch failed: ${e?.message ?? e}`));
+    let last: string | null = null;
+    const poll = () =>
+      fetch('http://127.0.0.1:8787/debug.json', { headers: { 'Cache-Control': 'no-cache' } })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          if (!d?.id || d.id === last) return;
+          const first = last === null && d.skipOnStart;
+          last = d.id;
+          if (first) return;
+          devLog(`trigger ${d.id}`);
+          if (d.route) router.push(d.route);
+          else if (d.pkg) router.push({ pathname: '/debug', params: { repo: d.repo ?? 'http://127.0.0.1:8787', pkg: d.pkg } } as never);
+        })
+        .catch(() => {});
+    void poll();
+    const t = setInterval(poll, 2000);
+    return () => clearInterval(t);
   }, []);
 }
 

@@ -527,3 +527,36 @@ export function toHttpUrl(s: string): HttpUrl {
 export function toHttpUrlOrNull(s: string): HttpUrl | null {
   return HttpUrl.parse(s);
 }
+
+/**
+ * Resolve like java.net.URL(base, ref).toExternalForm(): RFC 3986 merge on the raw strings,
+ * without percent-encoding (Jsoup's absUrl relies on this, e.g. for srcset values).
+ */
+export function resolveUrlRaw(base: string, ref: string): string | null {
+  const r = ref.trim();
+  if (ABS_RE.test(r)) return r;
+  const m = /^([a-zA-Z][a-zA-Z0-9+.-]*):\/\/([^/?#]*)([^?#]*)(\?[^#]*)?/.exec(base.trim());
+  if (!m) return null;
+  const [, scheme, authority, basePath, baseQuery] = m;
+  if (r.startsWith('//')) return `${scheme}:${r}`;
+  const hashAt = r.indexOf('#');
+  const frag = hashAt >= 0 ? r.slice(hashAt) : '';
+  const beforeFrag = hashAt >= 0 ? r.slice(0, hashAt) : r;
+  const qAt = beforeFrag.indexOf('?');
+  const pathPart = qAt >= 0 ? beforeFrag.slice(0, qAt) : beforeFrag;
+  const query = qAt >= 0 ? beforeFrag.slice(qAt) : null;
+  let path: string;
+  let q: string;
+  if (pathPart === '') {
+    path = basePath || '/';
+    q = query ?? baseQuery ?? '';
+  } else if (pathPart.startsWith('/')) {
+    path = resolvePath(pathPart);
+    q = query ?? '';
+  } else {
+    const dir = (basePath || '/').slice(0, (basePath || '/').lastIndexOf('/') + 1);
+    path = resolvePath(dir + pathPart);
+    q = query ?? '';
+  }
+  return `${scheme}://${authority}${path}${q}${frag}`;
+}
