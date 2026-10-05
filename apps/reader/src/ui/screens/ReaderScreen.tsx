@@ -121,9 +121,18 @@ function Reader({ session }: { session: ReaderSession }) {
     const offset = position.current?.index === index ? position.current.frac : index === session.startPage ? session.startOffset : 0;
     void uc.reader
       .progress(chapterId, page, total, spent, offset)
-      .then(() => syncWidget(uc, sources, { chapterId, total }))
+      .then(() => {
+        const shown = at.page;
+        return syncWidget(uc, sources, {
+          chapterId,
+          total,
+          page,
+          offset,
+          image: async () => (shown.kind === 'local' ? { uri: shown.uri } : uc.reader.image(current.manga, shown).then((r) => ({ uri: r.url, headers: r.headers }))),
+        });
+      })
       .catch(() => {});
-  }, [at.kind, index, page, total, chapterId, session.startPage, session.startOffset, uc, sources]);
+  }, [at, index, page, total, chapterId, current.manga, session.startPage, session.startOffset, uc, sources]);
 
   // Reaching a chapter's end card (or anything after it) finishes that chapter, even if its last
   // page scrolled by too fast to be reported as the current one.

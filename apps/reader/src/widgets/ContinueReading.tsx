@@ -1,7 +1,8 @@
-// Home screen widget (iOS): the chapter being read, with its cover and progress. Tapping it opens
-// the reader at that chapter. Its content is pushed by the app (see widgets/sync.ts).
-import { HStack, Image, ProgressView, Spacer, Text, VStack, ZStack } from '@expo/ui/swift-ui';
-import { aspectRatio, clipShape, font, foregroundStyle, frame, lineLimit, resizable, tint, widgetURL } from '@expo/ui/swift-ui/modifiers';
+// Home screen widget (iOS): the chapter being read. A strip of the current page (or the cover)
+// fills the widget, with the title, chapter and progress over a dark fade. Tapping it opens the
+// reader at that chapter. Its content is pushed by the app (see widgets/sync.ts).
+import { Image, ProgressView, Rectangle, Spacer, Text, VStack, ZStack } from '@expo/ui/swift-ui';
+import { aspectRatio, clipped, containerBackground, font, foregroundStyle, frame, lineLimit, padding, resizable, tint, widgetURL } from '@expo/ui/swift-ui/modifiers';
 import { createWidget, type WidgetEnvironment } from 'expo-widgets';
 
 export type ContinueReadingProps = {
@@ -13,8 +14,8 @@ export type ContinueReadingProps = {
   page: string;
   /** 0..1 through the chapter */
   progress: number;
-  /** cover copied into the shared app group directory, or '' */
-  cover: string;
+  /** current page strip or cover, in the shared app group directory, or '' */
+  image: string;
   /** deep link into the reader */
   url: string;
 };
@@ -23,57 +24,50 @@ const ContinueReading = (props: ContinueReadingProps, env: WidgetEnvironment) =>
   'widget';
   // Code here runs in the widget's own runtime: values must be declared inside this function.
   const accent = '#E8B04B';
-  const dim = '#9A9890';
+  const surface = '#17171B';
+  const text = '#ECEAE6';
+  const dim = '#C9C6BF';
+  // Required by iOS 17+: the widget's own background (Kanso's dark surface, in light mode too).
+  const bg = containerBackground(surface, 'widget');
+  // The widget has no content margins (edge-to-edge image), so the text sets its own.
+  const inset = padding({ all: 14 });
+  const fill = frame({ maxWidth: 10000, maxHeight: 10000 });
+  const small = env.widgetFamily === 'systemSmall';
 
   if (props.empty) {
     return (
-      <VStack spacing={6} modifiers={[widgetURL('kanso://')]}>
+      <VStack spacing={6} modifiers={[inset, widgetURL('kanso://'), bg]}>
         <Image systemName="books.vertical" color={accent} size={28} />
-        <Text modifiers={[font({ textStyle: 'headline' })]}>Kanso</Text>
+        <Text modifiers={[font({ textStyle: 'headline' }), foregroundStyle(text)]}>Kanso</Text>
         <Text modifiers={[font({ textStyle: 'caption' }), foregroundStyle(dim)]}>Start reading a series to see it here</Text>
       </VStack>
     );
   }
 
-  const cover = props.cover ? (
-    <Image uiImage={props.cover} modifiers={[resizable(), aspectRatio({ ratio: 2 / 3, contentMode: 'fill' }), clipShape('roundedRectangle', 8)]} />
-  ) : (
-    <ZStack modifiers={[aspectRatio({ ratio: 2 / 3, contentMode: 'fit' })]}>
-      <Image systemName="book.closed" color={accent} size={24} />
-    </ZStack>
-  );
-
-  const progress = <ProgressView value={props.progress} modifiers={[tint(accent)]} />;
-
-  if (env.widgetFamily === 'systemSmall') {
-    return (
-      <VStack alignment="leading" spacing={4} modifiers={[widgetURL(props.url)]}>
-        <HStack alignment="top" spacing={8}>
-          <VStack modifiers={[frame({ width: 40 })]}>{cover}</VStack>
-          <Spacer />
-          <Image systemName="book.fill" color={accent} size={16} />
-        </HStack>
-        <Spacer />
-        <Text modifiers={[font({ textStyle: 'subheadline', weight: 'semibold' }), lineLimit(2)]}>{props.title}</Text>
-        <Text modifiers={[font({ textStyle: 'caption2' }), foregroundStyle(dim), lineLimit(1)]}>{props.chapter}</Text>
-        {progress}
-      </VStack>
-    );
-  }
-
   return (
-    <HStack spacing={12} modifiers={[widgetURL(props.url)]}>
-      {cover}
-      <VStack alignment="leading" spacing={4}>
-        <Text modifiers={[font({ textStyle: 'caption', weight: 'semibold' }), foregroundStyle(accent)]}>CONTINUE READING</Text>
-        <Text modifiers={[font({ textStyle: 'headline' }), lineLimit(2)]}>{props.title}</Text>
-        <Text modifiers={[font({ textStyle: 'subheadline' }), foregroundStyle(dim), lineLimit(1)]}>{props.chapter}</Text>
+    <ZStack alignment="bottomLeading" modifiers={[fill, widgetURL(props.url), bg]}>
+      {props.image ? <Image uiImage={props.image} modifiers={[resizable(), aspectRatio({ contentMode: 'fill' }), fill, clipped()]} /> : <Rectangle modifiers={[foregroundStyle(surface), fill]} />}
+      <Rectangle
+        modifiers={[
+          fill,
+          foregroundStyle({
+            type: 'linearGradient',
+            colors: ['#0E0E1000', '#0E0E10B3', '#0E0E10F2'],
+            startPoint: { x: 0.5, y: 0.15 },
+            endPoint: { x: 0.5, y: 1 },
+          }),
+        ]}
+      />
+      <VStack alignment="leading" spacing={3} modifiers={[inset, frame({ maxWidth: 10000, maxHeight: 10000, alignment: 'bottomLeading' })]}>
         <Spacer />
-        <Text modifiers={[font({ textStyle: 'caption2' }), foregroundStyle(dim)]}>{props.page}</Text>
-        {progress}
+        {small ? null : <Text modifiers={[font({ textStyle: 'caption2', weight: 'bold' }), foregroundStyle(accent)]}>CONTINUE READING</Text>}
+        <Text modifiers={[font({ textStyle: small ? 'subheadline' : 'headline', weight: 'bold' }), foregroundStyle(text), lineLimit(small ? 2 : 1)]}>{props.title}</Text>
+        <Text modifiers={[font({ textStyle: small ? 'caption2' : 'caption' }), foregroundStyle(dim), lineLimit(1)]}>
+          {small ? props.chapter : `${props.chapter} · ${props.page}`}
+        </Text>
+        <ProgressView value={props.progress} modifiers={[tint(accent)]} />
       </VStack>
-      <Spacer minLength={0} />
-    </HStack>
+    </ZStack>
   );
 };
 
