@@ -1,11 +1,16 @@
 import { Tabs } from 'expo-router';
+import { SymbolView, type SymbolViewProps } from 'expo-symbols';
+import type { ColorValue } from 'react-native';
 
-import { Txt } from '@/ui/components/Txt';
 import { colors } from '@/ui/theme';
 
-const icon = (glyph: string) =>
-  function TabIcon({ color }: { color: string | import("react-native").ColorValue }) {
-    return <Txt size={20} color={String(color)}>{glyph}</Txt>;
+type Names = Extract<SymbolViewProps['name'], object>;
+type Glyph = { ios: NonNullable<Names['ios']>; iosActive: NonNullable<Names['ios']>; android: NonNullable<Names['android']> };
+
+/** SF Symbols on iOS (filled when selected, like the system apps), Material Symbols on Android. */
+const icon = ({ ios, iosActive, android }: Glyph) =>
+  function TabIcon({ color, focused }: { color: ColorValue; focused: boolean }) {
+    return <SymbolView name={{ ios: focused ? iosActive : ios, android }} tintColor={color} size={24} weight="medium" />;
   };
 
 export default function TabsLayout() {
@@ -18,10 +23,10 @@ export default function TabsLayout() {
         tabBarInactiveTintColor: colors.textDim,
       }}
     >
-      <Tabs.Screen name="index" options={{ title: 'Library', tabBarIcon: icon('▤') }} />
-      <Tabs.Screen name="history" options={{ title: 'History', tabBarIcon: icon('◷') }} />
-      <Tabs.Screen name="browse" options={{ title: 'Browse', tabBarIcon: icon('◎') }} />
-      <Tabs.Screen name="more" options={{ title: 'More', tabBarIcon: icon('⋯') }} />
+      <Tabs.Screen name="index" options={{ title: 'Library', tabBarIcon: icon({ ios: 'books.vertical', iosActive: 'books.vertical.fill', android: 'collections_bookmark' }) }} />
+      <Tabs.Screen name="history" options={{ title: 'History', tabBarIcon: icon({ ios: 'clock', iosActive: 'clock.fill', android: 'history' }) }} />
+      <Tabs.Screen name="browse" options={{ title: 'Browse', tabBarIcon: icon({ ios: 'safari', iosActive: 'safari.fill', android: 'explore' }) }} />
+      <Tabs.Screen name="more" options={{ title: 'More', tabBarIcon: icon({ ios: 'ellipsis.circle', iosActive: 'ellipsis.circle.fill', android: 'more_horiz' }) }} />
     </Tabs>
   );
 }
