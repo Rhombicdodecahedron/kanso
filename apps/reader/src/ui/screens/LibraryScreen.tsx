@@ -1,8 +1,9 @@
 import { router } from 'expo-router';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, FlatList, Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
 
 import { useApp } from '@/composition/AppProvider';
+import { devLog } from '@/ui/devlog';
 import { filterAndSort, type LibrarySort } from '@/core/application/library';
 import { Button, Chip, IconButton, Row } from '@/ui/components/Buttons';
 import { Field } from '@/ui/components/Field';
@@ -22,7 +23,22 @@ const SORTS: { key: LibrarySort; label: string }[] = [
   { key: 'dateAdded', label: 'Date added' },
 ];
 
+/** Dev builds: a debug.json next to a local repo (127.0.0.1:8787) opens the debug runner. */
+function useDevDebugTrigger() {
+  useEffect(() => {
+    if (!__DEV__) return;
+    devLog('checking trigger');
+    fetch('http://127.0.0.1:8787/debug.json')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.pkg) router.push({ pathname: '/debug', params: { repo: d.repo ?? 'http://127.0.0.1:8787', pkg: d.pkg } });
+      })
+      .catch((e) => devLog(`trigger fetch failed: ${e?.message ?? e}`));
+  }, []);
+}
+
 export function LibraryScreen() {
+  useDevDebugTrigger();
   const { uc, sources } = useApp();
   const load = useCallback(async () => ({ view: await uc.library.view(), lastRead: await uc.library.lastReadByManga(), settings: await uc.settings.get() }), [uc]);
   const { data, error, reload } = useQuery(load);

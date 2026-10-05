@@ -31,26 +31,26 @@ export class ValueRange {
 // ---------- ChronoUnit ----------
 
 export class ChronoUnit {
-  declare readonly name: string;
-  declare readonly ordinal: number;
-  declare static NANOS: ChronoUnit;
-  declare static MICROS: ChronoUnit;
-  declare static MILLIS: ChronoUnit;
-  declare static SECONDS: ChronoUnit;
-  declare static MINUTES: ChronoUnit;
-  declare static HOURS: ChronoUnit;
-  declare static HALF_DAYS: ChronoUnit;
-  declare static DAYS: ChronoUnit;
-  declare static WEEKS: ChronoUnit;
-  declare static MONTHS: ChronoUnit;
-  declare static YEARS: ChronoUnit;
-  declare static DECADES: ChronoUnit;
-  declare static CENTURIES: ChronoUnit;
-  declare static MILLENNIA: ChronoUnit;
-  declare static ERAS: ChronoUnit;
-  declare static FOREVER: ChronoUnit;
-  declare static values: () => ChronoUnit[];
-  declare static valueOf: (n: string) => ChronoUnit;
+  readonly name!: string;
+  readonly ordinal!: number;
+  static NANOS: ChronoUnit;
+  static MICROS: ChronoUnit;
+  static MILLIS: ChronoUnit;
+  static SECONDS: ChronoUnit;
+  static MINUTES: ChronoUnit;
+  static HOURS: ChronoUnit;
+  static HALF_DAYS: ChronoUnit;
+  static DAYS: ChronoUnit;
+  static WEEKS: ChronoUnit;
+  static MONTHS: ChronoUnit;
+  static YEARS: ChronoUnit;
+  static DECADES: ChronoUnit;
+  static CENTURIES: ChronoUnit;
+  static MILLENNIA: ChronoUnit;
+  static ERAS: ChronoUnit;
+  static FOREVER: ChronoUnit;
+  static values: () => ChronoUnit[];
+  static valueOf: (n: string) => ChronoUnit;
 
   /** Hook set by temporal.ts so `unit.duration` can return a java.time.Duration. */
   static $durationFactory: ((secs: number, nanos: number) => any) | null = null;
@@ -114,40 +114,40 @@ defEnum(ChronoUnit, [
 // ---------- ChronoField ----------
 
 export class ChronoField {
-  declare readonly name: string;
-  declare readonly ordinal: number;
-  declare static NANO_OF_SECOND: ChronoField;
-  declare static NANO_OF_DAY: ChronoField;
-  declare static MICRO_OF_SECOND: ChronoField;
-  declare static MICRO_OF_DAY: ChronoField;
-  declare static MILLI_OF_SECOND: ChronoField;
-  declare static MILLI_OF_DAY: ChronoField;
-  declare static SECOND_OF_MINUTE: ChronoField;
-  declare static SECOND_OF_DAY: ChronoField;
-  declare static MINUTE_OF_HOUR: ChronoField;
-  declare static MINUTE_OF_DAY: ChronoField;
-  declare static HOUR_OF_AMPM: ChronoField;
-  declare static CLOCK_HOUR_OF_AMPM: ChronoField;
-  declare static HOUR_OF_DAY: ChronoField;
-  declare static CLOCK_HOUR_OF_DAY: ChronoField;
-  declare static AMPM_OF_DAY: ChronoField;
-  declare static DAY_OF_WEEK: ChronoField;
-  declare static ALIGNED_DAY_OF_WEEK_IN_MONTH: ChronoField;
-  declare static ALIGNED_DAY_OF_WEEK_IN_YEAR: ChronoField;
-  declare static DAY_OF_MONTH: ChronoField;
-  declare static DAY_OF_YEAR: ChronoField;
-  declare static EPOCH_DAY: ChronoField;
-  declare static ALIGNED_WEEK_OF_MONTH: ChronoField;
-  declare static ALIGNED_WEEK_OF_YEAR: ChronoField;
-  declare static MONTH_OF_YEAR: ChronoField;
-  declare static PROLEPTIC_MONTH: ChronoField;
-  declare static YEAR_OF_ERA: ChronoField;
-  declare static YEAR: ChronoField;
-  declare static ERA: ChronoField;
-  declare static INSTANT_SECONDS: ChronoField;
-  declare static OFFSET_SECONDS: ChronoField;
-  declare static values: () => ChronoField[];
-  declare static valueOf: (n: string) => ChronoField;
+  readonly name!: string;
+  readonly ordinal!: number;
+  static NANO_OF_SECOND: ChronoField;
+  static NANO_OF_DAY: ChronoField;
+  static MICRO_OF_SECOND: ChronoField;
+  static MICRO_OF_DAY: ChronoField;
+  static MILLI_OF_SECOND: ChronoField;
+  static MILLI_OF_DAY: ChronoField;
+  static SECOND_OF_MINUTE: ChronoField;
+  static SECOND_OF_DAY: ChronoField;
+  static MINUTE_OF_HOUR: ChronoField;
+  static MINUTE_OF_DAY: ChronoField;
+  static HOUR_OF_AMPM: ChronoField;
+  static CLOCK_HOUR_OF_AMPM: ChronoField;
+  static HOUR_OF_DAY: ChronoField;
+  static CLOCK_HOUR_OF_DAY: ChronoField;
+  static AMPM_OF_DAY: ChronoField;
+  static DAY_OF_WEEK: ChronoField;
+  static ALIGNED_DAY_OF_WEEK_IN_MONTH: ChronoField;
+  static ALIGNED_DAY_OF_WEEK_IN_YEAR: ChronoField;
+  static DAY_OF_MONTH: ChronoField;
+  static DAY_OF_YEAR: ChronoField;
+  static EPOCH_DAY: ChronoField;
+  static ALIGNED_WEEK_OF_MONTH: ChronoField;
+  static ALIGNED_WEEK_OF_YEAR: ChronoField;
+  static MONTH_OF_YEAR: ChronoField;
+  static PROLEPTIC_MONTH: ChronoField;
+  static YEAR_OF_ERA: ChronoField;
+  static YEAR: ChronoField;
+  static ERA: ChronoField;
+  static INSTANT_SECONDS: ChronoField;
+  static OFFSET_SECONDS: ChronoField;
+  static values: () => ChronoField[];
+  static valueOf: (n: string) => ChronoField;
 
   readonly $range: ValueRange;
 
@@ -226,14 +226,14 @@ defEnum(ChronoField, [
 // ---------- TextStyle / SignStyle / ResolverStyle / FormatStyle ----------
 
 export class TextStyle {
-  declare readonly name: string;
-  declare readonly ordinal: number;
-  declare static FULL: TextStyle;
-  declare static FULL_STANDALONE: TextStyle;
-  declare static SHORT: TextStyle;
-  declare static SHORT_STANDALONE: TextStyle;
-  declare static NARROW: TextStyle;
-  declare static NARROW_STANDALONE: TextStyle;
+  readonly name!: string;
+  readonly ordinal!: number;
+  static FULL: TextStyle;
+  static FULL_STANDALONE: TextStyle;
+  static SHORT: TextStyle;
+  static SHORT_STANDALONE: TextStyle;
+  static NARROW: TextStyle;
+  static NARROW_STANDALONE: TextStyle;
   isStandalone(): boolean {
     return (this.ordinal & 1) === 1;
   }
@@ -243,7 +243,7 @@ export class TextStyle {
   asNormal(): TextStyle {
     return TextStyle.values()[this.ordinal & ~1];
   }
-  declare static values: () => TextStyle[];
+  static values: () => TextStyle[];
 }
 defEnum(TextStyle, [
   ['FULL', []],
@@ -255,13 +255,13 @@ defEnum(TextStyle, [
 ]);
 
 export class SignStyle {
-  declare readonly name: string;
-  declare readonly ordinal: number;
-  declare static NORMAL: SignStyle;
-  declare static ALWAYS: SignStyle;
-  declare static NEVER: SignStyle;
-  declare static NOT_NEGATIVE: SignStyle;
-  declare static EXCEEDS_PAD: SignStyle;
+  readonly name!: string;
+  readonly ordinal!: number;
+  static NORMAL: SignStyle;
+  static ALWAYS: SignStyle;
+  static NEVER: SignStyle;
+  static NOT_NEGATIVE: SignStyle;
+  static EXCEEDS_PAD: SignStyle;
   /** JDK SignStyle.parse: whether a sign is acceptable while parsing. */
   $parse(positive: boolean, strict: boolean, fixedWidth: boolean): boolean {
     switch (this.ordinal) {
@@ -284,10 +284,10 @@ defEnum(SignStyle, [
 ]);
 
 export class ResolverStyle {
-  declare readonly name: string;
-  declare static STRICT: ResolverStyle;
-  declare static SMART: ResolverStyle;
-  declare static LENIENT: ResolverStyle;
+  readonly name!: string;
+  static STRICT: ResolverStyle;
+  static SMART: ResolverStyle;
+  static LENIENT: ResolverStyle;
 }
 defEnum(ResolverStyle, [
   ['STRICT', []],
@@ -296,11 +296,11 @@ defEnum(ResolverStyle, [
 ]);
 
 export class FormatStyle {
-  declare readonly name: string;
-  declare static FULL: FormatStyle;
-  declare static LONG: FormatStyle;
-  declare static MEDIUM: FormatStyle;
-  declare static SHORT: FormatStyle;
+  readonly name!: string;
+  static FULL: FormatStyle;
+  static LONG: FormatStyle;
+  static MEDIUM: FormatStyle;
+  static SHORT: FormatStyle;
 }
 defEnum(FormatStyle, [
   ['FULL', []],
@@ -338,17 +338,17 @@ export function textBase(field: ChronoField): number {
 // ---------- DayOfWeek / Month ----------
 
 export class DayOfWeek {
-  declare readonly name: string;
-  declare readonly ordinal: number;
-  declare static MONDAY: DayOfWeek;
-  declare static TUESDAY: DayOfWeek;
-  declare static WEDNESDAY: DayOfWeek;
-  declare static THURSDAY: DayOfWeek;
-  declare static FRIDAY: DayOfWeek;
-  declare static SATURDAY: DayOfWeek;
-  declare static SUNDAY: DayOfWeek;
-  declare static values: () => DayOfWeek[];
-  declare static valueOf: (n: string) => DayOfWeek;
+  readonly name!: string;
+  readonly ordinal!: number;
+  static MONDAY: DayOfWeek;
+  static TUESDAY: DayOfWeek;
+  static WEDNESDAY: DayOfWeek;
+  static THURSDAY: DayOfWeek;
+  static FRIDAY: DayOfWeek;
+  static SATURDAY: DayOfWeek;
+  static SUNDAY: DayOfWeek;
+  static values: () => DayOfWeek[];
+  static valueOf: (n: string) => DayOfWeek;
 
   get value(): number {
     return this.ordinal + 1;
@@ -394,22 +394,22 @@ defEnum(DayOfWeek, [
 const MONTH_DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
 export class Month {
-  declare readonly name: string;
-  declare readonly ordinal: number;
-  declare static JANUARY: Month;
-  declare static FEBRUARY: Month;
-  declare static MARCH: Month;
-  declare static APRIL: Month;
-  declare static MAY: Month;
-  declare static JUNE: Month;
-  declare static JULY: Month;
-  declare static AUGUST: Month;
-  declare static SEPTEMBER: Month;
-  declare static OCTOBER: Month;
-  declare static NOVEMBER: Month;
-  declare static DECEMBER: Month;
-  declare static values: () => Month[];
-  declare static valueOf: (n: string) => Month;
+  readonly name!: string;
+  readonly ordinal!: number;
+  static JANUARY: Month;
+  static FEBRUARY: Month;
+  static MARCH: Month;
+  static APRIL: Month;
+  static MAY: Month;
+  static JUNE: Month;
+  static JULY: Month;
+  static AUGUST: Month;
+  static SEPTEMBER: Month;
+  static OCTOBER: Month;
+  static NOVEMBER: Month;
+  static DECEMBER: Month;
+  static values: () => Month[];
+  static valueOf: (n: string) => Month;
 
   get value(): number {
     return this.ordinal + 1;

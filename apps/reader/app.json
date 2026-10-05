@@ -9,7 +9,13 @@
     "userInterfaceStyle": "dark",
     "ios": {
       "bundleIdentifier": "com.alexiss.kanso",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true,
+          "NSAllowsLocalNetworking": true
+        }
+      }
     },
     "android": {
       "package": "com.alexiss.kanso",

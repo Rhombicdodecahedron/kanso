@@ -9,16 +9,16 @@ import { civil, epochDayOf, floorDiv, floorMod, monthLength, pad } from './util'
 // ---------- DurationUnit ----------
 
 export class DurationUnit {
-  declare readonly name: string;
-  declare readonly ordinal: number;
-  declare static NANOSECONDS: DurationUnit;
-  declare static MICROSECONDS: DurationUnit;
-  declare static MILLISECONDS: DurationUnit;
-  declare static SECONDS: DurationUnit;
-  declare static MINUTES: DurationUnit;
-  declare static HOURS: DurationUnit;
-  declare static DAYS: DurationUnit;
-  declare static values: () => DurationUnit[];
+  readonly name!: string;
+  readonly ordinal!: number;
+  static NANOSECONDS: DurationUnit;
+  static MICROSECONDS: DurationUnit;
+  static MILLISECONDS: DurationUnit;
+  static SECONDS: DurationUnit;
+  static MINUTES: DurationUnit;
+  static HOURS: DurationUnit;
+  static DAYS: DurationUnit;
+  static values: () => DurationUnit[];
   constructor(
     /** Length in nanoseconds. */
     readonly $ns: number,
@@ -78,9 +78,9 @@ export class Duration {
     return new Duration(ms + carry, ns - carry * 1e6);
   }
 
-  declare static ZERO: Duration;
-  declare static INFINITE: Duration;
-  declare static NEG_INFINITE: Duration;
+  static ZERO: Duration;
+  static INFINITE: Duration;
+  static NEG_INFINITE: Duration;
 
   static parse(value: string): Duration {
     const d = Duration.parseOrNull(value);
@@ -391,10 +391,10 @@ export class Instant {
     const r = parseInstant(String(input));
     return typeof r === 'string' ? null : r;
   }
-  declare static DISTANT_PAST: Instant;
-  declare static DISTANT_FUTURE: Instant;
-  declare static MIN: Instant;
-  declare static MAX: Instant;
+  static DISTANT_PAST: Instant;
+  static DISTANT_FUTURE: Instant;
+  static MIN: Instant;
+  static MAX: Instant;
 
   toEpochMilliseconds(): number {
     return this.epochSeconds * 1000 + Math.floor(this.nanosecondsOfSecond / 1e6);

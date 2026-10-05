@@ -396,9 +396,9 @@ export class ZoneOffset extends ZoneId {
     if (o === null || o === undefined) throw new DateTimeException(`Unable to obtain ZoneOffset from TemporalAccessor: ${t}`);
     return ZoneOffset.ofTotalSeconds(o);
   }
-  declare static UTC: ZoneOffset;
-  declare static MIN: ZoneOffset;
-  declare static MAX: ZoneOffset;
+  static UTC: ZoneOffset;
+  static MIN: ZoneOffset;
+  static MAX: ZoneOffset;
 }
 ZoneOffset.UTC = ZoneOffset.ofTotalSeconds(0);
 ZoneOffset.MIN = ZoneOffset.ofTotalSeconds(-18 * 3600);
@@ -432,9 +432,9 @@ export class Instant extends TemporalBase {
     if (!i) throw new DateTimeException(`Unable to obtain Instant from TemporalAccessor: ${t} of type ${t?.constructor?.name}`);
     return new Instant(i[0], i[1]);
   }
-  declare static EPOCH: Instant;
-  declare static MIN: Instant;
-  declare static MAX: Instant;
+  static EPOCH: Instant;
+  static MIN: Instant;
+  static MAX: Instant;
 
   get epochSecond(): number {
     return this.$sec;
@@ -613,9 +613,9 @@ export class LocalDate extends TemporalBase {
     if (!d) throw new DateTimeException(`Unable to obtain LocalDate from TemporalAccessor: ${t} of type ${t?.constructor?.name}`);
     return d;
   }
-  declare static MIN: LocalDate;
-  declare static MAX: LocalDate;
-  declare static EPOCH: LocalDate;
+  static MIN: LocalDate;
+  static MAX: LocalDate;
+  static EPOCH: LocalDate;
 
   get year(): number {
     return this.$y;
@@ -875,10 +875,10 @@ export class LocalTime extends TemporalBase {
     if (!x) throw new DateTimeException(`Unable to obtain LocalTime from TemporalAccessor: ${t} of type ${t?.constructor?.name}`);
     return x;
   }
-  declare static MIDNIGHT: LocalTime;
-  declare static NOON: LocalTime;
-  declare static MIN: LocalTime;
-  declare static MAX: LocalTime;
+  static MIDNIGHT: LocalTime;
+  static NOON: LocalTime;
+  static MIN: LocalTime;
+  static MAX: LocalTime;
 
   get hour(): number {
     return this.$h;
@@ -1066,8 +1066,8 @@ export class LocalDateTime extends TemporalBase {
     if (!d || !tm) throw new DateTimeException(`Unable to obtain LocalDateTime from TemporalAccessor: ${t} of type ${t?.constructor?.name}`);
     return new LocalDateTime(d, tm);
   }
-  declare static MIN: LocalDateTime;
-  declare static MAX: LocalDateTime;
+  static MIN: LocalDateTime;
+  static MAX: LocalDateTime;
 
   /** Wall-clock time as if the zone were UTC, in epoch millis (for zone-offset resolution). */
   $localMs(): number {
@@ -1693,8 +1693,8 @@ export class OffsetDateTime extends OffsetTemporal {
     if (d && tm) return new OffsetDateTime(new LocalDateTime(d, tm), ZoneOffset.ofTotalSeconds(off));
     return OffsetDateTime.ofInstant(Instant.from(t), ZoneOffset.ofTotalSeconds(off));
   }
-  declare static MIN: OffsetDateTime;
-  declare static MAX: OffsetDateTime;
+  static MIN: OffsetDateTime;
+  static MAX: OffsetDateTime;
 
   $zone(): ZoneId {
     return this.$off;
@@ -1880,7 +1880,7 @@ export class Duration {
     const d = Duration.ofSeconds(days * 86400 + hours * 3600 + mins * 60 + secs, nanos);
     return neg ? d.negated() : d;
   }
-  declare static ZERO: Duration;
+  static ZERO: Duration;
 
   get seconds(): number {
     return this.$sec;
@@ -2198,8 +2198,8 @@ export class WeekFields {
     const r = weekRulesFor(loc.language, loc.country);
     return new WeekFields(DayOfWeek.of(isoFromCalendarDow(r.firstDayOfWeek)), r.minimalDays);
   }
-  declare static ISO: WeekFields;
-  declare static SUNDAY_START: WeekFields;
+  static ISO: WeekFields;
+  static SUNDAY_START: WeekFields;
   getFirstDayOfWeek(): DayOfWeek {
     return this.firstDayOfWeek;
   }

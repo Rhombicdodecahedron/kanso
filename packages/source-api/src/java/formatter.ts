@@ -1804,20 +1804,20 @@ export class DateTimeFormatter {
     return DateTimeFormatter.ofPattern(`${LOCALIZED_DATE[dateStyle.name]}, ${LOCALIZED_TIME[(timeStyle ?? dateStyle).name]}`);
   }
 
-  declare static ISO_LOCAL_DATE: DateTimeFormatter;
-  declare static ISO_OFFSET_DATE: DateTimeFormatter;
-  declare static ISO_DATE: DateTimeFormatter;
-  declare static ISO_LOCAL_TIME: DateTimeFormatter;
-  declare static ISO_OFFSET_TIME: DateTimeFormatter;
-  declare static ISO_TIME: DateTimeFormatter;
-  declare static ISO_LOCAL_DATE_TIME: DateTimeFormatter;
-  declare static ISO_OFFSET_DATE_TIME: DateTimeFormatter;
-  declare static ISO_ZONED_DATE_TIME: DateTimeFormatter;
-  declare static ISO_DATE_TIME: DateTimeFormatter;
-  declare static ISO_ORDINAL_DATE: DateTimeFormatter;
-  declare static ISO_INSTANT: DateTimeFormatter;
-  declare static BASIC_ISO_DATE: DateTimeFormatter;
-  declare static RFC_1123_DATE_TIME: DateTimeFormatter;
+  static ISO_LOCAL_DATE: DateTimeFormatter;
+  static ISO_OFFSET_DATE: DateTimeFormatter;
+  static ISO_DATE: DateTimeFormatter;
+  static ISO_LOCAL_TIME: DateTimeFormatter;
+  static ISO_OFFSET_TIME: DateTimeFormatter;
+  static ISO_TIME: DateTimeFormatter;
+  static ISO_LOCAL_DATE_TIME: DateTimeFormatter;
+  static ISO_OFFSET_DATE_TIME: DateTimeFormatter;
+  static ISO_ZONED_DATE_TIME: DateTimeFormatter;
+  static ISO_DATE_TIME: DateTimeFormatter;
+  static ISO_ORDINAL_DATE: DateTimeFormatter;
+  static ISO_INSTANT: DateTimeFormatter;
+  static BASIC_ISO_DATE: DateTimeFormatter;
+  static RFC_1123_DATE_TIME: DateTimeFormatter;
 }
 
 /** en-US CLDR patterns for ofLocalized* (other locales use the same shapes). */
