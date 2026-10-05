@@ -12,6 +12,8 @@ export interface ReaderSession {
   chapter: Chapter;
   pages: ReaderPage[];
   startPage: number;
+  /** fraction of the start page already scrolled past (webtoon) */
+  startOffset: number;
   prev: Chapter | null;
   next: Chapter | null;
   mode: ReaderMode;
@@ -42,6 +44,7 @@ export function createReaderUseCases(d: Deps) {
         chapter,
         pages,
         startPage,
+        startOffset: chapter.read ? 0 : chapter.pageOffset,
         prev: i > 0 ? sorted[i - 1] : null,
         next: i >= 0 && i < sorted.length - 1 ? sorted[i + 1] : null,
         mode: manga.viewer ?? settings.readerMode,
@@ -54,12 +57,15 @@ export function createReaderUseCases(d: Deps) {
     },
 
     /** Called on page change. Marks the chapter read on its last page and records history. */
-    async progress(chapterId: ChapterId, page: number, total: number, msSpent: number): Promise<void> {
-      await d.chapters.setProgress(chapterId, page);
+    async progress(chapterId: ChapterId, page: number, total: number, msSpent: number, offset = 0): Promise<void> {
+      await d.chapters.setProgress(chapterId, page, offset);
       if (total > 0 && page >= total - 1) await d.chapters.setRead([chapterId], true);
       const now = d.clock.now();
       const prev = (await d.history.recent(5000)).find((h) => h.chapterId === chapterId);
       await d.history.upsert({ chapterId, lastRead: now, timeRead: (prev?.timeRead ?? 0) + Math.max(0, msSpent) });
     },
+
+    /** Exact scroll position inside a page (webtoon), saved when scrolling stops. */
+    position: (chapterId: ChapterId, page: number, offset: number) => d.chapters.setProgress(chapterId, page, offset),
   };
 }

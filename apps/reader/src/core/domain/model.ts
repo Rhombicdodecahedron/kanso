@@ -83,6 +83,8 @@ export interface Chapter {
   read: boolean;
   bookmark: boolean;
   lastPageRead: number;
+  /** webtoon: how far down `lastPageRead` the reader was, as a fraction of the page height */
+  pageOffset: number;
   memo: unknown;
 }
 

@@ -55,7 +55,7 @@ export interface ChapterRepository {
   deleteMany(ids: ChapterId[]): Promise<void>;
   setRead(ids: ChapterId[], read: boolean): Promise<void>;
   setBookmark(ids: ChapterId[], bookmark: boolean): Promise<void>;
-  setProgress(id: ChapterId, page: number): Promise<void>;
+  setProgress(id: ChapterId, page: number, offset?: number): Promise<void>;
   unreadCounts(): Promise<Map<MangaId, number>>;
 }
 

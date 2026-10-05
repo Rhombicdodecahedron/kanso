@@ -15,6 +15,7 @@ const ch = (id: number, url: string, n: number, extra: Partial<Chapter> = {}): C
   read: false,
   bookmark: false,
   lastPageRead: 0,
+  pageOffset: 0,
   memo: null,
   ...extra,
 });

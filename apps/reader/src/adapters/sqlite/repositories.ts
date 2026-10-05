@@ -162,6 +162,7 @@ interface ChapterRow {
   read: number;
   bookmark: number;
   last_page_read: number;
+  page_offset: number;
   memo: string | null;
 }
 
@@ -178,6 +179,7 @@ const toChapter = (r: ChapterRow): Chapter => ({
   read: !!r.read,
   bookmark: !!r.bookmark,
   lastPageRead: r.last_page_read,
+  pageOffset: r.page_offset ?? 0,
   memo: parse(r.memo, null),
 });
 
@@ -218,14 +220,14 @@ export class SqliteChapterRepository implements ChapterRepository {
   }
   async setRead(ids: number[], read: boolean) {
     if (!ids.length) return;
-    await this.db.run(`update chapter set read = ?${read ? '' : ', last_page_read = 0'} where id in (${qs(ids.length)})`, [read ? 1 : 0, ...ids]);
+    await this.db.run(`update chapter set read = ?${read ? '' : ', last_page_read = 0, page_offset = 0'} where id in (${qs(ids.length)})`, [read ? 1 : 0, ...ids]);
   }
   async setBookmark(ids: number[], b: boolean) {
     if (!ids.length) return;
     await this.db.run(`update chapter set bookmark = ? where id in (${qs(ids.length)})`, [b ? 1 : 0, ...ids]);
   }
-  setProgress(id: number, page: number) {
-    return this.db.run('update chapter set last_page_read = ? where id = ?', [page, id]);
+  setProgress(id: number, page: number, offset = 0) {
+    return this.db.run('update chapter set last_page_read = ?, page_offset = ? where id = ?', [page, offset, id]);
   }
   async unreadCounts() {
     const rows = await this.db.all<{ manga_id: number; n: number }>('select manga_id, count(*) as n from chapter where read = 0 group by manga_id');

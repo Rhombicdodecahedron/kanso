@@ -40,6 +40,7 @@ export function planChapterSync(mangaId: MangaId, mangaTitle: string, existing: 
         read: false,
         bookmark: false,
         lastPageRead: 0,
+        pageOffset: 0,
         memo: r.memo ?? null,
       });
       return;

@@ -45,6 +45,7 @@ const MIGRATIONS: string[][] = [
     `create index chapter_manga on chapter (manga_id)`,
     `create index history_last_read on history (last_read)`,
   ],
+  [`alter table chapter add column page_offset real not null default 0`],
 ];
 
 /** Brings the database up to `target` (default: the latest version). */
