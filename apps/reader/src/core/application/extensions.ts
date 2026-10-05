@@ -45,6 +45,16 @@ export function createExtensionUseCases(d: Deps) {
 
     removeRepo: (url: string) => d.repos.remove(url),
 
+    /** Add the official repository once (first launch, or for users who only had a local one). */
+    async ensureDefaultRepo(url: string): Promise<void> {
+      const repos = await d.repos.list();
+      if (repos.some((r) => r.url === url)) return;
+      const seeded = await d.settings.get();
+      if (seeded.seededRepos?.includes(url)) return; // user removed it on purpose
+      await d.repos.add({ url, name: url.replace(/^https?:\/\//, ''), addedAt: d.clock.now() });
+      await d.settings.save({ ...(await d.settings.get()), seededRepos: [...(seeded.seededRepos ?? []), url] });
+    },
+
     async list(): Promise<ExtensionListing> {
       const repos = await d.repos.list();
       const installed = await d.extensions.list();

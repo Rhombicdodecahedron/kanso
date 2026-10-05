@@ -7,6 +7,8 @@ import { FsBundleStore, FsPageStore } from '@/adapters/system/fileStores';
 import { createUseCases, type UseCases } from '@/core/application';
 import type { SourceGateway } from '@/core/application/ports';
 
+export const DEFAULT_REPO = 'https://rhombicdodecahedron.github.io/kanso-extensions';
+
 export interface App {
   uc: UseCases;
   sources: SourceGateway;
@@ -26,6 +28,7 @@ export async function createApp(): Promise<App> {
     sources,
     clock: { now: () => Date.now() },
   });
+  await uc.extensions.ensureDefaultRepo(DEFAULT_REPO).catch(() => {});
   const loadErrors = await uc.extensions.loadInstalled();
   void uc.downloads.resume();
   return { uc, sources, loadErrors };

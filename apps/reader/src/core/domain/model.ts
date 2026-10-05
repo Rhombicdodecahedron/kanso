@@ -118,6 +118,8 @@ export interface Settings {
   libraryColumns: number;
   downloadConcurrency: number;
   languages: string[];
+  /** default repositories already added once (not re-added after the user removes them) */
+  seededRepos?: string[];
 }
 
 export const DEFAULT_SETTINGS: Settings = {
