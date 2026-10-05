@@ -57,6 +57,19 @@ export function DebugScreen() {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return `${res.headers.get('content-type')} ${buf.byteLength} bytes`;
       }, (s) => s);
+      const dl = await step(
+        'download',
+        async () => {
+          const chapterId = session.chapter.id;
+          await uc.downloads.enqueue([chapterId]);
+          await uc.downloads.run();
+          const d = (await uc.downloads.list()).find((x) => x.chapterId === chapterId);
+          if (d?.state !== 'done') throw new Error(`state=${d?.state} ${d?.error ?? ''}`);
+          return d;
+        },
+        (d) => `${d.progress}/${d.total} pages`,
+      );
+      if (dl) await step('offline', () => uc.reader.open(session.chapter.id), (s) => `${s.pages.filter((p) => p.kind === 'local').length}/${s.pages.length} local pages`);
       log('DONE');
     })();
     return () => {

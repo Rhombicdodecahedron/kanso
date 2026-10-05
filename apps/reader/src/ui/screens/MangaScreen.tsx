@@ -85,7 +85,7 @@ export function MangaScreen() {
               <IconButton glyph="✕" label="Clear selection" onPress={() => setSelected(new Set())} />
             ) : (
               <Row>
-                <IconButton glyph={descending ? '↓' : '↑'} label="Sort chapters" onPress={() => setDescending((d) => !d)} />
+                <IconButton glyph="⇅" label={descending ? 'Sort chapters: newest first' : 'Sort chapters: oldest first'} onPress={() => setDescending((d) => !d)} />
                 <IconButton
                   glyph="↗"
                   label="Open in browser"
@@ -135,7 +135,23 @@ export function MangaScreen() {
             {refreshError ?? data.fetchError ? <Txt size={13} color={colors.danger}>{refreshError ?? data.fetchError}</Txt> : null}
             <Row style={{ justifyContent: 'space-between', marginTop: space.sm }}>
               <Txt weight="700">{data.chapters.length} chapters</Txt>
-              {nextToRead ? <Button label={data.chapters.some((c) => c.read || c.lastPageRead > 0) ? 'Resume' : 'Start reading'} small onPress={() => router.push({ pathname: '/reader/[chapterId]', params: { chapterId: String(nextToRead.id) } })} /> : null}
+              <Row style={{ gap: space.sm }}>
+                {data.chapters.some((c) => !c.read && downloads.get(c.id)?.state !== 'done') ? (
+                  <Button
+                    label="Download unread"
+                    small
+                    kind="ghost"
+                    onPress={() => {
+                      const ids = [...data.chapters].sort((a, b) => b.sourceOrder - a.sourceOrder).filter((c) => !c.read && downloads.get(c.id)?.state !== 'done').map((c) => c.id);
+                      Alert.alert(`Download ${ids.length} chapter${ids.length > 1 ? 's' : ''}?`, undefined, [
+                        { text: 'Cancel', style: 'cancel' },
+                        { text: 'Download', onPress: () => void uc.downloads.enqueue(ids) },
+                      ]);
+                    }}
+                  />
+                ) : null}
+                {nextToRead ? <Button label={data.chapters.some((c) => c.read || c.lastPageRead > 0) ? 'Resume' : 'Start reading'} small onPress={() => router.push({ pathname: '/reader/[chapterId]', params: { chapterId: String(nextToRead.id) } })} /> : null}
+              </Row>
             </Row>
           </View>
         }
@@ -149,6 +165,7 @@ export function MangaScreen() {
               else router.push({ pathname: '/reader/[chapterId]', params: { chapterId: String(item.id) } });
             }}
             onLongPress={() => toggle(selected, setSelected, item.id)}
+            onDownload={() => void uc.downloads.enqueue([item.id])}
           />
         )}
         ListEmptyComponent={refreshing ? <Loading /> : <Txt dim center style={{ padding: space.xl }}>No chapters</Txt>}
@@ -186,20 +203,39 @@ function toggle(set: Set<number>, setSet: (s: Set<number>) => void, id: number) 
   setSet(next);
 }
 
-function ChapterRow({ chapter, download, selected, onPress, onLongPress }: { chapter: Chapter; download?: Download; selected: boolean; onPress: () => void; onLongPress: () => void }) {
-  const dl = download?.state === 'done' ? '⤓' : download?.state === 'downloading' ? `${download.progress}/${download.total || '?'}` : download?.state === 'queued' ? '…' : download?.state === 'error' ? '!' : '';
+function ChapterRow({ chapter, download, selected, onPress, onLongPress, onDownload }: { chapter: Chapter; download?: Download; selected: boolean; onPress: () => void; onLongPress: () => void; onDownload: () => void }) {
+  const state = download?.state;
   return (
-    <Pressable onPress={onPress} onLongPress={onLongPress} style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', paddingHorizontal: space.lg, paddingVertical: space.md, backgroundColor: selected ? colors.surfaceHigh : pressed ? colors.surface : undefined })}>
+    <Pressable onPress={onPress} onLongPress={onLongPress} style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', paddingLeft: space.lg, paddingRight: space.sm, paddingVertical: space.md, backgroundColor: selected ? colors.surfaceHigh : pressed ? colors.surface : undefined })}>
       <View style={{ flex: 1 }}>
         <Txt weight="500" color={chapter.read ? colors.textFaint : chapter.bookmark ? colors.accent : colors.text} numberOfLines={1}>
           {chapter.bookmark ? '★ ' : ''}
           {chapter.name}
         </Txt>
         <Txt size={12} faint numberOfLines={1}>
-          {[chapter.dateUpload ? formatDate(chapter.dateUpload) : null, chapter.scanlator, !chapter.read && chapter.lastPageRead > 0 ? `Page ${chapter.lastPageRead + 1}` : null].filter(Boolean).join(' · ')}
+          {[chapter.dateUpload ? formatDate(chapter.dateUpload) : null, chapter.scanlator, !chapter.read && chapter.lastPageRead > 0 ? `Page ${chapter.lastPageRead + 1}` : null, state === 'error' ? `Download failed: ${download?.error}` : null]
+            .filter(Boolean)
+            .join(' · ')}
         </Txt>
       </View>
-      {dl ? <Txt size={13} color={download?.state === 'error' ? colors.danger : colors.textDim}>{dl}</Txt> : null}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={state === 'done' ? 'Downloaded' : 'Download chapter'}
+        disabled={state === 'done' || state === 'queued' || state === 'downloading'}
+        onPress={onDownload}
+        hitSlop={8}
+        style={{ width: 44, alignItems: 'center' }}
+      >
+        {state === 'downloading' ? (
+          <Txt size={12} dim>{download!.total ? `${download!.progress}/${download!.total}` : '…'}</Txt>
+        ) : state === 'queued' ? (
+          <Txt size={16} dim>⋯</Txt>
+        ) : state === 'done' ? (
+          <Txt size={18} color={colors.accent}>✓</Txt>
+        ) : (
+          <Txt size={18} color={state === 'error' ? colors.danger : colors.textDim}>↓</Txt>
+        )}
+      </Pressable>
     </Pressable>
   );
 }
