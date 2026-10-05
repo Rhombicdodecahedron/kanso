@@ -455,10 +455,15 @@ export class Compiler {
       case 'IntArray':
       case 'LongArray':
         return '$T.list($T.int)';
+      case 'ByteArray':
+        return '$T.bytes';
     }
     const r = this.resolveType(name, { file: this.file, cls: this.cls });
     if (r?.user) return args.length ? `$T.cls(${this.classJs(r.user)}, ${args.join(', ')})` : `$T.cls(${this.classJs(r.user)})`;
     if (r?.rt) {
+      // runtime typealiases whose value is itself a descriptor (e.g. ReactFlightDate)
+      const v: any = r.rt.value;
+      if (v && typeof v === 'object' && typeof v.k === 'string') return this.rtValueJs(r.rt.fqn);
       const tail = r.rt.fqn.split('.').pop();
       if (tail === 'JsonElement') return '$T.element';
       if (tail === 'JsonObject') return '$T.object';
@@ -951,7 +956,17 @@ export class Compiler {
         continue;
       }
       const desc = this.inFn(this.newFn('init', false, null, null), () => this.typeDesc(p.type, c.typeParams));
-      fields.push(`{ name: ${JSON.stringify(p.name)}, json: ${JSON.stringify(json)}${alt.length ? `, alt: ${JSON.stringify(alt)}` : ''}, type: ${desc}, optional: ${!!p.def} }`);
+      const extra: string[] = [];
+      for (const a of p.annotations) {
+        const an = annotationName(a);
+        const argText = a.text.replace(/^@\w+(\.\w+)*/, '').replace(/[()\s]/g, '');
+        if (an === 'ProtoNumber' && /^\d+$/.test(argText)) extra.push(`proto: ${argText}`);
+        if (an === 'ProtoType') extra.push(`protoType: ${JSON.stringify(argText.split('.').pop())}`);
+        if (an === 'ProtoPacked') extra.push('packed: true');
+        if (an === 'ProtoOneOf') extra.push('oneOf: true');
+        if (an === 'EncodeDefault') extra.push('encodeDefault: true');
+      }
+      fields.push(`{ name: ${JSON.stringify(p.name)}, json: ${JSON.stringify(json)}${alt.length ? `, alt: ${JSON.stringify(alt)}` : ''}, type: ${desc}, optional: ${!!p.def}${extra.length ? ', ' + extra.join(', ') : ''} }`);
     }
     const subclasses = c.mods.has('sealed') || c.mods.has('abstract') ? this.sealedSubclasses(c) : null;
     const disc = this.classDiscriminator(c);
@@ -960,6 +975,7 @@ export class Compiler {
     if (subclasses) parts.push(`subclasses: () => ({ ${subclasses.map((s) => `${JSON.stringify(s.serialName ?? s.fqn)}: ${this.classJs(s)}`).join(', ')} })`);
     if (disc) parts.push(`discriminator: ${JSON.stringify(disc)}`);
     if (c.kind === 'object') parts.push('object: true');
+    if (c.mods.has('value') || annotations(c.node).some((a) => annotationName(a) === 'JvmInline')) parts.push('inline: true');
     return `$k.serial(${jsName}, () => ({ ${parts.join(', ')} }));`;
   }
 
@@ -1493,6 +1509,7 @@ export class Compiler {
   private jump(kind: string, label: string | null, n: Node): void {
     const loop = label ? [...this.loops].reverse().find((l) => l.label === label) : this.loops[this.loops.length - 1];
     if (!loop) this.fail(`${kind} outside of a loop`, n);
+    if (kind === 'continue' && loop.noContinue) this.fail('continue in do-while whose condition uses body variables', n);
     if (loop.fn === this.fn) {
       this.emit(`${kind}${label ? ' ' + label : ''};`);
       return;
@@ -1612,6 +1629,29 @@ export class Compiler {
   private doWhileStmt(n: Node, label: string | null): void {
     const cond = field(n, 'condition') ?? named(n)[named(n).length - 1];
     const body = named(n).find((c) => c.id !== cond.id) ?? null;
+    const declared = new Set(this.bodyOf(body).filter((x) => x.type === 'property_declaration').flatMap((x) => x.descendantsOfType('variable_declaration').map((v) => identOf(named(v!)[0] ?? null) ?? '')));
+    const condUsesBody = cond.descendantsOfType('identifier').some((i) => i && declared.has(i.text)) || (cond.type === 'identifier' && declared.has(cond.text));
+    if (condUsesBody) {
+      // Kotlin's condition sees body locals: keep body and check in one JS block.
+      const entry = { label, fn: this.fn, token: null as string | null, noContinue: true };
+      this.loops.push(entry);
+      const lines: string[] = [];
+      const saved = this.out;
+      this.out = lines;
+      this.scope = new Scope(this.scope);
+      try {
+        this.stmts(this.bodyOf(body));
+        const c = this.expr(cond);
+        lines.push(`if (!(${c})) break;`);
+      } finally {
+        this.scope = this.scope.parent!;
+        this.out = saved;
+        this.loops.pop();
+      }
+      if (entry.token) this.fail('non-local jump into do-while with body-scoped condition', n);
+      this.emit(`${label ? `${label}: ` : ''}while (true) {\n${indent(lines.join('\n'))}\n}`);
+      return;
+    }
     const code = this.loopBody(label, body);
     const savedLbl = this.pendingLoopLabel;
     this.pendingLoopLabel = null;
@@ -1874,7 +1914,7 @@ export class Compiler {
   }
 
   private override = new Map<number, Node>();
-  private loops: { label: string | null; fn: FnCtx; token: string | null }[] = [];
+  private loops: { label: string | null; fn: FnCtx; token: string | null; noContinue?: boolean }[] = [];
   private inFallback = false;
   /** name of the call whose arguments are being compiled (default lambda label) */
   private callName: string | null = null;
@@ -2615,6 +2655,7 @@ export class Compiler {
     if (!r) this.fail(`unresolved function ${name}`, n);
     switch (r.k) {
       case 'topFun': {
+        if (!r.funs.some((x) => !x.extReceiver)) return this.dynCall([this.thisJs()], name, va, lambdaNode, typeArgs, null, n);
         const f = this.pickOverload(r.funs.filter((x) => !x.extReceiver), va, lambdaNode);
         const args = this.withReified(f, this.callArgs(va, lambdaNode, f.params, this.lambdaModesFor(f)), typeArgs, expected, n);
         const call = `${f.jsName}(${[...f.contextParams.map(() => this.contextArg()), ...args].join(', ')})`;

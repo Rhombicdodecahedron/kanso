@@ -495,8 +495,8 @@ function paramOf(p: Node, list?: Node, index?: number): Param {
     }
   }
   const text = p.text.replace(/@\w+(\([^)]*\))?/g, '').trim();
-  const prop = /^((private|protected|internal|public|override|open|final)\s+)*val\b/.test(text) ? 'val' : /^((private|protected|internal|public|override|open|final)\s+)*var\b/.test(text) ? 'var' : null;
-  const vararg = (child(p, 'parameter_modifiers')?.text ?? '').includes('vararg') || mods.has('vararg') || /^vararg\b/.test(text);
+  const prop = /^((private|protected|internal|public|override|open|final|vararg)\s+)*val\b/.test(text) ? 'val' : /^((private|protected|internal|public|override|open|final|vararg)\s+)*var\b/.test(text) ? 'var' : null;
+  const vararg = (child(p, 'parameter_modifiers')?.text ?? '').includes('vararg') || mods.has('vararg') || /^((private|protected|internal|public|override|open|final)\s+)*vararg\b/.test(text);
   return { name: identOf(nameNode) ?? '_', type, def, vararg, prop, node: p, annotations: annotations(p), mods };
 }
 
