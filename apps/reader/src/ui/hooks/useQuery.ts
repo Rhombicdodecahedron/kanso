@@ -41,16 +41,18 @@ export function useQuery<T>(load: () => Promise<T>) {
   }, [reload]);
 
   /**
-   * Runs a user action. If it fails, what is on screen was out of date (for example a second tap
-   * on something already removed), so the screen is refreshed instead of the error going unhandled.
+   * Runs a user action, then refreshes the screen to show its result. A failure means what was on
+   * screen was out of date (for example a second tap on something already removed), so refreshing
+   * is also the answer to the error.
    */
   const act = useCallback(
     async (action: () => Promise<void>) => {
       try {
         await action();
       } catch {
-        await reload();
+        // shown state was stale: the reload below fixes it
       }
+      await reload();
     },
     [reload],
   );

@@ -292,6 +292,9 @@ export class SqliteHistoryRepository implements HistoryRepository {
   remove(chapterId: number) {
     return this.db.run('delete from history where chapter_id = ?', [chapterId]);
   }
+  removeManga(mangaId: number) {
+    return this.db.run('delete from history where chapter_id in (select id from chapter where manga_id = ?)', [mangaId]);
+  }
   clear() {
     return this.db.run('delete from history');
   }

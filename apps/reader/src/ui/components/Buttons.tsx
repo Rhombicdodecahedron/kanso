@@ -1,6 +1,7 @@
 import { ActivityIndicator, Pressable, View, type PressableProps, type ViewStyle } from 'react-native';
 
 import { colors, radius, space } from '../theme';
+import { Icon, type IconName } from './Icon';
 import { Txt } from './Txt';
 
 type Props = Omit<PressableProps, 'style'> & {
@@ -39,10 +40,18 @@ export function Button({ label, kind = 'primary', busy, small, disabled, style, 
   );
 }
 
-export function IconButton({ glyph, onPress, label, active }: { glyph: string; onPress: () => void; label: string; active?: boolean }) {
+export function IconButton({ icon, onPress, label, active, color, size = 22, disabled }: { icon: IconName; onPress: () => void; label: string; active?: boolean; color?: string; size?: number; disabled?: boolean }) {
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress} hitSlop={10} style={({ pressed }) => ({ padding: 6, opacity: pressed ? 0.6 : 1 })}>
-      <Txt size={20} color={active ? colors.accent : colors.text}>{glyph}</Txt>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled, selected: active }}
+      disabled={disabled}
+      onPress={onPress}
+      hitSlop={6}
+      style={({ pressed }) => ({ width: 40, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 20, opacity: disabled ? 0.35 : pressed ? 0.5 : 1 })}
+    >
+      <Icon name={icon} size={size} color={active ? colors.accent : (color ?? colors.text)} />
     </Pressable>
   );
 }

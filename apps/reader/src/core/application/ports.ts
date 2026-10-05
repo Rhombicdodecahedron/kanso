@@ -75,6 +75,8 @@ export interface HistoryRepository {
   upsert(e: HistoryEntry): Promise<void>;
   recent(limit: number): Promise<HistoryEntry[]>;
   remove(chapterId: ChapterId): Promise<void>;
+  /** Every entry for the manga's chapters. */
+  removeManga(mangaId: MangaId): Promise<void>;
   clear(): Promise<void>;
 }
 

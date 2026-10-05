@@ -11,6 +11,7 @@ import { Field } from '@/ui/components/Field';
 import { MangaCard } from '@/ui/components/MangaCard';
 import { Sheet } from '@/ui/components/Sheet';
 import { Empty, ErrorState, Loading } from '@/ui/components/States';
+import { Icon, icons } from '@/ui/components/Icon';
 import { Txt } from '@/ui/components/Txt';
 import { colors, space } from '@/ui/theme';
 
@@ -48,7 +49,7 @@ export function SourceScreen() {
           title: source.name,
           headerRight: () => (
             <Row>
-              <IconButton glyph="⚙︎" label="Source settings" onPress={() => router.push({ pathname: '/source-settings/[id]', params: { id } })} />
+              <IconButton icon={icons.settings} label="Source settings" onPress={() => router.push({ pathname: '/source-settings/[id]', params: { id } })} />
             </Row>
           ),
         }}
@@ -162,7 +163,7 @@ function FilterSheet({ sourceId, visible, onClose, onApply }: { sourceId: string
   );
 }
 
-const TRI = ['○', '✓', '✕'];
+const TRI = [icons.neutral, icons.include, icons.exclude];
 
 function FilterRow({ f, path, onChange }: { f: FilterState; path: number[]; onChange: (p: number[], v: unknown) => void }) {
   switch (f.kind) {
@@ -180,14 +181,14 @@ function FilterRow({ f, path, onChange }: { f: FilterState; path: number[]; onCh
     case 'checkbox':
       return (
         <Pressable onPress={() => onChange(path, !f.state)} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, gap: space.sm }}>
-          <Txt size={18} color={f.state ? colors.accent : colors.textDim}>{f.state ? '☑' : '☐'}</Txt>
+          <Icon name={f.state ? icons.checked : icons.unchecked} color={f.state ? colors.accent : colors.textDim} />
           <Txt>{f.name}</Txt>
         </Pressable>
       );
     case 'tristate':
       return (
         <Pressable onPress={() => onChange(path, (((f.state as number) ?? 0) + 1) % 3)} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, gap: space.sm }}>
-          <Txt size={16} color={f.state === 1 ? colors.success : f.state === 2 ? colors.danger : colors.textDim}>{TRI[(f.state as number) ?? 0]}</Txt>
+          <Icon name={TRI[(f.state as number) ?? 0]} color={f.state === 1 ? colors.success : f.state === 2 ? colors.danger : colors.textDim} />
           <Txt>{f.name}</Txt>
         </Pressable>
       );

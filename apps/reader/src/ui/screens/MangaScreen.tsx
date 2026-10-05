@@ -8,6 +8,7 @@ import type { Category, Chapter, Download, Manga } from '@/core/domain/model';
 import { Button, IconButton, Row } from '@/ui/components/Buttons';
 import { Sheet } from '@/ui/components/Sheet';
 import { ErrorState, Loading } from '@/ui/components/States';
+import { Icon, icons } from '@/ui/components/Icon';
 import { Txt } from '@/ui/components/Txt';
 import { useQuery } from '@/ui/hooks/useQuery';
 import { formatDate, statusLabel } from '@/ui/format';
@@ -82,12 +83,12 @@ export function MangaScreen() {
           title: selecting ? `${selected.size} selected` : '',
           headerRight: () =>
             selecting ? (
-              <IconButton glyph="✕" label="Clear selection" onPress={() => setSelected(new Set())} />
+              <IconButton icon={icons.close} label="Clear selection" onPress={() => setSelected(new Set())} />
             ) : (
               <Row>
-                <IconButton glyph="⇅" label={descending ? 'Sort chapters: newest first' : 'Sort chapters: oldest first'} onPress={() => setDescending((d) => !d)} />
+                <IconButton icon={icons.sort} label={descending ? 'Sort chapters: newest first' : 'Sort chapters: oldest first'} onPress={() => setDescending((d) => !d)} />
                 <IconButton
-                  glyph="↗"
+                  icon={icons.web}
                   label="Open in browser"
                   onPress={() => {
                     const url = uc.catalog.webUrl(manga);
@@ -175,7 +176,10 @@ export function MangaScreen() {
         <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: space.md, paddingBottom: space.xl, backgroundColor: colors.surface, borderTopWidth: 1, borderTopColor: colors.border, flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
           <Button label="Read" small kind="secondary" onPress={() => act((ids) => uc.catalog.setRead(ids, true))} />
           <Button label="Unread" small kind="secondary" onPress={() => act((ids) => uc.catalog.setRead(ids, false))} />
-          <Button label="Bookmark" small kind="secondary" onPress={() => act((ids) => uc.catalog.setBookmark(ids, !data.chapters.find((c) => c.id === [...selected][0])?.bookmark))} />
+          {(() => {
+            const marked = data.chapters.filter((c) => selected.has(c.id)).every((c) => c.bookmark);
+            return <Button label={marked ? 'Remove bookmark' : 'Bookmark'} small kind="secondary" onPress={() => act((ids) => uc.catalog.setBookmark(ids, !marked))} />;
+          })()}
           <Button label="Download" small kind="secondary" onPress={() => act((ids) => uc.downloads.enqueue(ids))} />
           {selected.size === 1 ? <Button label="Mark previous read" small kind="secondary" onPress={() => act((ids) => uc.catalog.markPreviousRead(ids[0]))} /> : null}
           <Button
@@ -208,10 +212,12 @@ function ChapterRow({ chapter, download, selected, onPress, onLongPress, onDownl
   return (
     <Pressable onPress={onPress} onLongPress={onLongPress} style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', paddingLeft: space.lg, paddingRight: space.sm, paddingVertical: space.md, backgroundColor: selected ? colors.surfaceHigh : pressed ? colors.surface : undefined })}>
       <View style={{ flex: 1 }}>
-        <Txt weight="500" color={chapter.read ? colors.textFaint : chapter.bookmark ? colors.accent : colors.text} numberOfLines={1}>
-          {chapter.bookmark ? '★ ' : ''}
-          {chapter.name}
-        </Txt>
+        <Row style={{ gap: 6 }}>
+          {chapter.bookmark ? <Icon name={icons.bookmarked} size={14} color={colors.accent} /> : null}
+          <Txt weight="500" color={chapter.read ? colors.textFaint : chapter.bookmark ? colors.accent : colors.text} numberOfLines={1} style={{ flexShrink: 1 }}>
+            {chapter.name}
+          </Txt>
+        </Row>
         <Txt size={12} faint numberOfLines={1}>
           {[chapter.dateUpload ? formatDate(chapter.dateUpload) : null, chapter.scanlator, !chapter.read && chapter.lastPageRead > 0 ? `Page ${chapter.lastPageRead + 1}` : null, state === 'error' ? `Download failed: ${download?.error}` : null]
             .filter(Boolean)
@@ -224,16 +230,16 @@ function ChapterRow({ chapter, download, selected, onPress, onLongPress, onDownl
         disabled={state === 'done' || state === 'queued' || state === 'downloading'}
         onPress={onDownload}
         hitSlop={8}
-        style={{ width: 44, alignItems: 'center' }}
+        style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}
       >
         {state === 'downloading' ? (
           <Txt size={12} dim>{download!.total ? `${download!.progress}/${download!.total}` : '…'}</Txt>
         ) : state === 'queued' ? (
-          <Txt size={16} dim>⋯</Txt>
+          <Icon name={icons.queued} color={colors.textDim} />
         ) : state === 'done' ? (
-          <Txt size={18} color={colors.accent}>✓</Txt>
+          <Icon name={icons.downloaded} color={colors.accent} />
         ) : (
-          <Txt size={18} color={state === 'error' ? colors.danger : colors.textDim}>↓</Txt>
+          <Icon name={state === 'error' ? icons.failed : icons.download} color={state === 'error' ? colors.danger : colors.textDim} />
         )}
       </Pressable>
     </Pressable>
@@ -274,7 +280,7 @@ function CategoriesSheet({ manga, visible, onClose }: { manga: Manga; visible: b
       {!cats.length ? <Txt dim>No categories yet. Create them from the library.</Txt> : null}
       {cats.map((c) => (
         <Pressable key={c.id} onPress={() => toggle(chosen, setChosen, c.id)} style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingVertical: 10 }}>
-          <Txt size={18} color={chosen.has(c.id) ? colors.accent : colors.textDim}>{chosen.has(c.id) ? '☑' : '☐'}</Txt>
+          <Icon name={chosen.has(c.id) ? icons.checked : icons.unchecked} color={chosen.has(c.id) ? colors.accent : colors.textDim} />
           <Txt>{c.name}</Txt>
         </Pressable>
       ))}

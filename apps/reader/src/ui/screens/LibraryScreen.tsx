@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, FlatList, Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
+import { Alert, FlatList, ScrollView, useWindowDimensions, View } from 'react-native';
 
 import { useApp } from '@/composition/AppProvider';
 import { devLog } from '@/ui/devlog';
@@ -11,6 +11,7 @@ import { Header } from '@/ui/components/Header';
 import { MangaCard } from '@/ui/components/MangaCard';
 import { Sheet } from '@/ui/components/Sheet';
 import { Empty, ErrorState, Loading } from '@/ui/components/States';
+import { icons } from '@/ui/components/Icon';
 import { Txt } from '@/ui/components/Txt';
 import { useQuery } from '@/ui/hooks/useQuery';
 import { colors, space } from '@/ui/theme';
@@ -94,9 +95,9 @@ export function LibraryScreen() {
         title="Library"
         right={
           <>
-            {updating ? <Txt size={13} dim>{updating}</Txt> : <IconButton glyph="⟳" label="Update library" onPress={updateLibrary} />}
-            <IconButton glyph="⌕" label="Search" active={searching} onPress={() => setSearching((s) => !s)} />
-            <IconButton glyph="☰" label="Display options" onPress={() => setOptionsOpen(true)} />
+            {updating ? <Txt size={13} dim>{updating}</Txt> : <IconButton icon={icons.refresh} label="Update library" onPress={updateLibrary} />}
+            <IconButton icon={icons.search} label="Search" active={searching} onPress={() => setSearching((s) => !s)} />
+            <IconButton icon={icons.options} label="Display options" onPress={() => setOptionsOpen(true)} />
           </>
         }
       >
@@ -161,7 +162,10 @@ function CategoryEditor({ visible, onClose, onChanged }: { visible: boolean; onC
       {(data ?? []).map((c, i, all) => (
         <Row key={c.id} style={{ paddingVertical: 6, gap: space.sm }}>
           <Txt style={{ flex: 1 }}>{c.name}</Txt>
-          <Pressable
+          <IconButton
+            icon={icons.moveUp}
+            label={`Move ${c.name} up`}
+            size={18}
             disabled={i === 0}
             onPress={async () => {
               const ids = all.map((x) => x.id);
@@ -169,9 +173,7 @@ function CategoryEditor({ visible, onClose, onChanged }: { visible: boolean; onC
               await uc.library.reorderCategories(ids);
               await changed();
             }}
-          >
-            <Txt dim={i === 0}>↑</Txt>
-          </Pressable>
+          />
           <Button
             label="Delete"
             small

@@ -112,6 +112,18 @@ describe('core loop', () => {
     const hist = await uc.library.history();
     expect(hist.map((h) => h.chapter.name)).toEqual(['Chapter 1']);
 
+    // removing a series from history removes all its chapters, not just the one shown
+    const ch2 = r.chapters.find((c) => c.name === 'Chapter 2')!;
+    await uc.reader.progress(ch2.id, 0, 3, 1000);
+    expect((await uc.library.history()).map((h) => h.chapter.name)).toEqual(['Chapter 2']);
+    const removed = await uc.library.removeHistory(id);
+    expect(await uc.library.history()).toEqual([]);
+    await uc.library.restoreHistory(removed);
+    expect((await uc.library.history()).map((h) => h.chapter.name)).toEqual(['Chapter 2']);
+    await uc.library.restoreHistory(await uc.library.clearHistory());
+    expect((await uc.library.history()).map((h) => h.chapter.name)).toEqual(['Chapter 2']);
+    await uc.library.removeHistory(id);
+
     // new chapter appears on refresh
     sources.chapters = [rch('/c/3', 'Chapter 3'), ...sources.chapters];
     const r2 = await uc.catalog.refresh(id);

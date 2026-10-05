@@ -83,7 +83,25 @@ export function createLibraryUseCases(d: Deps) {
       }
       return out;
     },
-    removeHistory: (chapterId: number) => d.history.remove(chapterId),
-    clearHistory: () => d.history.clear(),
+    /**
+     * History shows one row per manga, so removing it removes all of its chapters.
+     * Returns the removed entries, for undo.
+     */
+    async removeHistory(mangaId: MangaId): Promise<HistoryEntry[]> {
+      const ids = new Set((await d.chapters.byManga(mangaId)).map((c) => c.id));
+      const removed = (await d.history.recent(Number.MAX_SAFE_INTEGER)).filter((h) => ids.has(h.chapterId));
+      await d.history.removeManga(mangaId);
+      return removed;
+    },
+    /** Clears everything. Returns the removed entries, for undo. */
+    async clearHistory(): Promise<HistoryEntry[]> {
+      const removed = await d.history.recent(Number.MAX_SAFE_INTEGER);
+      await d.history.clear();
+      return removed;
+    },
+    /** Undo of a removal: puts the entries back as they were. */
+    async restoreHistory(entries: HistoryEntry[]): Promise<void> {
+      for (const e of entries) await d.history.upsert(e);
+    },
   };
 }
