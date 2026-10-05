@@ -1,11 +1,13 @@
 import { Image } from 'expo-image';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, FlatList, Linking, Pressable, RefreshControl, View } from 'react-native';
+import { Alert, FlatList, Linking, Platform, Pressable, RefreshControl, View } from 'react-native';
+
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useApp } from '@/composition/AppProvider';
 import type { Category, Chapter, Download, Manga } from '@/core/domain/model';
-import { Button, IconButton, Row } from '@/ui/components/Buttons';
+import { Action, Button, IconButton, Row } from '@/ui/components/Buttons';
 import { Sheet } from '@/ui/components/Sheet';
 import { ErrorState, Loading } from '@/ui/components/States';
 import { Icon, icons } from '@/ui/components/Icon';
@@ -13,6 +15,8 @@ import { Txt } from '@/ui/components/Txt';
 import { useQuery } from '@/ui/hooks/useQuery';
 import { formatDate, statusLabel } from '@/ui/format';
 import { colors, radius, space } from '@/ui/theme';
+
+const native = Platform.OS === 'ios';
 
 export function MangaScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -37,6 +41,7 @@ export function MangaScreen() {
   const [catsOpen, setCatsOpen] = useState(false);
   const [descending, setDescending] = useState(true);
   const downloads = useDownloads(mangaId);
+  const insets = useSafeAreaInsets();
 
   const refresh = async () => {
     setRefreshing(true);
@@ -76,29 +81,39 @@ export function MangaScreen() {
     await reload();
   };
 
+  const openWeb = () => {
+    const url = uc.catalog.webUrl(manga);
+    if (url) void Linking.openURL(url);
+  };
+  const headerRight = () =>
+    selecting ? (
+      <IconButton icon={icons.close} label="Clear selection" onPress={() => setSelected(new Set())} />
+    ) : (
+      <Row>
+        <IconButton icon={icons.sort} label={descending ? 'Sort chapters: newest first' : 'Sort chapters: oldest first'} onPress={() => setDescending((d) => !d)} />
+        <IconButton icon={icons.web} label="Open in browser" onPress={openWeb} />
+      </Row>
+    );
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <Stack.Screen
-        options={{
-          title: selecting ? `${selected.size} selected` : '',
-          headerRight: () =>
-            selecting ? (
-              <IconButton icon={icons.close} label="Clear selection" onPress={() => setSelected(new Set())} />
-            ) : (
-              <Row>
-                <IconButton icon={icons.sort} label={descending ? 'Sort chapters: newest first' : 'Sort chapters: oldest first'} onPress={() => setDescending((d) => !d)} />
-                <IconButton
-                  icon={icons.web}
-                  label="Open in browser"
-                  onPress={() => {
-                    const url = uc.catalog.webUrl(manga);
-                    if (url) void Linking.openURL(url);
-                  }}
-                />
-              </Row>
-            ),
-        }}
-      />
+      <Stack.Screen options={{ title: selecting ? `${selected.size} selected` : '', headerRight: native ? undefined : headerRight }} />
+      {native ? (
+        // iOS: native bar items, so they sit in the system's own (Liquid Glass) header buttons.
+        <Stack.Toolbar placement="right">
+          {selecting ? (
+            <Stack.Toolbar.Button icon="xmark" accessibilityLabel="Clear selection" onPress={() => setSelected(new Set())} />
+          ) : (
+            <>
+              <Stack.Toolbar.Menu icon="arrow.up.arrow.down" accessibilityLabel="Sort chapters" title="Sort chapters">
+                <Stack.Toolbar.MenuAction icon="arrow.down" isOn={descending} onPress={() => setDescending(true)}>Newest first</Stack.Toolbar.MenuAction>
+                <Stack.Toolbar.MenuAction icon="arrow.up" isOn={!descending} onPress={() => setDescending(false)}>Oldest first</Stack.Toolbar.MenuAction>
+              </Stack.Toolbar.Menu>
+              <Stack.Toolbar.Button icon="safari" accessibilityLabel="Open in browser" onPress={openWeb} />
+            </>
+          )}
+        </Stack.Toolbar>
+      ) : null}
       <FlatList
         data={chapters}
         keyExtractor={(c) => String(c.id)}
@@ -127,8 +142,8 @@ export function MangaScreen() {
             {manga.genres.length ? (
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
                 {manga.genres.map((g) => (
-                  <View key={g} style={{ backgroundColor: colors.surfaceHigh, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 3 }}>
-                    <Txt size={12}>{g}</Txt>
+                  <View key={g} style={{ borderWidth: 1, borderColor: colors.border, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 3 }}>
+                    <Txt size={12} dim>{g}</Txt>
                   </View>
                 ))}
               </View>
@@ -173,26 +188,31 @@ export function MangaScreen() {
         contentContainerStyle={{ paddingBottom: selecting ? 120 : space.xl }}
       />
       {selecting ? (
-        <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: space.md, paddingBottom: space.xl, backgroundColor: colors.surface, borderTopWidth: 1, borderTopColor: colors.border, flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
-          <Button label="Read" small kind="secondary" onPress={() => act((ids) => uc.catalog.setRead(ids, true))} />
-          <Button label="Unread" small kind="secondary" onPress={() => act((ids) => uc.catalog.setRead(ids, false))} />
+        <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: space.sm, paddingTop: space.xs, paddingBottom: insets.bottom + space.xs, backgroundColor: colors.surface, borderTopWidth: 1, borderTopColor: colors.border, flexDirection: 'row' }}>
           {(() => {
-            const marked = data.chapters.filter((c) => selected.has(c.id)).every((c) => c.bookmark);
-            return <Button label={marked ? 'Remove bookmark' : 'Bookmark'} small kind="secondary" onPress={() => act((ids) => uc.catalog.setBookmark(ids, !marked))} />;
+            const chosen = data.chapters.filter((c) => selected.has(c.id));
+            const allRead = chosen.every((c) => c.read);
+            const marked = chosen.every((c) => c.bookmark);
+            return (
+              <>
+                <Action icon={allRead ? icons.markUnread : icons.markRead} label={allRead ? 'Unread' : 'Read'} onPress={() => act((ids) => uc.catalog.setRead(ids, !allRead))} />
+                <Action icon={marked ? icons.bookmarked : icons.bookmark} label={marked ? 'Unmark' : 'Bookmark'} onPress={() => act((ids) => uc.catalog.setBookmark(ids, !marked))} />
+                {selected.size === 1 ? <Action icon={icons.markPrevious} label="Read before" onPress={() => act((ids) => uc.catalog.markPreviousRead(ids[0]))} /> : null}
+                <Action icon={icons.download} label="Download" onPress={() => act((ids) => uc.downloads.enqueue(ids))} />
+                <Action
+                  icon={icons.delete}
+                  label="Delete"
+                  danger
+                  onPress={() =>
+                    Alert.alert('Delete downloaded chapters?', undefined, [
+                      { text: 'Cancel', style: 'cancel' },
+                      { text: 'Delete', style: 'destructive', onPress: () => act(async (ids) => void (await Promise.all(ids.map((i) => uc.downloads.remove(i))))) },
+                    ])
+                  }
+                />
+              </>
+            );
           })()}
-          <Button label="Download" small kind="secondary" onPress={() => act((ids) => uc.downloads.enqueue(ids))} />
-          {selected.size === 1 ? <Button label="Mark previous read" small kind="secondary" onPress={() => act((ids) => uc.catalog.markPreviousRead(ids[0]))} /> : null}
-          <Button
-            label="Delete downloads"
-            small
-            kind="danger"
-            onPress={() =>
-              Alert.alert('Delete downloaded chapters?', undefined, [
-                { text: 'Cancel', style: 'cancel' },
-                { text: 'Delete', style: 'destructive', onPress: () => act(async (ids) => void (await Promise.all(ids.map((i) => uc.downloads.remove(i))))) },
-              ])
-            }
-          />
         </View>
       ) : null}
       <CategoriesSheet manga={manga} visible={catsOpen} onClose={() => setCatsOpen(false)} />

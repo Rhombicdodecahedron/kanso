@@ -13,8 +13,8 @@ type Props = Omit<PressableProps, 'style'> & {
 };
 
 export function Button({ label, kind = 'primary', busy, small, disabled, style, ...rest }: Props) {
-  const bg = kind === 'primary' ? colors.accent : kind === 'secondary' ? colors.surfaceHigh : 'transparent';
-  const fg = kind === 'primary' ? '#1A1306' : kind === 'danger' ? colors.danger : colors.text;
+  const bg = kind === 'primary' ? colors.accent : kind === 'secondary' ? colors.accentSoft : 'transparent';
+  const fg = kind === 'primary' ? '#1A1306' : kind === 'secondary' ? colors.accent : kind === 'danger' ? colors.danger : colors.text;
   return (
     <Pressable
       accessibilityRole="button"
@@ -28,8 +28,8 @@ export function Button({ label, kind = 'primary', busy, small, disabled, style, 
           alignItems: 'center',
           justifyContent: 'center',
           opacity: disabled ? 0.4 : pressed ? 0.75 : 1,
-          borderWidth: kind === 'ghost' ? 1 : 0,
-          borderColor: colors.border,
+          borderWidth: kind === 'ghost' || kind === 'danger' ? 1 : 0,
+          borderColor: kind === 'danger' ? 'rgba(229,105,91,0.4)' : colors.border,
         },
         style,
       ]}
@@ -64,15 +64,28 @@ export function Chip({ label, active, onPress }: { label: string; active?: boole
         paddingHorizontal: space.md,
         paddingVertical: 6,
         borderRadius: 999,
-        backgroundColor: active ? colors.accent : colors.surfaceHigh,
+        backgroundColor: active ? colors.accent : 'transparent',
+        borderWidth: 1,
+        borderColor: active ? colors.accent : colors.border,
         marginRight: space.sm,
       }}
     >
-      <Txt size={13} weight="600" color={active ? '#1A1306' : colors.text}>{label}</Txt>
+      <Txt size={13} weight="600" color={active ? '#1A1306' : colors.textDim}>{label}</Txt>
     </Pressable>
   );
 }
 
 export function Row({ children, style }: { children: React.ReactNode; style?: ViewStyle }) {
   return <View style={[{ flexDirection: 'row', alignItems: 'center' }, style]}>{children}</View>;
+}
+
+/** Icon-over-label action, for bottom action bars. */
+export function Action({ icon, label, onPress, danger }: { icon: IconName; label: string; onPress: () => void; danger?: boolean }) {
+  const color = danger ? colors.danger : colors.text;
+  return (
+    <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress} style={({ pressed }) => ({ flex: 1, alignItems: 'center', gap: 4, paddingVertical: space.sm, borderRadius: radius.md, backgroundColor: pressed ? colors.surfaceHigh : undefined })}>
+      <Icon name={icon} size={22} color={color} />
+      <Txt size={11} weight="500" color={danger ? colors.danger : colors.textDim} numberOfLines={1}>{label}</Txt>
+    </Pressable>
+  );
 }

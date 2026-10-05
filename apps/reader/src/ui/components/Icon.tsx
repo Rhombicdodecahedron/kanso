@@ -30,6 +30,10 @@ export const icons = {
   include: { ios: 'checkmark.circle.fill', android: 'check_circle' },
   exclude: { ios: 'xmark.circle.fill', android: 'cancel' },
   neutral: { ios: 'circle', android: 'radio_button_unchecked' },
+  markRead: { ios: 'checkmark.circle', android: 'done_all' },
+  markUnread: { ios: 'circle', android: 'remove_done' },
+  markPrevious: { ios: 'checkmark.circle.badge.questionmark', android: 'playlist_add_check' },
+  delete: { ios: 'trash', android: 'delete' },
   prevChapter: { ios: 'backward.end.fill', android: 'skip_previous' },
   nextChapter: { ios: 'forward.end.fill', android: 'skip_next' },
 } satisfies Record<string, IconName>;

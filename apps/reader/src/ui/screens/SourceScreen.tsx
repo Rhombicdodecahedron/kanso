@@ -1,6 +1,6 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, FlatList, Platform, Pressable, useWindowDimensions, View } from 'react-native';
 
 import { useApp } from '@/composition/AppProvider';
 import { usePaged } from '@/ui/hooks/usePaged';
@@ -42,18 +42,21 @@ export function SourceScreen() {
 
   const submitSearch = (q = query, f = filters) => setMode({ kind: 'search', query: q, filters: f });
 
+  const openSettings = () => router.push({ pathname: '/source-settings/[id]', params: { id } });
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <Stack.Screen
         options={{
           title: source.name,
-          headerRight: () => (
-            <Row>
-              <IconButton icon={icons.settings} label="Source settings" onPress={() => router.push({ pathname: '/source-settings/[id]', params: { id } })} />
-            </Row>
-          ),
+          headerRight: Platform.OS === 'ios' ? undefined : () => <IconButton icon={icons.settings} label="Source settings" onPress={openSettings} />,
         }}
       />
+      {Platform.OS === 'ios' ? (
+        <Stack.Toolbar placement="right">
+          <Stack.Toolbar.Button icon="gearshape" accessibilityLabel="Source settings" onPress={openSettings} />
+        </Stack.Toolbar>
+      ) : null}
       <View style={{ paddingHorizontal: space.lg, gap: space.sm, paddingBottom: space.sm }}>
         <Field placeholder={`Search ${source.name}`} value={query} onChangeText={setQuery} returnKeyType="search" onSubmitEditing={() => submitSearch()} />
         <Row>

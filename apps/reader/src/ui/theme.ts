@@ -8,6 +8,8 @@ export const colors = {
   textFaint: '#66645E',
   accent: '#E8B04B',
   accentDim: '#7A5E2A',
+  /** accent wash behind secondary actions */
+  accentSoft: 'rgba(232,176,75,0.14)',
   danger: '#E5695B',
   success: '#7CC48C',
   overlay: 'rgba(0,0,0,0.6)',
