@@ -706,8 +706,16 @@ export class Compiler {
       if (c.hasPrimaryCtor || !c.secondaryCtors.length) {
         params = this.emitParams(c.ctorParams, null);
         if (hasSuper) {
-          const args = c.superArgs ? this.callArgs(c.superArgs, null, this.superParamsOf(c), null).join(', ') : '';
-          body.unshift(`super(${args});`);
+          this.inSuperArgs = true;
+          let args = '';
+          try {
+            args = c.superArgs ? this.callArgs(c.superArgs, null, this.superParamsOf(c), null).join(', ') : '';
+          } finally {
+            this.inSuperArgs = false;
+          }
+          // statements emitted while compiling super args must run before super() but cannot use `this`
+          const pre = body.splice(0, body.length);
+          body.push(...pre, `super(${args});`);
         } else if (c.kind !== 'interface' && this.superJs(c) === null) {
           // no super call needed
         }
@@ -729,7 +737,12 @@ export class Compiler {
           const kind = named(deleg)[0]?.text;
           if (kind === 'this') this.fail('this() constructor delegation', deleg);
           const va = child(deleg, 'value_arguments');
-          body.push(`super(${va ? this.callArgs(va, null, this.superParamsOf(c), null).join(', ') : ''});`);
+          this.inSuperArgs = true;
+          try {
+            body.push(`super(${va ? this.callArgs(va, null, this.superParamsOf(c), null).join(', ') : ''});`);
+          } finally {
+            this.inSuperArgs = false;
+          }
         } else if (hasSuper) body.push('super();');
       }
       // property initializers and init blocks in declaration order
@@ -765,8 +778,7 @@ export class Compiler {
       if (!body.length && !params.length && !temps) return null;
       if (!hasSuper && body.some((b) => b.startsWith('super('))) body.splice(body.findIndex((b) => b.startsWith('super(')), 1);
       // `super(...)` must come first, temps after it
-      const superIdx = body.findIndex((b) => b.startsWith('super('));
-      const lines = superIdx >= 0 ? [body[superIdx], temps, ...body.filter((_, i) => i !== superIdx)] : [temps, ...body];
+      const lines = [temps, ...body];
       return `constructor(${params.join(', ')}) {\n${indent(lines.filter(Boolean).join('\n'))}\n}`;
     });
   }
@@ -1417,6 +1429,7 @@ export class Compiler {
   private localClasses = new Set<ClassSym>();
 
   private thisJs(): string {
+    if (this.inSuperArgs) return 'undefined';
     const r = this.receivers.find((x) => x.kind === 'class' || x.kind === 'object');
     return r?.js ?? 'this';
   }
@@ -1963,7 +1976,11 @@ export class Compiler {
     this.fail(`unknown this@${lbl}`, n);
   }
 
+  /** True while compiling `super(...)` arguments: `this` does not exist yet. */
+  private inSuperArgs = false;
+
   private selfJs(): string {
+    if (this.inSuperArgs) return 'undefined';
     for (let f: FnCtx | null = this.fn; f; f = f.parent) {
       if (f.fun?.contextParams.length) return this.scope.lookup(f.fun.contextParams[0])?.js ?? this.thisJs();
     }

@@ -145,6 +145,10 @@ describe('core loop', () => {
     index[0].version = '1.6.3';
     const listing = await uc.extensions.list();
     expect(listing.installed[0].update?.version).toBe('1.6.3');
+    // same version, rebuilt bundle -> also an update
+    index[0].version = '1.6.2';
+    index[0].sha256 = 'h:rebuilt';
+    expect((await uc.extensions.list()).installed[0].update?.sha256).toBe('h:rebuilt');
     void ({} as InstalledExtension);
   });
 });

@@ -65,7 +65,9 @@ export function createExtensionUseCases(d: Deps) {
         installed: installed
           .map((e) => {
             const r = byPkg.get(e.pkg);
-            return { ...e, update: r && compareVersions(r.version, e.version) > 0 ? r : null };
+            // A rebuilt bundle (translator/runtime fix) keeps its version but changes its checksum.
+            const newer = r && (compareVersions(r.version, e.version) > 0 || (compareVersions(r.version, e.version) === 0 && r.sha256 !== e.sha256));
+            return { ...e, update: newer ? r : null };
           })
           .sort((a, b) => a.name.localeCompare(b.name)),
         available: remote.filter((e) => !installedPkgs.has(e.pkg)).sort((a, b) => a.name.localeCompare(b.name)),

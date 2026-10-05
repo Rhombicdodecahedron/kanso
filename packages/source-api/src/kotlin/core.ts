@@ -678,7 +678,7 @@ export function lazyProp(C: any, name: string, init: (self: any) => any): void {
     enumerable: false,
     get() {
       if (!Object.prototype.hasOwnProperty.call(this, key)) {
-        Object.defineProperty(this, key, { value: init(this), writable: true, enumerable: false });
+        Object.defineProperty(this, key, { value: init.call(this, this), writable: true, enumerable: false });
       }
       return this[key];
     },

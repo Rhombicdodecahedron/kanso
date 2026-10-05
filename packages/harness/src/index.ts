@@ -79,6 +79,11 @@ export async function smokeTest(code: string, opts: { sourceIndex?: number; log?
   out.push({ stage: 'create', ok: true, ms: 0, detail: `${src.name} ${src.lang} ${src.baseUrl} id=${src.id}` });
   const popular = await stage('popular', () => reg.popular(src.id, 1), (p) => `${p.mangas.length} mangas, next=${p.hasNextPage}, first=${p.mangas[0]?.title}`);
   if (!popular?.mangas.length) return out;
+  if (reg.supportsLatest(src.id)) await stage('latest', () => reg.latest(src.id, 1), (p) => `${p.mangas.length} mangas`);
+  const filters = await stage('filters', () => reg.filters(src.id), (f) => `${f.length} filters`);
+  const word = (popular.mangas[0].title.split(/\s+/).find((w) => w.length > 3) ?? popular.mangas[0].title).slice(0, 20);
+  await stage('search', () => reg.search(src.id, 1, word, filters), (p) => `"${word}": ${p.mangas.length} results`);
+  await stage('prefs', async () => reg.preferences(src.id), (p) => `${p.length} preferences`);
   const manga = popular.mangas[0];
   const update = await stage('details', () => reg.update(src.id, manga, [], true, true), (u) => `title=${u.manga.title} status=${u.manga.status} chapters=${u.chapters.length}`);
   if (!update?.chapters.length) return out;
