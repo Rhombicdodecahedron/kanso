@@ -62,7 +62,7 @@ export class JsonObject extends Map<string, any> {
     else if (entries) for (const [k, v] of Object.entries(entries)) super.set(k, v);
   }
   toString(): string {
-    return '{' + [...this].map(([k, v]) => JSON.stringify(k) + ':' + str(v)).join(',') + '}';
+    return '{' + [...this].map(([k, v]) => JSON.stringify(k) + ':' + elStr(v)).join(',') + '}';
   }
   equals(o: any): boolean {
     return o instanceof JsonObject && o.toString() === this.toString();
@@ -88,7 +88,7 @@ export class JsonArray extends Array<any> {
     return Array;
   }
   toString(): string {
-    return '[' + this.map((v) => str(v)).join(',') + ']';
+    return '[' + this.map((v) => elStr(v)).join(',') + ']';
   }
   equals(o: any): boolean {
     return o instanceof JsonArray && o.toString() === this.toString();
@@ -99,6 +99,11 @@ export class JsonArray extends Array<any> {
   toJS(): any {
     return this.map(elementToJS);
   }
+}
+
+/** Nested elements print as JSON (str() would render a JsonObject in Kotlin map style). */
+function elStr(v: any): string {
+  return v instanceof JsonObject || v instanceof JsonArray || v instanceof JsonPrimitive ? v.toString() : str(v);
 }
 
 export function elementToJS(e: any): any {
@@ -208,6 +213,8 @@ export class JsonArrayBuilder {
 export type Desc =
   | { k: 'str' | 'int' | 'long' | 'double' | 'float' | 'bool' | 'char' | 'unit' | 'any' }
   | { k: 'element' | 'object' | 'array' | 'primitive' }
+  /** ByteArray (Int8Array): a JSON array of numbers, a length-delimited field in protobuf. */
+  | { k: 'bytes' }
   | { k: 'list' | 'set'; of: Desc }
   | { k: 'array$'; of: Desc }
   | { k: 'map'; key: Desc; value: Desc }
@@ -232,6 +239,7 @@ export const T = {
   object: { k: 'object' } as Desc,
   array: { k: 'array' } as Desc,
   primitive: { k: 'primitive' } as Desc,
+  bytes: { k: 'bytes' } as Desc,
   list: (of: Desc): Desc => ({ k: 'list', of }),
   set: (of: Desc): Desc => ({ k: 'set', of }),
   arr: (of: Desc): Desc => ({ k: 'array$', of }),
@@ -256,6 +264,16 @@ export interface SerialField {
   optional: boolean;
   /** body property (not a constructor parameter) */
   body?: boolean;
+  /** protobuf field number (@ProtoNumber); defaults to the element index + 1 */
+  proto?: number;
+  /** protobuf integer encoding (@ProtoType(ProtoIntegerType.X)) */
+  protoType?: 'DEFAULT' | 'SIGNED' | 'FIXED';
+  /** @ProtoPacked */
+  packed?: boolean;
+  /** @ProtoOneOf: the field's sealed type's variants are flattened into this message */
+  oneOf?: boolean;
+  /** @EncodeDefault: encoded even when it holds its default value */
+  encodeDefault?: boolean;
 }
 export interface SerialInfo {
   fields: SerialField[];
@@ -266,6 +284,8 @@ export interface SerialInfo {
   /** class-level custom serializer (@Serializable(with = X::class)) */
   custom?: () => any;
   object?: boolean;
+  /** @JvmInline value class: serialized as its single underlying field */
+  inline?: boolean;
 }
 
 export interface JsonConfig {
@@ -422,6 +442,9 @@ function decodeValue(v: any, d: Desc, cfg: JsonConfig, typeArgs: Desc[]): any {
       if (typeof v === 'boolean') return v;
       if (cfg.isLenient && (v === 'true' || v === 'false')) return v === 'true';
       throw new SerializationException(`Expected boolean but found ${JSON.stringify(v)}`);
+    case 'bytes':
+      if (!Array.isArray(v)) throw new SerializationException(`Expected JSON array but found ${typeof v}`);
+      return Int8Array.from(v.map((x) => decodeValue(x, T.int, cfg, typeArgs)));
     case 'list':
     case 'array$':
     case 'set': {
@@ -587,6 +610,7 @@ function encodeValue(v: any, cfg: JsonConfig): any {
   if (typeof v === 'number') return v;
   if (v instanceof JsonPrimitive || v instanceof JsonObject || v instanceof JsonArray) return elementToJS(v);
   if (Array.isArray(v)) return v.map((x) => encodeValue(x, cfg));
+  if (v instanceof Int8Array || v instanceof Uint8Array) return Array.from(v);
   if (v instanceof Set) return [...v].map((x) => encodeValue(x, cfg));
   if (v instanceof Map) {
     const o: Record<string, any> = {};

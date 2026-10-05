@@ -10,12 +10,14 @@ import { T, setPairCtor } from './serialization/json';
 import { BundleClassLoader } from './lib/i18n';
 import { cryptoModules, cryptoExts } from './java/cryptoModules';
 import { timeModules } from './java/time';
+import { extraKeiyoushiModules } from './keiyoushi/extra';
 import { getPreferencesFor } from './source';
 import { ListPreference, EditTextPreference } from './source/preferences';
 
 setPairCtor(Pair);
 registerModules(cryptoModules);
 registerModules(timeModules);
+registerModules(extraKeiyoushiModules);
 // kotlin.text.* names usable without imports
 (defaultImports as any).Charsets = cryptoModules['kotlin.text.Charsets'];
 // Byte/charset-aware extensions take precedence over the generic stdlib ones.
