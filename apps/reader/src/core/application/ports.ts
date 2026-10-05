@@ -133,6 +133,13 @@ export interface SourceGateway {
 /** Downloaded page files. */
 export interface PageStore {
   write(chapterId: ChapterId, index: number, bytes: Uint8Array, ext: string): Promise<void>;
+  /**
+   * Downloads a page natively, straight to disk. On iOS the transfer goes on while the app is
+   * in the background. Rejects on a network error or a non-2xx response.
+   */
+  download(chapterId: ChapterId, index: number, req: ImageRequest, signal?: AbortSignal): Promise<void>;
+  /** Indexes of the pages already on disk. */
+  indexes(chapterId: ChapterId): Promise<Set<number>>;
   list(chapterId: ChapterId): Promise<string[]>;
   remove(chapterId: ChapterId): Promise<void>;
 }

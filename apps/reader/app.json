@@ -40,6 +40,27 @@
           "imageWidth": 76
         }
       ],
+      "./plugins/withoutPushEntitlement",
+      [
+        "expo-widgets",
+        {
+          "groupIdentifier": "group.com.alexiss.kanso",
+          "widgets": [
+            {
+              "name": "ContinueReading",
+              "displayName": "Continue reading",
+              "description": "Pick up the chapter you are reading.",
+              "ios": {
+                "supportedFamilies": [
+                  "systemSmall",
+                  "systemMedium"
+                ]
+              }
+            }
+          ],
+          "enablePushNotifications": false
+        }
+      ],
       "./plugins/withReleaseSigning"
     ],
     "experiments": {

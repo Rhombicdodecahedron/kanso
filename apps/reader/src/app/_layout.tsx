@@ -6,6 +6,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppProvider } from '@/composition/AppProvider';
 import { colors } from '@/ui/theme';
 
+// A deep link (the widget opens kanso://reader/<id>) still has the tabs to go back to.
+export const unstable_settings = { initialRouteName: '(tabs)' };
+
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.bg }}>

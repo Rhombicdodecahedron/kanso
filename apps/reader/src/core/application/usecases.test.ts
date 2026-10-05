@@ -51,15 +51,38 @@ function setup(chapters: RemoteChapter[]) {
     read: async (p) => files.get(p) ?? null,
     remove: async (p) => void files.delete(p),
   };
+  const add = (c: number, i: number) => pageFiles.set(c, [...(pageFiles.get(c) ?? []), `file://${c}/${i}`]);
+  // Native downloads: controllable from the tests (failures, delay, how many run at once).
+  const native = { fail: false, delay: 0, active: 0, max: 0, requests: [] as { url: string; headers: Record<string, string> }[], aborted: 0 };
   const pages: PageStore = {
-    write: async (c, i) => void pageFiles.set(c, [...(pageFiles.get(c) ?? []), `file://${c}/${i}`]),
+    write: async (c, i) => void add(c, i),
+    async download(c, i, req, signal) {
+      native.requests.push(req);
+      native.active++;
+      native.max = Math.max(native.max, native.active);
+      try {
+        await new Promise<void>((resolve, reject) => {
+          const t = setTimeout(resolve, native.delay);
+          signal?.addEventListener('abort', () => {
+            clearTimeout(t);
+            native.aborted++;
+            reject(new Error('aborted'));
+          });
+        });
+        if (native.fail) throw new Error('HTTP 403');
+        add(c, i);
+      } finally {
+        native.active--;
+      }
+    },
+    indexes: async (c) => new Set((pageFiles.get(c) ?? []).map((f) => Number(f.split('/').pop()))),
     list: async (c) => pageFiles.get(c) ?? [],
     remove: async (c) => void pageFiles.delete(c),
   };
   let t = 1_000_000;
   const sources = fakeSource(chapters);
   const deps: Deps = { ...sqliteRepositories(db), fetcher, bundles, pages, sources, clock: { now: () => ++t } };
-  return { db, uc: createUseCases(deps), sources, index, pageFiles };
+  return { db, uc: createUseCases(deps), sources, index, pageFiles, native };
 }
 
 const rch = (url: string, name: string): RemoteChapter => ({ url, name, date_upload: 5, chapter_number: -1, scanlator: null });
@@ -137,6 +160,81 @@ describe('core loop', () => {
     expect(pageFiles.get(ch1.id)).toHaveLength(3);
     const offline = await uc.reader.open(ch1.id);
     expect(offline.pages.every((p) => p.kind === 'local')).toBe(true);
+  });
+
+  describe('downloads', () => {
+    // A favorite with one chapter of `n` pages, ready to download.
+    async function chapterOf(n: number) {
+      const env = setup([rch('/c/1', 'Chapter 1')]);
+      env.sources.pages = async () => Array.from({ length: n }, (_, i) => ({ index: i, url: '', imageUrl: `https://t.test/p${i}.jpg` }));
+      await migrate(env.db);
+      await env.uc.extensions.addRepo('https://repo.test');
+      await env.uc.extensions.install((await env.uc.extensions.list()).available[0]);
+      const { mangas } = await env.uc.catalog.popular(SRC.id, 1);
+      const r = await env.uc.catalog.refresh(mangas[0].id);
+      return { ...env, chapterId: r.chapters[0].id };
+    }
+
+    it('downloads pages natively with the source headers, several at a time', async () => {
+      const { uc, native, pageFiles, chapterId } = await chapterOf(20);
+      native.delay = 5;
+      await uc.downloads.enqueue([chapterId]);
+      await uc.downloads.run();
+      expect((await uc.downloads.list())[0]).toMatchObject({ state: 'done', progress: 20, total: 20 });
+      expect(pageFiles.get(chapterId)).toHaveLength(20);
+      expect(native.requests[0]).toEqual({ url: 'https://t.test/p0.jpg', headers: { Referer: 'https://t.test/' } });
+      expect(native.max).toBeGreaterThan(1);
+      expect(native.max).toBeLessThanOrEqual(6);
+    });
+
+    it("falls back to the source's client when the native download fails", async () => {
+      const { uc, native, pageFiles, sources, chapterId } = await chapterOf(3);
+      native.fail = true;
+      const fetched: number[] = [];
+      sources.fetchImage = async (_s, p) => {
+        fetched.push(p.index);
+        return { bytes: new Uint8Array([1]), contentType: 'image/png' };
+      };
+      await uc.downloads.enqueue([chapterId]);
+      await uc.downloads.run();
+      expect((await uc.downloads.list())[0]).toMatchObject({ state: 'done', progress: 3 });
+      expect(fetched.sort()).toEqual([0, 1, 2]);
+      expect(pageFiles.get(chapterId)).toHaveLength(3);
+    });
+
+    it('keeps the pages already on disk when a download resumes', async () => {
+      const { uc, native, pageFiles, chapterId } = await chapterOf(5);
+      pageFiles.set(chapterId, [`file://${chapterId}/0`, `file://${chapterId}/1`]);
+      await uc.downloads.enqueue([chapterId]);
+      await uc.downloads.run();
+      expect(native.requests.map((r) => r.url)).toEqual(['https://t.test/p2.jpg', 'https://t.test/p3.jpg', 'https://t.test/p4.jpg']);
+      expect((await uc.downloads.list())[0]).toMatchObject({ state: 'done', progress: 5, total: 5 });
+    });
+
+    it('hands every remaining page to the system when the app goes to the background', async () => {
+      const { uc, native, chapterId } = await chapterOf(30);
+      native.delay = 20;
+      await uc.downloads.enqueue([chapterId]);
+      const done = uc.downloads.run();
+      await new Promise((r) => setTimeout(r, 5));
+      uc.downloads.background();
+      await done;
+      expect(native.max).toBeGreaterThan(6);
+      expect((await uc.downloads.list())[0]).toMatchObject({ state: 'done', progress: 30 });
+    });
+
+    it('cancels the transfers of a cancelled chapter', async () => {
+      const { uc, native, pageFiles, chapterId } = await chapterOf(10);
+      native.delay = 50;
+      await uc.downloads.enqueue([chapterId]);
+      const done = uc.downloads.run();
+      await new Promise((r) => setTimeout(r, 10));
+      await uc.downloads.cancel(chapterId);
+      await done;
+      expect(native.aborted).toBeGreaterThan(0);
+      expect(await uc.downloads.list()).toEqual([]);
+      expect(pageFiles.get(chapterId)).toBeUndefined();
+    });
   });
 
   it('rejects a bundle whose checksum does not match', async () => {

@@ -46,6 +46,8 @@ export function DebugScreen() {
       if (!popular?.mangas.length) return;
       const details = await step('details', () => uc.catalog.refresh(popular.mangas[0].id), (r) => `${r.manga.title}: ${r.chapters.length} chapters`);
       if (!details?.chapters.length) return;
+      // start from a clean chapter so the download path really runs
+      await uc.downloads.remove(details.chapters[0].id);
       const session = await step('pages', () => uc.reader.open(details.chapters[0].id), (s) => `${s.pages.length} pages`);
       const first = session?.pages[0];
       if (!session || !first || first.kind !== 'remote') return;
