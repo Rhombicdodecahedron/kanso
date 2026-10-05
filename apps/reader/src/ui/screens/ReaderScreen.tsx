@@ -261,7 +261,8 @@ const PageView = memo(function PageView({ manga, page, width, height, paged, nea
 
   if (!paged) return <View style={{ width, height: boxHeight, alignItems: 'center', justifyContent: 'center' }}>{content}</View>;
   return (
-    <ScrollView style={{ width, height }} contentContainerStyle={{ width, height, alignItems: 'center', justifyContent: 'center' }} maximumZoomScale={3} minimumZoomScale={1} centerContent showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
+    // Zoom container only: no bounce, so unzoomed drags reach the page list instead of springing back.
+    <ScrollView style={{ width, height }} contentContainerStyle={{ width, height, alignItems: 'center', justifyContent: 'center' }} maximumZoomScale={3} minimumZoomScale={1} bounces={false} centerContent showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
       {content}
     </ScrollView>
   );
