@@ -105,6 +105,12 @@ export interface Crypto {
   randomId(): string;
 }
 
+/** Small secrets kept by the platform (the iOS keychain), such as the sync token. */
+export interface SecretStore {
+  get(key: string): Promise<string | null>;
+  set(key: string, value: string | null): Promise<void>;
+}
+
 /** Per-source preference values, kept as one JSON object per source. */
 export interface SourcePrefsRepository {
   loadAll(): Promise<Map<SourceId, Record<string, unknown>>>;

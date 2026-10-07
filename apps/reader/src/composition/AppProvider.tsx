@@ -6,7 +6,7 @@ import { colors } from '@/ui/theme';
 
 import { createApp, type App } from './container';
 
-const AppContext = createContext<App | null>(null);
+export const AppContext = createContext<App | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [app, setApp] = useState<App | null>(null);
