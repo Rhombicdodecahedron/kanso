@@ -7,8 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useApp } from '@/composition/AppProvider';
 import { useQuery } from '@/ui/hooks/useQuery';
-import type { ReaderPage, ReaderSession } from '@/core/application/reader';
-import type { ImageRequest, Manga, ReaderMode } from '@/core/domain/model';
+import type { ReaderPage, ReaderSession, ImageRequest, Manga, ReaderMode } from '@kanso/core';
 import { Button, Chip, IconButton, Row } from '@/ui/components/Buttons';
 import { Icon, icons } from '@/ui/components/Icon';
 import { Sheet } from '@/ui/components/Sheet';

@@ -1,5 +1,5 @@
-import { planChapterSync, recognizeChapterNumber } from './chapters';
-import type { Chapter, RemoteChapter } from './model';
+import { planChapterSync, recognizeChapterNumber } from '../src/domain/chapters';
+import type { Chapter, RemoteChapter } from '../src/domain/model';
 
 const rc = (url: string, name: string, n = -1): RemoteChapter => ({ url, name, date_upload: 1000, chapter_number: n, scanlator: null });
 const ch = (id: number, url: string, n: number, extra: Partial<Chapter> = {}): Chapter => ({

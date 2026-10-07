@@ -1,14 +1,12 @@
 import { AppState } from 'react-native';
 
 import { openExpoDriver } from '@/adapters/sqlite/expoDriver';
-import { sqliteRepositories } from '@/adapters/sqlite/repositories';
-import { migrate } from '@/adapters/sqlite/schema';
+import { sqliteRepositories, migrate } from '@kanso/sqlite';
 import { createRuntimeGateway } from '@/adapters/sources/runtimeGateway';
 import { HttpExtensionFetcher } from '@/adapters/system/fetcher';
 import { FsBundleStore, FsPageStore } from '@/adapters/system/fileStores';
-import { createUseCases, type UseCases } from '@/core/application';
+import { createUseCases, type SourceGateway, type UseCases } from '@kanso/core';
 import { syncWidget } from '@/widgets/sync';
-import type { SourceGateway } from '@/core/application/ports';
 
 export const DEFAULT_REPO = 'https://rhombicdodecahedron.github.io/kanso-extensions';
 

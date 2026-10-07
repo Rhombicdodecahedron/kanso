@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { Alert, FlatList, Pressable, View } from 'react-native';
 
 import { useApp } from '@/composition/AppProvider';
-import type { HistoryEntry } from '@/core/domain/model';
+import type { HistoryEntry } from '@kanso/core';
 import { IconButton } from '@/ui/components/Buttons';
 import { Header } from '@/ui/components/Header';
 import { Empty, ErrorState, Loading } from '@/ui/components/States';

@@ -1,6 +1,6 @@
 import { DatabaseSync } from 'node:sqlite';
 
-import { createSerialDriver, type SqlDriver } from './driver';
+import { createSerialDriver, type SqlDriver } from '../driver';
 
 /** An in-memory database on Node's built-in SQLite, so the real SQL runs in Jest. */
 export function openNodeDriver(): SqlDriver {

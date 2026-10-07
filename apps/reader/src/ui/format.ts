@@ -1,4 +1,4 @@
-import { MangaStatus } from '@/core/domain/model';
+import { MangaStatus } from '@kanso/core';
 
 const STATUS: Record<number, string> = {
   [MangaStatus.UNKNOWN]: 'Unknown',

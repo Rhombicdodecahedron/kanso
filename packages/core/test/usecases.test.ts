@@ -1,10 +1,10 @@
-import { openNodeDriver } from '@/adapters/sqlite/nodeDriver.testkit';
-import { sqliteRepositories } from '@/adapters/sqlite/repositories';
-import { migrate } from '@/adapters/sqlite/schema';
+import { openNodeDriver } from '@kanso/sqlite/testing';
+import { sqliteRepositories } from '@kanso/sqlite';
+import { migrate } from '@kanso/sqlite';
 
-import type { InstalledExtension, RemoteChapter, RemoteManga, SourceInfo } from '../domain/model';
-import { createUseCases } from './index';
-import type { BundleStore, Deps, ExtensionFetcher, PageStore, SourceGateway } from './ports';
+import type { InstalledExtension, RemoteChapter, RemoteManga, SourceInfo } from '../src/domain/model';
+import { createUseCases } from '../src/application';
+import type { BundleStore, Deps, ExtensionFetcher, PageStore, SourceGateway } from '../src/application/ports';
 
 const SRC: SourceInfo = { id: '123', name: 'Test', lang: 'en', baseUrl: 'https://t.test', index: 0 };
 

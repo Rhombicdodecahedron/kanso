@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { ScrollView, Switch, View } from 'react-native';
 
 import { useApp } from '@/composition/AppProvider';
-import type { ReaderMode, Settings } from '@/core/domain/model';
+import type { ReaderMode, Settings } from '@kanso/core';
 import { Chip, Row } from '@/ui/components/Buttons';
 import { Loading } from '@/ui/components/States';
 import { Txt } from '@/ui/components/Txt';

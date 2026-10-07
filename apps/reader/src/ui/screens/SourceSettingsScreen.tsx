@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Alert, ScrollView, Switch, View } from 'react-native';
 
 import { useApp } from '@/composition/AppProvider';
-import type { PreferenceItem } from '@/core/domain/model';
+import type { PreferenceItem } from '@kanso/core';
 import { Button, Chip, Row } from '@/ui/components/Buttons';
 import { Field } from '@/ui/components/Field';
 import { Txt } from '@/ui/components/Txt';

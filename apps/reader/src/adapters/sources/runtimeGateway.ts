@@ -4,9 +4,8 @@ import { initHost, SourceRegistry } from '@kanso/source-api/src/host';
 import type { PrefStore } from '@kanso/source-api/src/source/preferences';
 import { MemoryCookieJar, type Transport } from '@kanso/source-api/src/okhttp';
 
-import type { SqlDriver } from '@/adapters/sqlite/driver';
-import type { SourceGateway } from '@/core/application/ports';
-import type { FilterState, InstalledExtension, RemoteChapter, RemoteManga, RemotePage, SourceInfo } from '@/core/domain/model';
+import type { SqlDriver } from '@kanso/sqlite';
+import type { SourceGateway, FilterState, InstalledExtension, RemoteChapter, RemoteManga, RemotePage, SourceInfo } from '@kanso/core';
 
 export const USER_AGENT = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
 

@@ -1,6 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 
-import { createSerialDriver, type SqlDriver, type SqlParam } from './driver';
+import { createSerialDriver, type SqlDriver, type SqlParam } from '@kanso/sqlite';
 
 export async function openExpoDriver(name = 'kanso.db'): Promise<SqlDriver> {
   const db = await SQLite.openDatabaseAsync(name);

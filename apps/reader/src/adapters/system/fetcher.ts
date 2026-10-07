@@ -1,6 +1,6 @@
 import * as Crypto from 'expo-crypto';
 
-import type { ExtensionFetcher } from '@/core/application/ports';
+import type { ExtensionFetcher } from '@kanso/core';
 
 /** Reads static extension repos: `<repo>/index.min.json` + bundle files next to it. */
 export class HttpExtensionFetcher implements ExtensionFetcher {

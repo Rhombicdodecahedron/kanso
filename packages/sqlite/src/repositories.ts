@@ -7,8 +7,8 @@ import type {
   MangaRepository,
   RepoRepository,
   SettingsRepository,
-} from '@/core/application/ports';
-import { type Category, type Chapter, DEFAULT_SETTINGS, type Download, type ExtensionRepo, type HistoryEntry, type InstalledExtension, type Manga, type Settings } from '@/core/domain/model';
+} from '@kanso/core';
+import { type Category, type Chapter, DEFAULT_SETTINGS, type Download, type ExtensionRepo, type HistoryEntry, type InstalledExtension, type Manga, type Settings } from '@kanso/core';
 
 import type { SqlDriver, SqlParam } from './driver';
 

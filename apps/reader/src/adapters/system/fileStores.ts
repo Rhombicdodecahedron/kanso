@@ -1,7 +1,6 @@
 import { Directory, DownloadTask, File, Paths } from 'expo-file-system';
 
-import type { BundleStore, PageStore } from '@/core/application/ports';
-import type { ImageRequest } from '@/core/domain/model';
+import type { BundleStore, PageStore, ImageRequest } from '@kanso/core';
 
 const bundlesDir = () => new Directory(Paths.document, 'extensions');
 const downloadsDir = () => new Directory(Paths.document, 'downloads');

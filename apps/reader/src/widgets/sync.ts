@@ -7,9 +7,7 @@ import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import { widgetsDirectory } from 'expo-widgets';
 import { Platform } from 'react-native';
 
-import type { UseCases } from '@/core/application';
-import type { SourceGateway } from '@/core/application/ports';
-import type { Chapter, Manga } from '@/core/domain/model';
+import type { UseCases, SourceGateway, Chapter, Manga } from '@kanso/core';
 
 import ContinueReading, { type ContinueReadingProps } from './ContinueReading';
 

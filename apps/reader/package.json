@@ -4,7 +4,9 @@
   "main": "expo-router/entry",
   "dependencies": {
     "@expo/ui": "~57.0.21",
+    "@kanso/core": "*",
     "@kanso/source-api": "*",
+    "@kanso/sqlite": "*",
     "expo": "~57.0.26",
     "expo-constants": "~57.0.20",
     "expo-crypto": "~57.0.3",
@@ -44,7 +46,7 @@
     "android": "expo run:android",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
-    "test": "jest"
+    "test": "jest --passWithNoTests"
   },
   "private": true
 }
