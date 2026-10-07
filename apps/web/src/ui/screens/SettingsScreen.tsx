@@ -68,7 +68,7 @@ export function SettingsScreen() {
             <span className="list-title">Downloads</span>
             <span className="muted small">Chapters saved in this browser{storage ? `, ${storage}` : ''}</span>
           </Link>
-          {!persistent ? <p className="error small">This browser gave Kanso no lasting storage (a private window?). Your library is lost when the tab closes.</p> : null}
+          {!persistent ? <p className="faint small">This browser may clear Kanso’s data when it runs low on space. Installing Kanso (Add to Home Screen, or Install in the address bar) protects it.</p> : null}
         </Section>
         <Section title="This browser">
           <button

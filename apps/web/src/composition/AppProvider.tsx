@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 
 import { useRouter } from 'next/navigation';
 
-import { OtherTabError } from '@/adapters/sqlite/wasmDriver';
+import { OtherTabError } from '@/adapters/sqlite/browserDriver';
 import { BootScreen } from '@/ui/components/BootScreen';
 
 import type { App } from './container';
@@ -22,8 +22,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let alive = true;
     void (async () => {
-      const session = await fetch('/api/session', { cache: 'no-store' }).then((r) => r.json() as Promise<{ authenticated: boolean }>).catch(() => ({ authenticated: false }));
-      if (!session.authenticated) {
+      // Offline (no answer at all), the library still opens: downloads are readable without the server.
+      const session = await fetch('/api/session', { cache: 'no-store' }).then((r) => r.json() as Promise<{ authenticated: boolean }>).catch(() => null);
+      if (session && !session.authenticated) {
         router.replace('/connect');
         return;
       }
@@ -42,6 +43,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [router]);
 
   useEffect(() => app?.onUnauthorized(() => router.replace('/connect')), [app, router]);
+
+  // The app shell is kept for offline use (production builds only: dev assets change constantly).
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) void navigator.serviceWorker.register('/sw.js').catch(() => {});
+  }, []);
 
   if (error) return <BootScreen error={error.message} retry={!error.otherTab} />;
   if (!app) return <BootScreen />;

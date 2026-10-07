@@ -106,3 +106,30 @@ describe('web crypto', () => {
     expect(webCrypto.randomId()).toMatch(/^[0-9a-f-]{36}$/);
   });
 });
+
+describe('snapshot driver', () => {
+  it('keeps the library across openings and saves once per burst of writes', async () => {
+    const { openSnapshotDriver } = await import('../sqlite/snapshotDriver');
+    const sqlite3 = (await sqlite3InitModule()) as unknown as import('../sqlite/snapshotDriver').Sqlite3;
+    let stored: Uint8Array | null = null;
+    let saves = 0;
+    const store = { load: async () => stored, save: async (b: Uint8Array) => void ((stored = b), saves++) };
+
+    const first = await openSnapshotDriver(sqlite3, store, { delayMs: 10_000 });
+    await migrate(first.db);
+    const repos = sqliteRepositories(first.db);
+    await repos.categories.create('Kept');
+    await repos.categories.create('Also kept');
+    expect(saves).toBe(0);
+    await first.flush();
+    expect(saves).toBe(1);
+    await first.flush();
+    expect(saves).toBe(1);
+
+    const second = await openSnapshotDriver(sqlite3, store);
+    expect((await sqliteRepositories(second.db).categories.list()).map((c) => c.name)).toEqual(['Kept', 'Also kept']);
+    // migrations are not re-applied to a restored database
+    await migrate(second.db);
+    expect(await sqliteRepositories(second.db).categories.list()).toHaveLength(2);
+  });
+});

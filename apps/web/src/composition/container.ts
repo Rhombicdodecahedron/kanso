@@ -8,7 +8,7 @@ import { createProxyTransport, ProxyError } from '@kanso/transport';
 
 import { createImageSrc } from '@/adapters/net/images';
 import { PersistentCookieJar } from '@/adapters/net/persistentCookieJar';
-import { openWasmDriver } from '@/adapters/sqlite/wasmDriver';
+import { openBrowserDriver } from '@/adapters/sqlite/browserDriver';
 import { IdbBundleStore } from '@/adapters/storage/idbBundleStore';
 import { IdbPageStore } from '@/adapters/storage/idbPageStore';
 import { webCrypto } from '@/adapters/system/webCrypto';
@@ -23,7 +23,7 @@ export interface App {
   imageSrc: (req: ImageRequest) => string;
   /** cover URL for a manga of the given source */
   coverSrc: (sourceId: string, url: string | null) => string | null;
-  /** false when the browser gave no persistent storage (private window): data goes on reload */
+  /** false when the browser may evict Kanso's data under storage pressure */
   persistent: boolean;
   /** extensions that failed to load at startup */
   loadErrors: { pkg: string; message: string }[];
@@ -32,7 +32,7 @@ export interface App {
 }
 
 export async function createApp(): Promise<App> {
-  const { db, persistent } = await openWasmDriver();
+  const { db, persistent } = await openBrowserDriver();
   await migrate(db);
   const cookieJar = await PersistentCookieJar.load();
   const unauthorized = new Set<() => void>();

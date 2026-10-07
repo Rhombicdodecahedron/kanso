@@ -127,7 +127,7 @@ describe('image proxy', () => {
 
   it('needs auth and maps upstream errors', async () => {
     expect((await handler(new Request(url('/img.png')))).status).toBe(401);
-    expect((await handler(new Request(url('/missing'), { headers: bearer }))).status).toBe(502);
+    expect((await handler(new Request(url('/missing'), { headers: bearer }))).status).toBe(404);
     expect((await handler(new Request('http://app/api/img?r=@@', { headers: bearer }))).status).toBe(400);
   });
 });

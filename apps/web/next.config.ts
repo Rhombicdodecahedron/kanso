@@ -28,6 +28,8 @@ const config: NextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
         ],
       },
+      // The service worker must be revalidated, or browsers keep an old one for up to a day.
+      { source: '/sw.js', headers: [{ key: 'Cache-Control', value: 'no-cache' }] },
     ];
   },
 };

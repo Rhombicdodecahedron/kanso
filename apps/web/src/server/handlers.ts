@@ -88,7 +88,8 @@ export function createImageHandler(d: ImageDeps) {
           url = new URL(next, url).toString();
           continue;
         }
-        if (!res.ok || !res.body) return text(502, `Upstream answered HTTP ${res.status}`);
+        // A missing image stays a 4xx; anything else is the upstream failing.
+        if (!res.ok || !res.body) return text(res.status >= 400 && res.status < 500 ? res.status : 502, `Upstream answered HTTP ${res.status}`);
         return new Response(res.body, {
           headers: {
             'Content-Type': res.headers.get('content-type') ?? 'application/octet-stream',
