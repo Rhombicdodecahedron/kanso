@@ -58,8 +58,6 @@ export async function createApp(): Promise<App> {
     if (state === 'background') {
       uc.downloads.background();
       void widget.refresh();
-  const sync = createSyncController({ local: new SqliteSyncLocalStore(db), state: new SqliteSyncStateRepository(db), secrets: keychain, crypto: expoCrypto, clock });
-  sync.onDataChanged(() => void widget.refresh());
     } else if (state === 'active') {
       uc.downloads.foreground();
       void uc.downloads.run();
