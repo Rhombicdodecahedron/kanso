@@ -7,23 +7,14 @@ import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import { widgetsDirectory } from 'expo-widgets';
 import { Platform } from 'react-native';
 
-import type { UseCases, SourceGateway, Chapter, Manga } from '@kanso/core';
+import type { Chapter, Manga, ReadingSnapshot, SourceGateway, UseCases } from '@kanso/core';
 
 import ContinueReading, { type ContinueReadingProps } from './ContinueReading';
 
 const EMPTY: ContinueReadingProps = { empty: true, title: '', chapter: '', page: '', progress: 0, image: '', url: 'kanso://' };
 const enabled = Platform.OS === 'ios' && !!widgetsDirectory;
 
-/** What the reader shows right now. */
-export interface Seen {
-  chapterId: number;
-  total: number;
-  page: number;
-  /** how far down the page the reader is (0..1, webtoon) */
-  offset: number;
-  /** where the page image is: a local file, or a URL and the headers to fetch it with */
-  image: () => Promise<{ uri: string; headers?: Record<string, string> }>;
-}
+type Seen = ReadingSnapshot;
 
 /** Page counts seen by the reader (not stored in the database). */
 const totals = new Map<number, number>();

@@ -7,6 +7,7 @@ import type {
   MangaRepository,
   RepoRepository,
   SettingsRepository,
+  SourcePrefsRepository,
 } from '@kanso/core';
 import { type Category, type Chapter, DEFAULT_SETTINGS, type Download, type ExtensionRepo, type HistoryEntry, type InstalledExtension, type Manga, type Settings } from '@kanso/core';
 
@@ -332,6 +333,18 @@ export class SqliteSettingsRepository implements SettingsRepository {
   }
   save(s: Settings) {
     return this.db.run("insert or replace into setting (key, value) values ('settings', ?)", [JSON.stringify(s)]);
+  }
+}
+
+/** Source preferences under `pref:<sourceId>` keys of the setting table. */
+export class SqliteSourcePrefsRepository implements SourcePrefsRepository {
+  constructor(private db: SqlDriver) {}
+  async loadAll() {
+    const rows = await this.db.all<{ key: string; value: string }>("select key, value from setting where key like 'pref:%'");
+    return new Map(rows.map((r) => [r.key.slice(5), parse<Record<string, unknown>>(r.value, {})]));
+  }
+  save(sourceId: string, data: Record<string, unknown>) {
+    return this.db.run('insert or replace into setting (key, value) values (?, ?)', [`pref:${sourceId}`, JSON.stringify(data)]);
   }
 }
 

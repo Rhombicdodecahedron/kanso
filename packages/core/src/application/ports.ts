@@ -97,7 +97,37 @@ export interface SettingsRepository {
 export interface ExtensionFetcher {
   index(repoUrl: string): Promise<Omit<AvailableExtension, 'repoUrl'>[]>;
   bundle(repoUrl: string, file: string): Promise<string>;
+}
+
+export interface Crypto {
+  /** Lowercase hex SHA-256 of the UTF-8 text. */
   sha256(text: string): Promise<string>;
+  randomId(): string;
+}
+
+/** Per-source preference values, kept as one JSON object per source. */
+export interface SourcePrefsRepository {
+  loadAll(): Promise<Map<SourceId, Record<string, unknown>>>;
+  save(sourceId: SourceId, data: Record<string, unknown>): Promise<void>;
+}
+
+/** What the reader shows right now. */
+export interface ReadingSnapshot {
+  chapterId: ChapterId;
+  total: number;
+  page: number;
+  /** how far down the page the reader is (0..1, webtoon) */
+  offset: number;
+  /** where the page image is: a local file, or a URL and the headers to fetch it with */
+  image: () => Promise<{ uri: string; headers?: Record<string, string> }>;
+}
+
+/** A glanceable "continue reading" surface outside the app (the iOS widget). */
+export interface ContinueReadingSurface {
+  /** Rebuilds from history (at startup, after history changes). */
+  refresh(): Promise<void>;
+  /** Follows the reader. */
+  seen(s: ReadingSnapshot): Promise<void>;
 }
 
 /** Stores installed bundle code on device. */
@@ -158,6 +188,7 @@ export interface Deps {
   downloads: DownloadRepository;
   settings: SettingsRepository;
   fetcher: ExtensionFetcher;
+  crypto: Crypto;
   bundles: BundleStore;
   sources: SourceGateway;
   pages: PageStore;

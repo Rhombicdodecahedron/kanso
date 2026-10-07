@@ -14,10 +14,9 @@ import { Txt } from '@/ui/components/Txt';
 import { formatRelativeTime } from '@/ui/format';
 import { useQuery } from '@/ui/hooks/useQuery';
 import { colors, radius, space } from '@/ui/theme';
-import { syncWidget } from '@/widgets/sync';
 
 export function HistoryScreen() {
-  const { uc, sources } = useApp();
+  const { uc, sources, widget } = useApp();
   const load = useCallback(() => uc.library.history(), [uc]);
   const { data, error, reload, act } = useQuery(load);
   const snackbar = useSnackbar();
@@ -25,10 +24,10 @@ export function HistoryScreen() {
   const removeWithUndo = (text: string, remove: () => Promise<HistoryEntry[]>) =>
     act(async () => {
       const removed = await remove();
-      void syncWidget(uc, sources);
+      void widget.refresh();
       snackbar.show({ text, action: { label: 'Undo', onPress: () => void act(async () => {
             await uc.library.restoreHistory(removed);
-            void syncWidget(uc, sources);
+            void widget.refresh();
           }) } });
     });
   if (error) return <ErrorState message={error} onRetry={reload} />;

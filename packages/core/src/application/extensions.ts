@@ -23,7 +23,7 @@ export function compareVersions(a: string, b: string): number {
 export function createExtensionUseCases(d: Deps) {
   async function install(ext: AvailableExtension): Promise<InstalledExtension> {
     const code = await d.fetcher.bundle(ext.repoUrl, ext.file);
-    const hash = await d.fetcher.sha256(code);
+    const hash = await d.crypto.sha256(code);
     if (hash !== ext.sha256) throw new IntegrityError(`Checksum mismatch for ${ext.name}`);
     const installed: InstalledExtension = { ...ext, installedAt: d.clock.now() };
     await d.sources.load(installed, code);

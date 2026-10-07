@@ -4,7 +4,7 @@ import { migrate } from '@kanso/sqlite';
 
 import type { InstalledExtension, RemoteChapter, RemoteManga, SourceInfo } from '../src/domain/model';
 import { createUseCases } from '../src/application';
-import type { BundleStore, Deps, ExtensionFetcher, PageStore, SourceGateway } from '../src/application/ports';
+import type { BundleStore, Crypto, Deps, ExtensionFetcher, PageStore, SourceGateway } from '../src/application/ports';
 
 const SRC: SourceInfo = { id: '123', name: 'Test', lang: 'en', baseUrl: 'https://t.test', index: 0 };
 
@@ -44,8 +44,9 @@ function setup(chapters: RemoteChapter[]) {
   const fetcher: ExtensionFetcher = {
     index: async () => index,
     bundle: async () => 'code',
-    sha256: async (t) => `h:${t}`,
   };
+  let ids = 0;
+  const crypto: Crypto = { sha256: async (t) => `h:${t}`, randomId: () => `id${++ids}` };
   const bundles: BundleStore = {
     write: async (p, c) => void files.set(p, c),
     read: async (p) => files.get(p) ?? null,
@@ -81,7 +82,7 @@ function setup(chapters: RemoteChapter[]) {
   };
   let t = 1_000_000;
   const sources = fakeSource(chapters);
-  const deps: Deps = { ...sqliteRepositories(db), fetcher, bundles, pages, sources, clock: { now: () => ++t } };
+  const deps: Deps = { ...sqliteRepositories(db), fetcher, crypto, bundles, pages, sources, clock: { now: () => ++t } };
   return { db, uc: createUseCases(deps), sources, index, pageFiles, native };
 }
 

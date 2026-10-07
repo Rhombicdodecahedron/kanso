@@ -5,7 +5,9 @@
   "dependencies": {
     "@expo/ui": "~57.0.21",
     "@kanso/core": "*",
+    "@kanso/http": "*",
     "@kanso/source-api": "*",
+    "@kanso/source-gateway": "*",
     "@kanso/sqlite": "*",
     "expo": "~57.0.26",
     "expo-constants": "~57.0.20",

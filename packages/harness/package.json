@@ -8,5 +8,8 @@
     "harness": "tsx src/cli.ts",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": { "@kanso/source-api": "*" }
+  "dependencies": {
+    "@kanso/source-api": "*",
+    "@kanso/transport": "*"
+  }
 }
