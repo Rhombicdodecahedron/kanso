@@ -1,5 +1,5 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": { "noEmit": true, "types": ["node", "vitest/globals"] },
-  "include": ["src", "test"]
+  "include": ["src", "test", "testing"]
 }

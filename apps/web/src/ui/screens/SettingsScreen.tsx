@@ -9,6 +9,7 @@ import type { ReaderMode, Settings } from '@kanso/core';
 import { useApp } from '@/composition/AppProvider';
 import { Chip, PageHeader } from '@/ui/components/Shell';
 import { Loading } from '@/ui/components/States';
+import { formatRelativeTime } from '@/ui/format';
 import { useQuery } from '@/ui/hooks/useQuery';
 import { languageName } from '@/ui/lang';
 
@@ -70,6 +71,7 @@ export function SettingsScreen() {
           </Link>
           {!persistent ? <p className="faint small">This browser may clear Kanso’s data when it runs low on space. Installing Kanso (Add to Home Screen, or Install in the address bar) protects it.</p> : null}
         </Section>
+        <SyncSection />
         <Section title="This browser">
           <button
             className="btn btn-ghost"
@@ -93,6 +95,30 @@ export function SettingsScreen() {
         <p className="faint small">Kanso runs extensions translated from the Mihon extension ecosystem (keiyoushi/extensions-source, Apache-2.0). It is not affiliated with Mihon.</p>
       </div>
     </>
+  );
+}
+
+function SyncSection() {
+  const { sync } = useApp();
+  const [status, setStatus] = useState(sync.status());
+  useEffect(() => sync.onStatus(setStatus), [sync]);
+  const last = status.kind !== 'off' && status.lastSyncAt ? `Last synced ${formatRelativeTime(status.lastSyncAt)}.` : 'Not synced yet.';
+  return (
+    <Section title="Sync">
+      {status.kind === 'off' ? (
+        <p className="muted small">{status.reason} Set SYNC_DATABASE_URL on the deployment to keep your library, progress and history the same on every device.</p>
+      ) : (
+        <>
+          <p className="muted small">Your library, reading progress and history follow you between this browser and the Kanso app. {last}</p>
+          {status.kind === 'error' ? <p className="error small">{status.message}</p> : null}
+          <div>
+            <button className="btn btn-secondary btn-small" disabled={status.kind === 'syncing'} onClick={() => void sync.syncNow()}>
+              {status.kind === 'syncing' ? 'Syncing' : 'Sync now'}
+            </button>
+          </div>
+        </>
+      )}
+    </Section>
   );
 }
 

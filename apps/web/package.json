@@ -19,6 +19,7 @@
     "@kanso/source-api": "*",
     "@kanso/source-gateway": "*",
     "@kanso/sqlite": "*",
+    "@kanso/sync-turso": "*",
     "@kanso/transport": "*",
     "@sqlite.org/sqlite-wasm": "^3.53.4-build2",
     "fake-indexeddb": "^6.2.5",

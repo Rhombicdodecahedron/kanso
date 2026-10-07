@@ -17,7 +17,8 @@ const csp = [
 ].join('; ');
 
 const config: NextConfig = {
-  transpilePackages: ['@kanso/core', '@kanso/sqlite', '@kanso/source-gateway', '@kanso/transport', '@kanso/http', '@kanso/source-api'],
+  transpilePackages: ['@kanso/core', '@kanso/sqlite', '@kanso/source-gateway', '@kanso/transport', '@kanso/http', '@kanso/source-api', '@kanso/sync-turso'],
+  serverExternalPackages: ['@libsql/client'],
   async headers() {
     return [
       {

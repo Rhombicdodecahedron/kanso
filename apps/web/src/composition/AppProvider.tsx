@@ -9,7 +9,7 @@ import { BootScreen } from '@/ui/components/BootScreen';
 
 import type { App } from './container';
 
-const AppContext = createContext<App | null>(null);
+export const AppContext = createContext<App | null>(null);
 
 // One app per tab, kept across client-side navigations.
 let booting: Promise<App> | null = null;

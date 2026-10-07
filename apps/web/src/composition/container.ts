@@ -1,9 +1,9 @@
 // Browser composition root: the same use cases as the iPhone app, on browser adapters.
 
-import { createUseCases, type ContinueReadingSurface, type ImageRequest, type SourceGateway, type UseCases } from '@kanso/core';
-import { HttpExtensionFetcher } from '@kanso/http';
+import { createSyncUseCases, createUseCases, type ContinueReadingSurface, type ImageRequest, type SourceGateway, type UseCases } from '@kanso/core';
+import { HttpExtensionFetcher, HttpSyncClient } from '@kanso/http';
 import { createRuntimeGateway } from '@kanso/source-gateway';
-import { migrate, SqliteSourcePrefsRepository, sqliteRepositories } from '@kanso/sqlite';
+import { migrate, SqliteSourcePrefsRepository, sqliteRepositories, SqliteSyncLocalStore, SqliteSyncStateRepository } from '@kanso/sqlite';
 import { createProxyTransport, ProxyError } from '@kanso/transport';
 
 import { createImageSrc } from '@/adapters/net/images';
@@ -12,6 +12,8 @@ import { openBrowserDriver } from '@/adapters/sqlite/browserDriver';
 import { IdbBundleStore } from '@/adapters/storage/idbBundleStore';
 import { IdbPageStore } from '@/adapters/storage/idbPageStore';
 import { webCrypto } from '@/adapters/system/webCrypto';
+
+import { createSyncController, type SyncController } from './syncController';
 
 export const DEFAULT_REPO = 'https://rhombicdodecahedron.github.io/kanso-extensions';
 
@@ -27,6 +29,7 @@ export interface App {
   persistent: boolean;
   /** extensions that failed to load at startup */
   loadErrors: { pkg: string; message: string }[];
+  sync: SyncController;
   /** the server stopped accepting this browser's session */
   onUnauthorized: (f: () => void) => () => void;
 }
@@ -53,6 +56,7 @@ export async function createApp(): Promise<App> {
     prefs: new SqliteSourcePrefsRepository(db),
   });
   const imageSrc = createImageSrc(cookieJar);
+  const clock = { now: () => Date.now() };
   const uc = createUseCases({
     ...sqliteRepositories(db),
     fetcher: new HttpExtensionFetcher(),
@@ -60,12 +64,16 @@ export async function createApp(): Promise<App> {
     bundles: new IdbBundleStore(),
     pages: new IdbPageStore(imageSrc),
     sources,
-    clock: { now: () => Date.now() },
+    clock,
   });
   await uc.extensions.ensureDefaultRepo(DEFAULT_REPO).catch(() => {});
   const loadErrors = await uc.extensions.loadInstalled();
   void uc.downloads.resume();
+  const sync = createSyncController(
+    createSyncUseCases({ local: new SqliteSyncLocalStore(db), remote: new HttpSyncClient({ baseUrl: '' }), state: new SqliteSyncStateRepository(db), crypto: webCrypto, clock }),
+  );
   return {
+    sync,
     uc,
     sources,
     widget: { refresh: async () => {}, seen: async () => {} },

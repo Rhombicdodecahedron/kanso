@@ -6,7 +6,10 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createFetchTransport, createProxyTransport, encodeRequest, WIRE_CONTENT_TYPE } from '@kanso/transport';
 
 import { createAuth } from './auth';
-import { createImageHandler, createProxyHandler, createSessionHandlers, encodeImageParams } from './handlers';
+import { createSyncService } from '@kanso/core';
+import { createMemorySyncStore } from '@kanso/core/testing';
+
+import { createImageHandler, createProxyHandler, createSessionHandlers, createSyncHandler, encodeImageParams } from './handlers';
 import { allowAll, createUrlGuard, isBlockedAddress } from './ssrf';
 
 const TOKEN = 't'.repeat(40);
@@ -129,5 +132,27 @@ describe('image proxy', () => {
     expect((await handler(new Request(url('/img.png')))).status).toBe(401);
     expect((await handler(new Request(url('/missing'), { headers: bearer }))).status).toBe(404);
     expect((await handler(new Request('http://app/api/img?r=@@', { headers: bearer }))).status).toBe(400);
+  });
+});
+
+describe('sync endpoint', () => {
+  const post = (h: (r: Request) => Promise<Response>, body: unknown, headers: Record<string, string> = bearer) => h(new Request('http://app/api/sync', { method: 'POST', headers, body: typeof body === 'string' ? body : JSON.stringify(body) }));
+  const service = createSyncService(createMemorySyncStore(), { now: () => Date.now() });
+  const handler = createSyncHandler({ auth, service });
+
+  it('needs auth, a configured store and a valid body', async () => {
+    expect((await post(handler, { deviceId: 'a', cursor: 0, changes: [] }, {})).status).toBe(401);
+    expect((await post(createSyncHandler({ auth, service: null }), { deviceId: 'a', cursor: 0, changes: [] })).status).toBe(503);
+    expect((await post(handler, 'not json')).status).toBe(400);
+    expect((await post(handler, { deviceId: 'a', cursor: 'x', changes: [] })).status).toBe(400);
+  });
+
+  it('exchanges changes between devices', async () => {
+    const change = { kind: 'library', key: '["s","/m"]', updatedAt: 5, deleted: false, data: { favorite: true } };
+    const a = await (await post(handler, { deviceId: 'a', cursor: 0, changes: [change] })).json();
+    expect(a.changes).toEqual([]);
+    const b = await (await post(handler, { deviceId: 'b', cursor: 0, changes: [] })).json();
+    expect(b.changes).toEqual([{ ...change, deviceId: 'a' }]);
+    expect(b.cursor).toBeGreaterThan(0);
   });
 });

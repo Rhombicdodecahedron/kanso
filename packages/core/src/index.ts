@@ -7,3 +7,4 @@ export * from './application/extensions';
 export * from './application/library';
 export * from './application/reader';
 export * from './application';
+export * from './sync';

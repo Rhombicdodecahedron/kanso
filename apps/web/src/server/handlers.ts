@@ -1,5 +1,6 @@
 // Route handler logic, kept free of Next so it can be exercised in-process.
 
+import { InvalidExchangeError, parseExchangeRequest, type SyncService } from '@kanso/core';
 import type { Transport } from '@kanso/source-api/src/okhttp';
 import { decodeRequest, encodeResponse, WIRE_CONTENT_TYPE } from '@kanso/transport';
 
@@ -119,5 +120,32 @@ export function createSessionHandlers(auth: Auth) {
     async DELETE() {
       return Response.json({ authenticated: false }, { headers: { 'Set-Cookie': auth.logoutCookie() } });
     },
+  };
+}
+
+export interface SyncDeps {
+  auth: Auth;
+  /** null: no sync database configured on this deployment */
+  service: SyncService | null;
+}
+
+export function createSyncHandler(d: SyncDeps) {
+  return async (req: Request): Promise<Response> => {
+    if (!d.auth.check(req)) return unauthorized();
+    if (!d.service) return text(503, 'Sync is not set up on this server (no sync database configured).');
+    const body = await readCapped(req, MAX_REQUEST_BYTES);
+    if (!body) return text(413, 'Request too large');
+    let exchange;
+    try {
+      exchange = parseExchangeRequest(JSON.parse(new TextDecoder().decode(body)));
+    } catch (e) {
+      return text(400, e instanceof InvalidExchangeError ? e.message : 'Body must be JSON');
+    }
+    try {
+      return Response.json(await d.service.exchange(exchange), { headers: { 'Cache-Control': 'no-store' } });
+    } catch (e) {
+      console.error('[sync]', e);
+      return text(500, 'Sync storage failed');
+    }
   };
 }

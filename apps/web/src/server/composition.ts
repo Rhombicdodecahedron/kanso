@@ -2,10 +2,12 @@
 // does not need the secrets.
 import 'server-only';
 
+import { createSyncService } from '@kanso/core';
+import { createTursoSyncStore } from '@kanso/sync-turso';
 import { fetchTransport } from '@kanso/transport';
 
 import { createAuth, type Auth } from './auth';
-import { createImageHandler, createProxyHandler, createSessionHandlers } from './handlers';
+import { createImageHandler, createProxyHandler, createSessionHandlers, createSyncHandler } from './handlers';
 import { createUrlGuard } from './ssrf';
 
 let auth: Auth | null = null;
@@ -26,3 +28,15 @@ export const session = {
   GET: lazy(() => createSessionHandlers(getAuth()).GET),
   DELETE: lazy(() => createSessionHandlers(getAuth()).DELETE),
 };
+
+// The sync store adapter is chosen here, and only here: another database means another adapter.
+function syncStore() {
+  const url = process.env.SYNC_DATABASE_URL;
+  if (!url) return null;
+  return createTursoSyncStore({ url, authToken: process.env.SYNC_DATABASE_TOKEN });
+}
+
+export const sync = lazy(() => {
+  const store = syncStore();
+  return createSyncHandler({ auth: getAuth(), service: store ? createSyncService(store, { now: () => Date.now() }) : null });
+});
