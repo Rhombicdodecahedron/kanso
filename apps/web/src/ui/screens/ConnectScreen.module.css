@@ -50,6 +50,7 @@
   cursor: pointer;
 }
 .primary {
+  text-align: center;
   background: var(--accent);
   color: #1a1408;
 }

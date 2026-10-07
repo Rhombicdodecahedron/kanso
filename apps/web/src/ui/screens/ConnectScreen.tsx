@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState, type FormEvent } from 'react';
 
 import styles from './ConnectScreen.module.css';
@@ -9,6 +11,7 @@ export function ConnectScreen() {
   const [state, setState] = useState<'checking' | 'out' | 'in'>('checking');
   const [token, setToken] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     fetch('/api/session', { cache: 'no-store' })
@@ -21,10 +24,8 @@ export function ConnectScreen() {
     e.preventDefault();
     setError(null);
     const res = await fetch('/api/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: token.trim() }) });
-    if (res.ok) {
-      setToken('');
-      setState('in');
-    } else setError(res.status === 401 ? 'That token is not right.' : `The server answered HTTP ${res.status}.`);
+    if (res.ok) router.replace('/');
+    else setError(res.status === 401 ? 'That token is not right.' : `The server answered HTTP ${res.status}.`);
   }
 
   async function signOut() {
@@ -38,6 +39,9 @@ export function ConnectScreen() {
       {state === 'checking' ? null : state === 'in' ? (
         <section className={styles.card}>
           <p className={styles.ok}>Connected to this server.</p>
+          <Link className={styles.primary} href="/">
+            Open your library
+          </Link>
           <button className={styles.secondary} onClick={signOut}>
             Sign out
           </button>

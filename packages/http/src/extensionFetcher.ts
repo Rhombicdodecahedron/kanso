@@ -5,7 +5,9 @@ export class HttpExtensionFetcher implements ExtensionFetcher {
   constructor(private readonly doFetch: typeof fetch = (...a) => fetch(...a)) {}
 
   async index(repoUrl: string) {
-    const res = await this.doFetch(`${repoUrl}/index.min.json`, { headers: { 'Cache-Control': 'no-cache' } });
+    // The fetch option, not a Cache-Control header: a header makes browsers send a CORS preflight
+    // that static hosts like GitHub Pages do not answer.
+    const res = await this.doFetch(`${repoUrl}/index.min.json`, { cache: 'no-cache' });
     if (!res.ok) throw new Error(`Repository answered HTTP ${res.status}`);
     const list = await res.json();
     if (!Array.isArray(list)) throw new Error('Not an extension index');
