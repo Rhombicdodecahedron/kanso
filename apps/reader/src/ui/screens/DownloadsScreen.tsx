@@ -5,7 +5,7 @@ import { useQuery } from '@/ui/hooks/useQuery';
 import { FlatList, View } from 'react-native';
 
 import { useApp } from '@/composition/AppProvider';
-import type { Chapter, Download, Manga } from '@/core/domain/model';
+import type { Chapter, Download, Manga } from '@kanso/core';
 import { Button, Row } from '@/ui/components/Buttons';
 import { Empty } from '@/ui/components/States';
 import { Txt } from '@/ui/components/Txt';

@@ -7,15 +7,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useApp } from '@/composition/AppProvider';
 import { useQuery } from '@/ui/hooks/useQuery';
-import type { ReaderPage, ReaderSession } from '@/core/application/reader';
-import type { ImageRequest, Manga, ReaderMode } from '@/core/domain/model';
+import type { ReaderPage, ReaderSession, ImageRequest, Manga, ReaderMode } from '@kanso/core';
 import { Button, Chip, IconButton, Row } from '@/ui/components/Buttons';
 import { Icon, icons } from '@/ui/components/Icon';
 import { Sheet } from '@/ui/components/Sheet';
 import { ErrorState, Loading } from '@/ui/components/States';
 import { Txt } from '@/ui/components/Txt';
 import { colors, space } from '@/ui/theme';
-import { syncWidget } from '@/widgets/sync';
 
 /** Webtoon: where each page cell sits in the list content (FlatList keeps this private). */
 const CellLayoutContext = createContext<((index: number, y: number, height: number) => void) | null>(null);
@@ -70,7 +68,7 @@ export function ReaderScreen() {
 
 function Reader({ session }: { session: ReaderSession }) {
   const [mode, setMode] = useState<ReaderMode>(session.mode);
-  const { uc, sources } = useApp();
+  const { uc, widget } = useApp();
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const [menu, setMenu] = useState(false);
@@ -123,7 +121,7 @@ function Reader({ session }: { session: ReaderSession }) {
       .progress(chapterId, page, total, spent, offset)
       .then(() => {
         const shown = at.page;
-        return syncWidget(uc, sources, {
+        return widget.seen({
           chapterId,
           total,
           page,
@@ -132,7 +130,7 @@ function Reader({ session }: { session: ReaderSession }) {
         });
       })
       .catch(() => {});
-  }, [at, index, page, total, chapterId, current.manga, session.startPage, session.startOffset, uc, sources]);
+  }, [at, index, page, total, chapterId, current.manga, session.startPage, session.startOffset, uc, widget]);
 
   // Reaching a chapter's end card (or anything after it) finishes that chapter, even if its last
   // page scrolled by too fast to be reported as the current one.

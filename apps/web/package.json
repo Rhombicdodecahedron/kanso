@@ -1,0 +1,41 @@
+{
+  "name": "@kanso/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "node scripts/copy-sqlite-wasm.mjs",
+    "dev": "next dev",
+    "prebuild": "node scripts/copy-sqlite-wasm.mjs",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@kanso/core": "*",
+    "@kanso/http": "*",
+    "@kanso/source-api": "*",
+    "@kanso/source-gateway": "*",
+    "@kanso/sqlite": "*",
+    "@kanso/sync-turso": "*",
+    "@kanso/transport": "*",
+    "@sqlite.org/sqlite-wasm": "^3.53.4-build2",
+    "fake-indexeddb": "^6.2.5",
+    "idb": "^8.0.4",
+    "next": "16.4.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "16.4.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7"
+  }
+}

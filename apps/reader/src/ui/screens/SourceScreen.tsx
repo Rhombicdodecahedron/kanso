@@ -4,8 +4,7 @@ import { ActivityIndicator, FlatList, Platform, Pressable, useWindowDimensions, 
 
 import { useApp } from '@/composition/AppProvider';
 import { usePaged } from '@/ui/hooks/usePaged';
-import type { BrowsePage } from '@/core/application/catalog';
-import type { FilterState, Manga } from '@/core/domain/model';
+import type { BrowsePage, FilterState, Manga } from '@kanso/core';
 import { Button, Chip, IconButton, Row } from '@/ui/components/Buttons';
 import { Field } from '@/ui/components/Field';
 import { MangaCard } from '@/ui/components/MangaCard';

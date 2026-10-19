@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Alert, Pressable, SectionList, View } from 'react-native';
 
 import { useApp } from '@/composition/AppProvider';
-import type { AvailableExtension } from '@/core/domain/model';
+import type { AvailableExtension } from '@kanso/core';
 import { Button, Chip, Row } from '@/ui/components/Buttons';
 import { Field } from '@/ui/components/Field';
 import { Header } from '@/ui/components/Header';

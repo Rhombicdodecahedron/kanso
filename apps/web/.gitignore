@@ -1,0 +1,8 @@
+.next/
+next-env.d.ts
+*.tsbuildinfo
+.env*.local
+.vercel
+.tmp/
+public/sqlite/
+.data/

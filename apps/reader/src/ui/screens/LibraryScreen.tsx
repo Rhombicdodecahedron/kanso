@@ -4,7 +4,7 @@ import { Alert, FlatList, ScrollView, useWindowDimensions, View } from 'react-na
 
 import { useApp } from '@/composition/AppProvider';
 import { devLog } from '@/ui/devlog';
-import { filterAndSort, type LibrarySort } from '@/core/application/library';
+import { filterAndSort, type LibrarySort } from '@kanso/core';
 import { Button, Chip, IconButton, Row } from '@/ui/components/Buttons';
 import { Field } from '@/ui/components/Field';
 import { Header } from '@/ui/components/Header';

@@ -2,7 +2,7 @@
 
 # Kanso
 
-A manga reader for iOS and Android modelled on [Mihon](https://github.com/mihonapp/mihon), which runs
+A manga reader for iOS, Android and the web, modelled on [Mihon](https://github.com/mihonapp/mihon), which runs
 Mihon's own extension ecosystem. Kotlin extensions from
 [keiyoushi/extensions-source](https://github.com/keiyoushi/extensions-source) are translated
 mechanically into JavaScript bundles, which the app downloads from a repository and runs.
@@ -34,7 +34,14 @@ Each [release](https://github.com/Rhombicdodecahedron/kanso/releases/latest) has
 | `packages/source-api` | Runtime that translated extensions run against: Kotlin stdlib and coroutines, Jsoup (parse5 + css-select), OkHttp (async interceptors), kotlinx.serialization (JSON, Protobuf), java.time/text, crypto, keiyoushi `core`, Mihon's model and `KeiSource`. `host.ts` is the API the app uses. |
 | `packages/translator` | Kotlin → JS compiler (tree-sitter-kotlin) plus a CLI that translates the whole repo and writes bundles, `index.min.json` and a compatibility report. |
 | `packages/harness` | Runs bundles against live sites (popular → details → pages → image). Also a dev server for a repo. |
+| `packages/core` | The app itself, free of any platform: domain, use cases, sync (merge rules and protocol) and every port the outside world plugs into. |
+| `packages/sqlite` | The persistence adapter shared by every device: schema, migrations, repositories and sync change tracking, over a small `SqlDriver` port. |
+| `packages/source-gateway` | The `SourceGateway` adapter over `source-api`; each app brings its own network transport, cookie jar and preference storage. |
+| `packages/transport` | Network transports: plain fetch (server, harness), the web proxy's wire format and its browser client. |
+| `packages/http` | Extension repositories and the sync server over HTTP, shared by both apps. |
+| `packages/sync-turso` | The sync server's store on Turso / libSQL. |
 | `apps/reader` | Expo / React Native app (library, history, browse, extensions, reader, downloads). |
+| `apps/web` | Next.js web app: the same app in a browser, plus the source proxy and the sync server. |
 | `docs/runtime-conventions.md` | How translated code and the runtime agree on representations. |
 
 ## Translating extensions
@@ -71,11 +78,39 @@ shares the host's network). In dev builds the Library screen polls `repo/debug.j
 `{"id":"x2","pkg":"<extension pkg>"}` runs install → popular → details → pages → image inside the
 app and reports each step to `repo/device.log`.
 
+## Web app and sync
+
+Browsers cannot send the headers manga sites expect (Referer, cookies, User-Agent) and are stopped by
+CORS, so the web app comes with its own server: a proxy for source requests and images, and the sync
+endpoint. Your library lives in the browser (SQLite in WebAssembly, saved to IndexedDB); downloaded
+chapters read offline.
+
+Deploy `apps/web` on Vercel (Root Directory `apps/web`) with:
+
+| Variable | What |
+|---|---|
+| `KANSO_TOKEN` | The access token you type once per browser, and in the iPhone app's Sync settings. At least 32 characters (`openssl rand -base64 33`). |
+| `KANSO_SESSION_SECRET` | Signs browser sessions. At least 32 characters. |
+| `SYNC_DATABASE_URL`, `SYNC_DATABASE_TOKEN` | A [Turso](https://turso.tech) database (`libsql://…`) and its token. Leave unset to run without sync. |
+
+Sync keeps the library, categories, reading progress and history the same on every device: per
+record, the latest change wins. In the iPhone app, Settings → Sync takes the web app's address and the
+token. Installed extensions do not sync.
+
+To run it locally:
+
+```bash
+cd apps/web
+cp .env.example .env.local      # fill in the tokens; SYNC_DATABASE_URL=file:.data/sync.db works locally
+npm run dev
+```
+
 ## Checks
 
 ```bash
-npm test --workspaces --if-present
-cd apps/reader && npx tsc --noEmit && npx expo lint
+npm run typecheck && npm test
+cd apps/reader && npx expo lint
+cd apps/web && npm run lint && npm run build
 ```
 
 ## Licence notes

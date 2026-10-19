@@ -2,35 +2,12 @@
 
 import { initHost, SourceRegistry } from '@kanso/source-api/src/host';
 import { MemoryPrefStore } from '@kanso/source-api/src/source/preferences';
-import { MemoryCookieJar, type Transport } from '@kanso/source-api/src/okhttp';
+import { MemoryCookieJar } from '@kanso/source-api/src/okhttp';
+import { fetchTransport } from '@kanso/transport';
 
 export const UA = 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36';
 
-export const fetchTransport: Transport = {
-  async execute(req) {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), req.timeoutMs);
-    try {
-      const res = await fetch(req.url, {
-        method: req.method,
-        headers: req.headers,
-        body: req.body && req.method !== 'GET' && req.method !== 'HEAD' ? (req.body as unknown as BodyInit) : undefined,
-        redirect: 'manual',
-        signal: ctrl.signal,
-      });
-      const body = new Uint8Array(await res.arrayBuffer());
-      const headers: [string, string][] = [];
-      res.headers.forEach((v, k) => {
-        if (k === 'set-cookie') return;
-        headers.push([k, v]);
-      });
-      for (const c of res.headers.getSetCookie?.() ?? []) headers.push(['set-cookie', c]);
-      return { url: req.url, code: res.status, message: res.statusText, headers, body };
-    } finally {
-      clearTimeout(timer);
-    }
-  },
-};
+export { fetchTransport };
 
 const prefs = new Map<string, MemoryPrefStore>();
 export function initNodeHost(log = false): void {

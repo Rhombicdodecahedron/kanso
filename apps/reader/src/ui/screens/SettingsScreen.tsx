@@ -1,12 +1,14 @@
 import { Stack } from 'expo-router';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ScrollView, Switch, View } from 'react-native';
 
 import { useApp } from '@/composition/AppProvider';
-import type { ReaderMode, Settings } from '@/core/domain/model';
-import { Chip, Row } from '@/ui/components/Buttons';
+import type { ReaderMode, Settings } from '@kanso/core';
+import { Button, Chip, Row } from '@/ui/components/Buttons';
+import { Field } from '@/ui/components/Field';
 import { Loading } from '@/ui/components/States';
 import { Txt } from '@/ui/components/Txt';
+import { formatRelativeTime } from '@/ui/format';
 import { useQuery } from '@/ui/hooks/useQuery';
 import { languageName } from '@/ui/lang';
 import { colors, space } from '@/ui/theme';
@@ -60,6 +62,7 @@ export function SettingsScreen() {
           <Switch value={data.showNsfw} onValueChange={(v) => save({ showNsfw: v })} trackColor={{ true: colors.accent }} />
         </Row>
       </Section>
+      <SyncSection />
       <Section title="Downloads">
         <Row>
           {[1, 2, 3, 4].map((n) => (
@@ -68,6 +71,59 @@ export function SettingsScreen() {
         </Row>
       </Section>
     </ScrollView>
+  );
+}
+
+/** Keeps library, progress and history the same as on the Kanso web app. */
+function SyncSection() {
+  const { sync } = useApp();
+  const [status, setStatus] = useState(sync.status());
+  const [server, setServer] = useState('');
+  const [token, setToken] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  useEffect(() => sync.onStatus(setStatus), [sync]);
+  useEffect(() => {
+    void sync.setup().then((s) => s && setServer(s.server));
+  }, [sync]);
+
+  if (status.kind === 'off') {
+    return (
+      <Section title="Sync">
+        <Txt size={13} dim>Keep your library, reading progress and history the same as on your Kanso web app. Enter its address and access token.</Txt>
+        <Field placeholder="https://your-kanso.vercel.app" value={server} onChangeText={setServer} keyboardType="url" />
+        <Field placeholder="Access token" value={token} onChangeText={setToken} secureTextEntry />
+        {error ? <Txt size={13} color={colors.danger}>{error}</Txt> : null}
+        <Button
+          label="Connect"
+          busy={busy}
+          disabled={!/^https?:\/\/.+/.test(server.trim()) || !token.trim()}
+          onPress={async () => {
+            setBusy(true);
+            setError(null);
+            try {
+              await sync.connect({ server, token });
+              setToken('');
+            } catch (e) {
+              setError(e instanceof Error ? e.message : String(e));
+            } finally {
+              setBusy(false);
+            }
+          }}
+        />
+      </Section>
+    );
+  }
+  return (
+    <Section title="Sync">
+      <Txt size={13} dim numberOfLines={1}>Connected to {server.replace(/^https?:\/\//, '')}</Txt>
+      <Txt size={13} dim>{status.lastSyncAt ? `Last synced ${formatRelativeTime(status.lastSyncAt)}` : 'Not synced yet'}</Txt>
+      {status.kind === 'error' ? <Txt size={13} color={colors.danger}>{status.message}</Txt> : null}
+      <Row style={{ gap: space.sm }}>
+        <Button label={status.kind === 'syncing' ? 'Syncing' : 'Sync now'} small kind="secondary" busy={status.kind === 'syncing'} onPress={() => void sync.syncNow()} />
+        <Button label="Disconnect" small kind="ghost" onPress={() => void sync.disconnect()} />
+      </Row>
+    </Section>
   );
 }
 

@@ -6,7 +6,7 @@ import { Alert, FlatList, Linking, Platform, Pressable, RefreshControl, View } f
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useApp } from '@/composition/AppProvider';
-import type { Category, Chapter, Download, Manga } from '@/core/domain/model';
+import type { Category, Chapter, Download, Manga } from '@kanso/core';
 import { Action, Button, IconButton, Row } from '@/ui/components/Buttons';
 import { Sheet } from '@/ui/components/Sheet';
 import { ErrorState, Loading } from '@/ui/components/States';
